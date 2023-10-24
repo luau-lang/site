@@ -291,8 +291,16 @@ To manipulate array-like tables, Luau provides a set of functions as part of the
 local t = {}
 
 table.insert(t, 0, 42) -- table.insert uses index 0 but arrays are 1-based; did you mean 1 instead?
-
 table.insert(t, #t+1, 42) -- table.insert will append the value to the table; consider removing the second argument for efficiency
+```
+
+In addition, when type information is present, this warning will be emitted when `#` or `ipairs` is used on a table that has no numeric keys or indexers. This helps avoid common bugs like using `#t == 0` to check if a dictionary is empty.
+
+```lua
+local message = { data = { 1, 2, 3 } }
+
+if #message == 0 then -- Using '#' on a table without an array part is likely a bug
+end 
 ```
 
 ## DuplicateCondition (24)
