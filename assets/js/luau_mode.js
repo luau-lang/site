@@ -26,25 +26,34 @@
   
     // long list of standard functions from lua manual
     var builtins = wordRE([
-      "_G","_VERSION","assert","error","getfenv","getmetatable","ipairs","load", "loadstring","next","pairs","pcall",
-      "print","rawequal","rawget","rawset","require","select","setfenv","setmetatable","tonumber","tostring","type","typeof",
-      "unpack","xpcall",
+      "_VERSION","assert","error","gcinfo","getfenv","getmetatable","ipairs","newproxy","next",
+      "pairs","pcall","print","rawequal","rawget","rawlen","rawset","select","setfenv",
+      "setmetatable","tonumber","tostring","type","typeof","unpack","xpcall",
   
-      "coroutine.create","coroutine.resume","coroutine.running","coroutine.status","coroutine.wrap","coroutine.yield",
+      "bit32.arshift","bit32.band","bit32.bnot","bit32.bor","bit32.btest","bit32.bxor","bit32.byteswap",
+      "bit32.countlz","bit32.countrz","bit32.extract","bit32.lrotate","bit32.lshift","bit32.replace","bit32.rrotate","bit32.rshift",
+
+      "buffer.copy","buffer.create","buffer.fill","buffer.fromstring","buffer.len",
+      "buffer.readf32","buffer.readf64","buffer.readi16","buffer.readi32","buffer.readi8","buffer.readstring","buffer.readu16","buffer.readu32","buffer.readu8",
+      "buffer.tostring","buffer.writef32","buffer.writef64","buffer.writei16","buffer.writei32","buffer.writei8","buffer.writestring","buffer.writeu16","buffer.writeu32","buffer.writeu8",
+
+      "coroutine.close","coroutine.create","coroutine.isyieldable","coroutine.resume","coroutine.running","coroutine.status","coroutine.wrap","coroutine.yield",
   
       "debug.info","debug.traceback",
   
-      "math.abs","math.acos","math.asin","math.atan","math.atan2","math.ceil","math.cos","math.cosh","math.deg",
-      "math.exp","math.floor","math.fmod","math.frexp","math.huge","math.ldexp","math.log","math.log10","math.max",
-      "math.min","math.modf","math.pi","math.pow","math.rad","math.random","math.randomseed","math.sin","math.sinh",
-      "math.sqrt","math.tan","math.tanh",
+      "math.abs","math.acos","math.asin","math.atan","math.atan2","math.ceil","math.clamp","math.cos","math.cosh",
+      "math.deg","math.exp","math.floor","math.fmod","math.frexp","math.huge","math.ldexp","math.log","math.log10",
+      "math.max","math.min","math.modf","math.noise","math.pi","math.pow","math.rad","math.random","math.randomseed",
+      "math.round","math.sign","math.sin","math.sinh","math.sqrt","math.tan","math.tanh",
   
       "os.clock","os.date","os.difftime","os.time",
 
-      "string.byte","string.char","string.find","string.format","string.gmatch","string.gsub",
-      "string.len","string.lower","string.match","string.rep","string.reverse","string.sub","string.upper",
+      "string.byte","string.char","string.find","string.format","string.gmatch","string.gsub","string.len","string.lower",
+      "string.match","string.pack","string.packsize","string.rep","string.reverse","string.split","string.sub","string.unpack","string.upper",
   
-      "table.concat","table.clone","table.create","table.freeze","table.isfrozen","table.insert","table.maxn","table.move","table.remove","table.sort","table.unpack"
+      "table.clear","table.clone","table.concat","table.create","table.find","table.freeze","table.insert","table.isfrozen","table.maxn","table.move","table.pack","table.remove","table.sort","table.unpack",
+
+      "utf8.char","utf8.charpattern","utf8.codepoint","utf8.codes","utf8.len","utf8.offset"
     ]);
     var keywords = wordRE(["and","break","elseif","false","nil","not","or","return",
                            "true","function", "end", "if", "then", "else", "do",
