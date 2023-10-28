@@ -4,9 +4,9 @@
         <br>
         <textarea rows="10" cols="80" id="script"></textarea>
         <div class="button-group">
-            <button onclick="executeScript(); return false;" class="demo-button">Run</button>
-            <label for="output-clear">Clear Output</label>
+            <button onclick="executeScript(); return false;">Run</button>
             <input type="checkbox" checked="true" id="output-clear" />
+            <label for="output-clear">Clear Output</label>
         </div>
     </div>
     <div>
@@ -22,9 +22,10 @@
         text-align: center;
     }
 
-    .demo-button {
-        padding: 7px 7px;
-        vertical-align: middle;
+    .button-group > * {
+        display: inline-block;
+        margin-right: 10px;
+        margin-left: 5px;
     }
 
     .line-error {
