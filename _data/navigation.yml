@@ -6,7 +6,7 @@ main:
   - title: Demo
     url: /demo
   - title: GitHub
-    url: https://github.com/Roblox/luau
+    url: https://github.com/luau-lang/luau
 
 pages:
   - title: Getting Started
