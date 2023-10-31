@@ -174,9 +174,9 @@ In addition to a fast allocator, all frequently used structures in Luau have bee
 
 While the best performing code in Luau spends most of the time in the interpreter, performance of the standard library functions is critical to some applications. In addition to specializing many small and simple functions using the builtin call mechanism, we spend extra care on optimizing all library functions and providing additional functions beyond the Lua standard library that help achieve good performance with idiomatic code.
 
-For example, functions like `insert`, `remove` and `move` from the `table` library have been tuned for performance on array-like tables, achieving 3x and more performance compared to un-tuned versions, and Luau provides functions like `table.create` and `table.find` to achieve further speedup when applicable. We also use a carefully tuned dynamic string buffer implementation for internal `string` library to reduce garbage created during string manipulation.
+Functions from the `table` library like `insert`, `remove` and `move` have been tuned for performance on array-like tables, achieving 3x and more performance compared to un-tuned versions, and Luau provides additional functions like `table.create` and `table.find` to achieve further speedup when applicable. Our implementation of `table.sort` is using `introsort` algorithm which results in guaranteed worst case `NlogN` complexity regardless of the input, and, together with the array-like specializations, helps achieve ~4x speedup on average.
 
-In addition to the array-like specializations mentioned above, our implementation of `table.sort` is using `introsort` algorithm which results in guaranteed worst case `NlogN` complexity regardless of the input.
+For `string` library, we use a carefully tuned dynamic string buffer implementation; it is optimized for smaller strings to reduce garbage created during string manipulation, and for larger strings it allows to produce a large string without extra copies, especially in cases where the resulting size is known ahead of time. Additionally, functions like `format` have been tuned to avoid the overhead of `sprintf` where possible, resulting in further speedups.
 
 ## Improved garbage collector pacing
 
