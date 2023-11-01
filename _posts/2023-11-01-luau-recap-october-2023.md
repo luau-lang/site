@@ -35,6 +35,7 @@ We continue to work on many code size and performance improvements; here's a sho
 - Performance of function calls has been marginally improved on X64 and A64
 - Fix code generation for some `bit32.extract` variants where we could produce incorrect results
 - `table.insert` is now faster when called with two arguments as it's compiled directly to native code
+- To reduce code size, module code outside of functions is not compiled natively unless it has loops
 
 ## Analysis Improvements
 
