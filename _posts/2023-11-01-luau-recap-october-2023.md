@@ -84,7 +84,8 @@ We've also added a complete suggestion for anonymous functions if one would be v
 
 ```lua
 local p = Instance.new('Part')
-p.Touched:Connect(```
+p.Touched:Connect(
+```
 
 You will see a completion suggestion `function (anonymous autofilled)`.  Selecting that will cause the following to be inserted into your code:
 
