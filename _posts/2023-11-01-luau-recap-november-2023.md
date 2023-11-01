@@ -16,7 +16,7 @@ a //= 2           -- a == 1
 
 For numbers, `a // b` is equivalent to `math.floor(a / b)`, and you can also overload this operator by implementing the `__idiv` metamethod. The syntax and semantics are borrowed from Lua 5.3 (although Lua 5.3 has an integer type while we don't, we tried to match the behavior to be as close as possible).
 
-## Native Codegen Beta
+## Native Codegen Preview
 
 We are actively working on our new native code generation module that can significantly improve performance of compute-dense scripts by compiling them to X64 (Intel/AMD) or A64 (ARM) machine code and executing that natively. We aim to support all AArch64 hardware with the current focus being Apple Silicon (M1-M3) chips, and all Intel/AMD hardware that supports AVX1 (with no planned support for earlier systems). When the hardware does not support native code generation, any code that would be compiled as native just falls back to the interpreted execution.
 
