@@ -3,9 +3,7 @@ layout: single
 title:  "Luau Recap: November 2023"
 ---
 
-Hi everyone!
-
-The team is still quite busy working on some big updates that we hope to talk about soon, but we have some things to share in the meantime:
+Happy Halloween! We're still quite busy working on some big type checking updates that we hope to talk about soon, but we have a few equally exciting updates to share in the meantime!
 
 ## Floor Division
 
@@ -16,11 +14,19 @@ local a = 10 // 3 -- a == 3
 a //= 2           -- a == 1
 ```
 
-You can also overload this operator by implementing the `__idiv` metamethod.
+For numbers, `a // b` is equivalent to `math.floor(a / b)`, and you can also overload this operator by implementing the `__idiv` metamethod. The syntax and semantics are borrowed from Lua 5.3 (although Lua 5.3 has an integer type while we don't, we tried to match the behavior to be as close as possible).
+
+## Native Codegen Beta
+
+We are actively working on our new native code generation module that can significantly improve performance of compute-dense scripts by compiling them to X64 (Intel/AMD) or A64 (ARM) machine code and executing that natively.
+
+When working with open-source releases, all binaries now have native code generation support compiled in by default; you need to pass `--codegen` command line flag to enable it. We have also integrated native code generation into Roblox Studio [as a beta feature](https://devforum.roblox.com/t/luau-native-code-generation-preview-studio-beta/2572587), which requires manual annotation of select scripts with `--!native` comment.
+
+Since then, we've made some improvements:
 
 ## Analysis Improvements
 
-The `break` and `continue` keywords can now be used in loop bodies to refine variables.
+The `break` and `continue` keywords can now be used in loop bodies to refine variables. This was contributed by a community member - thank you, [AmberGraceSoftware](https://github.com/AmberGraceSoftware)!
 
 ```lua
 function f(objects: {{value: string?}})
@@ -34,9 +40,7 @@ function f(objects: {{value: string?}})
 end
 ```
 
-## Linter Improvements
-
-In addition, when type information is present, this warning will be emitted when `#` or `ipairs` is used on a table that has no numeric keys or indexers. This helps avoid common bugs like using `#t == 0` to check if a dictionary is empty.
+When type information is present, we will now emit a warning when `#` or `ipairs` is used on a table that has no numeric keys or indexers. This helps avoid common bugs like using `#t == 0` to check if a dictionary is empty.
 
 ```lua
 local message = { data = { 1, 2, 3 } }
@@ -44,6 +48,8 @@ local message = { data = { 1, 2, 3 } }
 if #message == 0 then -- Using '#' on a table without an array part is likely a bug
 end 
 ```
+
+Finally, some uses of `getfenv`/`setfenv` are now flagged as deprecated. We do not plan to remove support for `getfenv`/`setfenv` but we actively discourage its use as it disables many optimizations throughout the compiler, runtime, and native code generation, and interferes with type checking and linting.
 
 ## Autocomplete Improvements
 
@@ -85,16 +91,13 @@ Previously, the signature help tooltip would erroneously tell you that you neede
 
 ## Runtime Improvements
 
-* `string.format`'s handling of `%*` is now 1.5-2x faster
-* Constant fold `math.pi` and `math.huge`
+* `string.format`'s handling of `%*` and `%s` is now 1.5-2x faster
+* `tonumber` and `tostring` are now 1.5x and 2.5x faster respectively when working on primitive types
+* Compiler now recognizes `math.pi` and `math.huge` and performs constant folding on the expressions that involve these at `-O2`; for example, `math.pi*2` is now free.
+* Compiler now optimizes `if...then...else` expressions into AND/OR form when possible (for example, `if x then x else y` now compiles as `x or y`)
+* We had a few bugs around `repeat..until` statements when the `until` condition referred to local variables defined in the loop body. These bugs have been fixed.
 * Fix an oversight that could lead to `string.char` and `string.sub` generating potentially unlimited amounts of garbage and exhausting all available memory.
 * We had a bug that could cause the compiler to unroll loops that it really shouldn't.  This could result in massive bytecode bloat.  It is now fixed.
-
-## Native Code Generation
-
-Native Code Generation is a feature we first rolled out in a beta test [toward the end of August](https://devforum.roblox.com/t/luau-native-code-generation-preview-studio-beta/2572587).
-
-Since then, we've made some improvements:
 
 Lastly, a big thanks to our [open source community](https://github.com/luau-lang/luau) for their generous contributions:
 
