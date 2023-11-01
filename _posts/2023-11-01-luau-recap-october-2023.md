@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Luau Recap: November 2023"
+title:  "Luau Recap: October 2023"
 ---
 
 Happy Halloween! We're still quite busy working on some big type checking updates that we hope to talk about soon, but we have a few equally exciting updates to share in the meantime!
