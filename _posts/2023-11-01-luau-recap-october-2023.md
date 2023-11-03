@@ -3,7 +3,9 @@ layout: single
 title:  "Luau Recap: October 2023"
 ---
 
-Happy Halloween! We're still quite busy working on some big type checking updates that we hope to talk about soon, but we have a few equally exciting updates to share in the meantime!
+We're still quite busy working on some big type checking updates that we hope to talk about soon, but we have a few equally exciting updates to share in the meantime!
+
+Let's dive in!
 
 ## Floor Division
 
@@ -18,7 +20,7 @@ For numbers, `a // b` is equivalent to `math.floor(a / b)`, and you can also ove
 
 ## Native Codegen Preview
 
-We are actively working on our new native code generation module that can significantly improve performance of compute-dense scripts by compiling them to X64 (Intel/AMD) or A64 (ARM) machine code and executing that natively. We aim to support all AArch64 hardware with the current focus being Apple Silicon (M1-M3) chips, and all Intel/AMD hardware that supports AVX1 (with no planned support for earlier systems). When the hardware does not support native code generation, any code that would be compiled as native just falls back to the interpreted execution.
+We are actively working on our new native code generation module that can significantly improve the performance of compute-dense scripts by compiling them to X64 (Intel/AMD) or A64 (ARM) machine code and executing that natively. We aim to support all AArch64 hardware with the current focus being Apple Silicon (M1-M3) chips, and all Intel/AMD hardware that supports AVX1 (with no planned support for earlier systems). When the hardware does not support native code generation, any code that would be compiled as native just falls back to the interpreted execution.
 
 When working with [open-source releases](https://github.com/luau-lang/luau/releases), binaries now have native code generation support compiled in by default; you need to pass `--codegen` command line flag to enable it. If you use Luau as a library in a third-party application, you would need to manually link `Luau.CodeGen` library and call the necessary functions to compile specific modules as needed - or keep using the interpreter if you want to! If you work in Roblox Studio, we have integrated native code generation preview [as a beta feature](https://devforum.roblox.com/t/luau-native-code-generation-preview-studio-beta/2572587), which currently requires manual annotation of select scripts with `--!native` comment.
 
@@ -26,7 +28,7 @@ Our goal for the native code generation is to help reach ultimate performance fo
 
 Importantly, native code generation does not change our behavior or correctness expectations. Code compiled natively should give the same results when it executes as non-native code (just take a little less time), and it should not result in any memory safety or sandboxing issues. If you ever notice native code giving a different result from non-native code, please submit a bug report.
 
-We continue to work on many code size and performance improvements; here's a short summary of what we've done in the last couple months, and there's more to come!
+We continue to work on many code size and performance improvements; here's a short summary of what we've done in the last couple of months, and there's more to come!
 
 - Repeated access to table fields with the same object and name are now optimized (e.g. `t.x = t.x + 5` is faster)
 - Numerical `for` loops are now compiled more efficiently, yielding significant speedups on hot loops
