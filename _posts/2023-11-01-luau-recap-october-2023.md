@@ -44,7 +44,7 @@ We continue to work on many code size and performance improvements; here's a sho
 The `break` and `continue` keywords can now be used in loop bodies to refine variables. This was contributed by a community member - thank you, [AmberGraceSoftware](https://github.com/AmberGraceSoftware)!
 
 ```lua
-function f(objects: {{value: string?}})
+function f(objects: { { value: string? } })
     for _, object in objects do
         if not object.value then
             continue
