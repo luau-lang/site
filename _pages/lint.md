@@ -340,8 +340,15 @@ Luau uses comments that start from `!` to control certain aspects of analysis, f
 Luau parses hexadecimal and binary literals as 64-bit integers before converting them to Luau numbers. As a result, numbers that exceed 2^64 are silently truncated to 2^64, which can result in unexpected program behavior. This warning flags literals that are truncated:
 
 ```lua
--- Hexadecimal number literal exceeded available precision and has been truncated to 2^64
+-- Hexadecimal number literal exceeded available precision and was truncated to 2^64
 local x = 0x1111111111111111111111111111111111111
+```
+
+Luau numbers are represented as double precision IEEE754 floating point numbers; they can represent integers up to 2^53 exactly, but larger integers may lose precision. This warning also flags literals that are parsed with a precision loss:
+
+```lua
+-- Number literal exceeded available precision and was truncated to closest representable number
+local x = 9007199254740993
 ```
 
 ## ComparisonPrecedence (28)
