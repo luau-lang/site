@@ -918,7 +918,7 @@ Used to write data to the buffer by converting the number into the type in the a
 
 If the bytes that are accessed by the write are outside the buffer memory, an error is thrown.
 
-Offset should be a positive integer number and the value starts at 0.
+Offset should be an integer number and the value starts at 0.
 
 Ranges of acceptable values can be seen in the table above.
 
@@ -936,11 +936,11 @@ function buffer.writestring(b: buffer, offset: number, value: string, count: num
 
 Used to write data from a string into the buffer at specified offset.
 
-Offset should be a positive integer number and the value starts at 0.
+Offset should be an integer number and the value starts at 0.
 
 If an optional 'count' is specified, only 'count' bytes are taken from the string.
 
-Count should be a positive integer number and cannot be larger than the string length.
+Count should be an integer number and cannot be larger than the string length.
 
 ```
 function buffer.copy(target: buffer, targetOffset: number, source: buffer, sourceOffset: number?, count: number?): ()
@@ -952,7 +952,7 @@ It is possible for 'source' and 'target' to be the same. Copying an overlapping 
 
 If the bytes that are accessed by the read or write are outside the corresponding buffer memory, an error is thrown.
 
-Offsets should be positive integer numbers and the value starts at 0.
+Offsets should be integer numbers and the value starts at 0.
 
 If 'sourceOffset' is nil or is omitted, it defaults to 0.
 
@@ -964,6 +964,6 @@ function buffer.fill(b: buffer, offset: number, value: number, count: number?): 
 
 Sets the 'count' bytes in the buffer starting at the specified 'offset' to the 'value'.
 
-Offset should be a positive integer number and the value starts at 0.
+Offset should be an integer number and the value starts at 0.
 
 If 'count' is 'nil' or is omitted, all bytes after the specified offset are set.
