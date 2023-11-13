@@ -933,8 +933,6 @@ function buffer.readstring(b: buffer, offset: number, count: number): string
 
 Used to read a string of length 'count' from the buffer at specified offset.
 
-If the bytes that are accessed by the read are outside the buffer memory, an error is thrown.
-
 ```
 function buffer.writestring(b: buffer, offset: number, value: string, count: number?): ()
 ```
