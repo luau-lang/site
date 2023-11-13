@@ -863,7 +863,7 @@ Returns the buffer data as a string.
 function buffer.len(b: buffer): number
 ```
 
-Returns the size of the buffer.
+Returns the size of the buffer in bytes.
 
 ```
 function buffer.readi8(b: buffer, offset: number): number
