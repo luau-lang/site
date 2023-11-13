@@ -966,4 +966,4 @@ Sets the 'count' bytes in the buffer starting at the specified 'offset' to the '
 
 Offset should be an integer number and the value starts at 0.
 
-If 'count' is 'nil' or is omitted, all bytes after the specified offset are set.
+If 'count' is 'nil' or is omitted, all bytes from the specified offset until the end of the buffer are set.
