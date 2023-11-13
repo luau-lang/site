@@ -890,7 +890,7 @@ Function | Type | Range |
 readi8 | signed 8-bit integer | [-128, 127]
 readu8 | unsigned 8-bit integer | [0, 255]
 readi16 | signed 16-bit integer | [-32,768, 32,767]
-readu16 | unsigned 16-bit integer | [0, 65,536]
+readu16 | unsigned 16-bit integer | [0, 65,535]
 readi32 | signed 32-bit integer | [-2,147,483,648, 2,147,483,647]
 readu32 | unsigned 32-bit integer | [0, 4,294,967,295]
 readf32 | 32-bit floating-point number | Single-precision IEEE 754 number
