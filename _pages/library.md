@@ -834,13 +834,18 @@ Buffer is an object that represents a fixed-size mutable block of memory.
 
 All operations on a buffer are provided using the 'buffer' library functions.
 
+Many of the functions accept an offset in bytes from the start of the buffer.
+Offset of 0 from the start of the buffer memory block accesses the first byte.
+
+All offsets, counts and sizes should be non-negative integer numbers.
+
+If the bytes that are accessed by any read or write operation are outside the buffer memory, an error is thrown.
+
 ```
 function buffer.create(size: number): buffer
 ```
 
 Creates a buffer of the requested size with all bytes initialized to 0.
-
-Size should be an integer number and cannot be negative.
 
 Size limit is 1GB or 1,073,741,824 bytes.
 
@@ -878,10 +883,6 @@ function buffer.readf64(b: buffer, offset: number): number
 
 Used to read the data from the buffer by reinterpreting bytes at the offset as the type in the argument and converting it into a number.
 
-If the bytes that are accessed by the read are outside the buffer memory, an error is thrown.
-
-Offset should be a positive integer number and the value starts at 0.
-
 Available types:
 
 Function | Type | Range |
@@ -916,11 +917,15 @@ function buffer.writef64(b: buffer, offset: number, value: number): ()
 
 Used to write data to the buffer by converting the number into the type in the argument and reinterpreting it as individual bytes.
 
-If the bytes that are accessed by the write are outside the buffer memory, an error is thrown.
-
-Offset should be an integer number and the value starts at 0.
-
 Ranges of acceptable values can be seen in the table above.
+
+When writing integers, the number is converted using `bit32` library rules.
+
+Values that are out-of-range will take less significant bits of the full number.
+For example, writing 43,981 (0xabcd) using writei8 function will take 0xcd and interpret it as an 8-bit signed number -51.
+It is still recommended to keep all numbers in range of the target type.
+
+Results of converting special number values (inf/nan) to integers are platform-specific.
 
 ```
 function buffer.readstring(b: buffer, offset: number, count: number): string
@@ -936,11 +941,9 @@ function buffer.writestring(b: buffer, offset: number, value: string, count: num
 
 Used to write data from a string into the buffer at a specified offset.
 
-Offset should be an integer number and the value starts at 0.
-
 If an optional 'count' is specified, only 'count' bytes are taken from the string.
 
-Count should be an integer number and cannot be larger than the string length.
+Count cannot be larger than the string length.
 
 ```
 function buffer.copy(target: buffer, targetOffset: number, source: buffer, sourceOffset: number?, count: number?): ()
@@ -949,10 +952,6 @@ function buffer.copy(target: buffer, targetOffset: number, source: buffer, sourc
 Copy 'count' bytes from 'source' starting at offset 'sourceOffset' into the 'target' at 'targetOffset'.
 
 It is possible for 'source' and 'target' to be the same. Copying an overlapping region inside the same buffer acts as if the source region is copied into a temporary buffer and then that buffer is copied over to the target.
-
-If the bytes that are accessed by the read or write are outside the corresponding buffer memory, an error is thrown.
-
-Offsets should be integer numbers and the value starts at 0.
 
 If 'sourceOffset' is nil or is omitted, it defaults to 0.
 
@@ -963,7 +962,5 @@ function buffer.fill(b: buffer, offset: number, value: number, count: number?): 
 ```
 
 Sets the 'count' bytes in the buffer starting at the specified 'offset' to the 'value'.
-
-Offset should be an integer number and the value starts at 0.
 
 If 'count' is 'nil' or is omitted, all bytes from the specified offset until the end of the buffer are set.
