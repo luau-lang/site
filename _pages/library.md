@@ -934,7 +934,7 @@ If the bytes that are accessed by the read are outside the buffer memory, an err
 function buffer.writestring(b: buffer, offset: number, value: string, count: number?): ()
 ```
 
-Used to write data from a string into the buffer at specified offset.
+Used to write data from a string into the buffer at a specified offset.
 
 Offset should be an integer number and the value starts at 0.
 
