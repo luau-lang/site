@@ -4,7 +4,7 @@ title: Getting Started
 toc: true
 ---
 
-To get started with Luau you need to use `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
+To get started with Luau you need to use the `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
 
 ## Creating a script
 
@@ -136,6 +136,25 @@ end
 
 local result : string
 result = ispositive(1)
+```
+
+## Commonly used practices
+Indexing a string:
+
+```lua
+local helloworld = "Hello world!"
+local helloworld_split = string.split(helloworld, "") -- Using "" just splits every character into it's own index in a table.
+
+print(helloworld_split[1]) -- H
+print(helloworld_split[7]) -- w
+```
+
+Append an item to a table:
+```lua
+local MyTable = table.new()
+
+table.insert(MyTable, "hi!") -- This is index 1 on "MyTable"
+MyTable.insert("hello!") -- This is another way to do the same thing
 ```
 
 ## Conclusions
