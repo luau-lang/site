@@ -151,7 +151,7 @@ print(helloworld_split[7]) -- w
 
 Append an item to a table:
 ```lua
-local MyTable = table.new()
+local MyTable = {} -- You can also create a table with "table.new()".
 
 table.insert(MyTable, "hi!") -- This is index 1 on "MyTable"
 MyTable.insert("hello!") -- This is another way to do the same thing
