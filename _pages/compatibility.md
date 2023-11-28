@@ -114,8 +114,8 @@ If integers are taken out of the equation, bitwise operators make less sense, as
 | `utf8` library accepts codepoints up to 2^31 | 🤷‍♀️ | no strong use cases |
 | The use of the `__lt` metamethod to emulate `__le` has been removed | ❌ | breaks compatibility and complicates comparison overloading story |
 | When finalizing objects, Lua will call `__gc` metamethods that are not functions | ❌ | no `__gc` support due to sandboxing and performance/complexity |
-| The function print calls `__tostring` instead of tostring to format its arguments. | ✔️ | |
-| By default, the decoding functions in the utf8 library do not accept surrogates. | 😞 | breaks compatibility and doesn't seem very interesting otherwise |
+| function `print` calls `__tostring` instead of `tostring` to format its arguments | ✔️ | |
+| decoding functions in the utf8 library do not accept surrogates | ✔️ | |
 
 Taking syntax aside (which doesn't feel idiomatic or beautiful), `<close>` isn't very useful in Luau - its dominant use case is for code that works with external resources like files or sockets, but we don't provide such APIs - and has a very large complexity cost, evidences by a lot of bug fixes since the initial implementation in 5.4 work versions. `<const>` in Luau doesn't matter for performance - our multi-pass compiler is already able to analyze the usage of the variable to know if it's modified or not and extract all performance gains from it - so the only use here is for code readability, where the `<const>` syntax is... suboptimal.
 
