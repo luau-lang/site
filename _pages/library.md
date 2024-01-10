@@ -122,7 +122,7 @@ Converts the input object to string and returns the result. If the object has a 
 function type(obj: any): string
 ```
 
-Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"` or `"thread"`.
+Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, or `"buffer"`.
 
 ```
 function typeof(obj: any): string
