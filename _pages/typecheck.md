@@ -46,6 +46,8 @@ local a2: A = b1 -- ok
 local b2: B = a1 -- not ok
 ```
 
+Note that the types are defined before use. Using types defined later in a file can result in unexpected and misleading behavior.
+
 ## Builtin types
 
 The Luau VM supports 9 primitive types: `nil`, `string`, `number`, `boolean`, `table`, `function`, `thread`, `userdata`, and `buffer`. Of these, `table` and `function` are not represented by name, but have their dedicated syntax as covered in this [syntax document](syntax), and `userdata` is represented by [concrete types](#roblox-types); other types can be specified by their name.
