@@ -626,11 +626,22 @@ When one type inherits from another type, the type checker models this relations
 
 All enums are also available to use by their name as part of the `Enum` type library, e.g. `local m: Enum.Material = part.Material`.
 
-Finally, we can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
+We can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
 
 ```lua
 local part = Instance.new("Part")
 local basePart: BasePart = part
+```
+
+Finally, Roblox types can be refined using `isA`:
+
+```lua
+local function getText(x : Instance) : string
+    if x:isA("TextLabel") or x:isA("TextButton") or x:isA("TextBox") then
+		return child.Text
+    end
+    return ""
+end
 ```
 
 Note that many of these types provide some properties and methods in both lowerCase and UpperCase; the lowerCase variants are deprecated, and the type system will ask you to use the UpperCase variants instead.
