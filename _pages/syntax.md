@@ -280,9 +280,17 @@ print "hello" -- valid
 
 ## Floor division (`//`)
 
-Luau supports the floor division operator (`//`) and its compound assignment operator (`//=`) as ergonomic alternatives to `math.floor`.
+Luau supports the floor division operator (`//`) as an ergonomic alternative to `math.floor`.
+Floor division uses the compound assignment operator (`//=`) and the metamethod `__idiv`, with syntax and semantics that follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1). 
 
-For numbers, `a // b` is equal to `math.floor(a / b)`. When `b` is 0, `a // b` results in infinity or NaN as appropriate.
-The `__idiv` metamethod may be used to overload the `//` and `//=` operators. 
+For numbers, `a // b` is equal to `math.floor(a / b)`:
+```lua
+local n = 6.72
+print(n // 2) --> 3
+n //= 3
+print(n) --> 2
+```
+When `b` is 0, `a // b` results in infinity or NaN as appropriate.
 
-Floor division syntax and semantics follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1).
+
+
