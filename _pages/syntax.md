@@ -270,20 +270,19 @@ print(`Welcome to {
 The sequence of two opening braces {{"`{{`"}} is rejected with a parse error.
 This restriction is made to prevent developers using other programming languages with a similar feature from trying to attempt that as a way to escape a single `{` and getting unexpected results in Luau.
 
-Luau currently does not support backtick string literals as a type annotation, so `` type Foo = `Foo` `` is invalid.
+Luau currently does not support backtick string literals as type annotations, therefore `` type Foo = `Foo` `` is invalid syntax.
 
-Function calls with a backtick string literal without parentheses are not supported, so `` print`hello` `` is invalid.
+Unlike single and double-quoted string literals, backtick string literals must always be wrapped in parentheses for function calls:
+```lua
+print`hello` -- invalid syntax
+print "hello" -- valid 
+```
 
 ## Floor division (`//`)
 
-Luau implements support for floor division operator (`//`) for numbers as well as support for `__idiv` metamethod. The syntax and semantics follow [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1).
+Luau supports the floor division operator (`//`) and its compound assignment operator (`//=`) as ergonomic alternatives to `math.floor`.
 
-For numbers, `a // b` is equal to `math.floor(a / b)`; when `b` is 0, `a // b` results in infinity or NaN as appropriate.
+For numbers, `a // b` is equal to `math.floor(a / b)`. When `b` is 0, `a // b` results in infinity or NaN as appropriate.
+The `__idiv` metamethod may be used to overload the `//` and `//=` operators. 
 
-Compound assignments are supported with `//=`: 
-
-```lua
-local a = 4.2
-a //= 2
-print(a) --> 2
-```
+Floor division syntax and semantics follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1).
