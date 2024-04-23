@@ -272,7 +272,7 @@ This restriction is made to prevent developers using other programming languages
 
 Luau currently does not support backtick string literals as a type annotation, so `` type Foo = `Foo` `` is invalid.
 
-Function calls with a backtick string literal without parethesis is not supported, so `` print`hello` `` is invalid.
+Function calls with a backtick string literal without parentheses are not supported, so `` print`hello` `` is invalid.
 
 ## Floor division (`//`)
 
