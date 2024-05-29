@@ -43,7 +43,7 @@ feature_row3:
   - 
     title: Performance
     excerpt: >
-        In addition to a completely custom front end that implements parsing, linting and type checking, Luau runtime features new bytecode, interpreter and compiler that are heavily tuned for performance. Luau currently does not implement Just-In-Time compilation, but its interpreter can be competitive with LuaJIT interpreter depending on the program. We continue to optimize the runtime and rewrite portions of it to be even more efficient. While our overall goal is to minimize the amount of time programmers spend tuning performance, some details about the performance characteristics are [provided for inquisitive minds](performance).
+        In addition to a completely custom front end that implements parsing, linting and type checking, Luau runtime features new bytecode, interpreter and compiler that are heavily tuned for performance. Luau supports Just-In-Time compilation, and can be competitive with LuaJIT interpreter depending on the program. We continue to optimize the runtime and rewrite portions of it to be even more efficient. While our overall goal is to minimize the amount of time programmers spend tuning performance, some details about the performance characteristics are [provided for inquisitive minds](performance).
 
   -
     title: Libraries
