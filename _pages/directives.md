@@ -4,10 +4,6 @@ title: Script directives
 toc: true
 ---
 
-[comment]: <> (please delete)
-[comment]: <> (info on this page was pieced together from several devforum posts and oss messages from zeuxcg [🐐] and WheretIB [🐐] and reputable oss community members [🐐])
-[comment]: <> (apologies if any info is outdated or was lost in translation)
-
 Luau comes with script directives - comments placed at the top lines of code that modify the linter behavior or script performance.
 
 ## --!strict, nonstrict, nocheck
