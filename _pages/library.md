@@ -732,7 +732,7 @@ Returns the number of consecutive zero bits in the 32-bit representation of `n` 
 function bit32.byteswap(n: number): number
 ```
 
-Returns `n` with the order of the bytes swappped.
+Returns `n` with the order of the bytes swapped.
 
 ## utf8 library
 
