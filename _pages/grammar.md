@@ -68,9 +68,9 @@ SimpleType =
 
 SingletonType = STRING | 'true' | 'false'
 
-UnionSuffix = {'?'} {'|' SimpleType {'?'}}
-IntersectionSuffix = {'&' SimpleType}
-Type = SimpleType (UnionSuffix | IntersectionSuffix)
+Union = [SimpleType {'?'}] {'|' SimpleType {'?'}}
+Intersection = [SimpleType] {'&' SimpleType}
+Type = Union | Intersection
 
 GenericTypePackParameter = NAME '...'
 GenericTypeList = NAME [',' GenericTypeList] | GenericTypePackParameter {',' GenericTypePackParameter}
