@@ -28,7 +28,7 @@ laststat = 'return' [explist] | 'break' | 'continue'
 
 funcname = NAME {'.' NAME} [':' NAME]
 funcbody = ['<' GenericTypeList '>'] '(' [parlist] ')' [':' ReturnType] block 'end'
-parlist = bindinglist [',' '...'] | '...' [':' (Type | GenericTypePack)]
+parlist = bindinglist [',' '...' [':' GenericTypePack | Type]]
 
 explist = {exp ','} exp
 namelist = NAME {',' NAME}
@@ -83,7 +83,7 @@ GenericTypeListWithDefaults =
     GenericTypePackParameterWithDefault {',' GenericTypePackParameterWithDefault}
 
 TypeList = Type [',' TypeList] | '...' Type
-BoundTypeList = [NAME ':'] Type [',' BoundTypeList] | '...' Type
+BoundTypeList = [NAME ':'] Type [',' BoundTypeList] | GenericTypePack | VariadicTypePack
 TypeParams = (Type | TypePack | VariadicTypePack | GenericTypePack) [',' TypeParams]
 TypePack = '(' [TypeList] ')'
 GenericTypePack = NAME '...'
