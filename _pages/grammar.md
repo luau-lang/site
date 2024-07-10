@@ -41,8 +41,6 @@ varlist = var {',' var}
 prefixexp = var | functioncall | '(' exp ')'
 functioncall = prefixexp funcargs | prefixexp ':' NAME funcargs
 
-attributes = {'@' NAME}
-
 exp = asexp { binop exp } | unop exp { binop exp }
 ifelseexp = 'if' exp 'then' exp {'elseif' exp 'then' exp} 'else' exp
 asexp = simpleexp ['::' Type]
@@ -58,6 +56,18 @@ fieldsep = ',' | ';'
 compoundop :: '+=' | '-=' | '*=' | '/=' | '//=' | '%=' | '^=' | '..='
 binop = '+' | '-' | '*' | '/' | '//' | '^' | '%' | '..' | '<' | '<=' | '>' | '>=' | '==' | '~=' | 'and' | 'or'
 unop = '-' | 'not' | '#'
+
+littable ::= '{' [fieldlist] '}'
+litfieldlist ::= field {fieldsep field} [fieldsep]
+litfield ::= [NAME '='] literal
+
+literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
+litlist ::= literal {‘,’ literal}
+
+pars ::= ‘(’ [litlist] ‘)’ | littable | LiteralString 
+parattr ::= Name [pars]
+attribute ::= '@' Name | '@[' parattr {',' parattr} ']'
+attributes ::= {attribute}
 
 SimpleType =
     'nil' |
