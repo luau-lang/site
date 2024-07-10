@@ -19,8 +19,8 @@ stat = varlist '=' explist |
     'if' exp 'then' block {'elseif' exp 'then' block} ['else' block] 'end' |
     'for' binding '=' exp ',' exp [',' exp] 'do' block 'end' |
     'for' bindinglist 'in' explist 'do' block 'end' |
-    'function' funcname funcbody |
-    'local' 'function' NAME funcbody |
+    attributes 'function' funcname funcbody |
+    attributes 'local' 'function' NAME funcbody |
     'local' bindinglist ['=' explist] |
     ['export'] 'type' NAME ['<' GenericTypeListWithDefaults '>'] '=' Type
 
@@ -45,7 +45,7 @@ exp = asexp { binop exp } | unop exp { binop exp }
 ifelseexp = 'if' exp 'then' exp {'elseif' exp 'then' exp} 'else' exp
 asexp = simpleexp ['::' Type]
 stringinterp = INTERP_BEGIN exp { INTERP_MID exp } INTERP_END
-simpleexp = NUMBER | STRING | 'nil' | 'true' | 'false' | '...' | tableconstructor | 'function' funcbody | prefixexp | ifelseexp | stringinterp
+simpleexp = NUMBER | STRING | 'nil' | 'true' | 'false' | '...' | tableconstructor | attributes 'function' funcbody | prefixexp | ifelseexp | stringinterp
 funcargs =  '(' [explist] ')' | tableconstructor | STRING
 
 tableconstructor = '{' [fieldlist] '}'
@@ -56,6 +56,18 @@ fieldsep = ',' | ';'
 compoundop :: '+=' | '-=' | '*=' | '/=' | '//=' | '%=' | '^=' | '..='
 binop = '+' | '-' | '*' | '/' | '//' | '^' | '%' | '..' | '<' | '<=' | '>' | '>=' | '==' | '~=' | 'and' | 'or'
 unop = '-' | 'not' | '#'
+
+littable ::= '{' [litfieldlist] '}'
+litfieldlist ::= litfield {fieldsep litfield} [fieldsep]
+litfield ::= [NAME '='] literal
+
+literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
+litlist ::= literal {‘,’ literal}
+
+pars ::= ‘(’ [litlist] ‘)’ | littable | STRING 
+parattr ::= NAME [pars]
+attribute ::= '@' NAME | '@[' parattr {',' parattr} ']'
+attributes ::= {attribute}
 
 SimpleType =
     'nil' |
