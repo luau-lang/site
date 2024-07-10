@@ -57,8 +57,8 @@ compoundop :: '+=' | '-=' | '*=' | '/=' | '//=' | '%=' | '^=' | '..='
 binop = '+' | '-' | '*' | '/' | '//' | '^' | '%' | '..' | '<' | '<=' | '>' | '>=' | '==' | '~=' | 'and' | 'or'
 unop = '-' | 'not' | '#'
 
-littable ::= '{' [fieldlist] '}'
-litfieldlist ::= field {fieldsep field} [fieldsep]
+littable ::= '{' [litfieldlist] '}'
+litfieldlist ::= litfield {fieldsep litfield} [fieldsep]
 litfield ::= [NAME '='] literal
 
 literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
