@@ -64,9 +64,9 @@ litfield ::= [NAME '='] literal
 literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
 litlist ::= literal {‘,’ literal}
 
-pars ::= ‘(’ [litlist] ‘)’ | littable | LiteralString 
-parattr ::= Name [pars]
-attribute ::= '@' Name | '@[' parattr {',' parattr} ']'
+pars ::= ‘(’ [litlist] ‘)’ | littable | STRING 
+parattr ::= NAME [pars]
+attribute ::= '@' NAME | '@[' parattr {',' parattr} ']'
 attributes ::= {attribute}
 
 SimpleType =
