@@ -171,4 +171,16 @@ For example, `tostring(1e+30)` now outputs '1e+30' instead of '1.e+30'. This imp
 
 Lastly, if you have open-source or even private projects on GitHub which use Luau, you might be happy to learn that Luau now has official support on GitHub for `.luau` file extension. This includes recognizing files as using Luau programming language and having support for syntax highlighting.
 
-A big thanks goes to our [open source community](https://github.com/luau-lang/luau) for their generous contributions including pushing for broader Luau support.
+A big thanks goes to our [open source community](https://github.com/luau-lang/luau) for their generous contributions including pushing for broader Luau support:
+
+* [birds3345](https://github.com/birds3345)
+* [bjornbytes](https://github.com/bjornbytes)
+* [Gskartwii](https://github.com/Gskartwii)
+* [jackdotink](https://github.com/jackdotink)
+* [JohnnyMorganz](https://github.com/JohnnyMorganz)
+* [khvzak](https://github.com/khvzak)
+* [kostadinsh](https://github.com/kostadinsh)
+* [mttsner](https://github.com/mttsner)
+* [mxruben](https://github.com/mxruben)
+* [petrihakkinen](https://github.com/petrihakkinen)
+* [zeux](https://github.com/zeux)
