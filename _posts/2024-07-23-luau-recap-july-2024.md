@@ -8,43 +8,6 @@ While the Luau team is actively working on a big rewrite of the type inference a
 
 ## What's new
 
-### Stricter `utf8` library validation
-
-`utf8` library will now correctly validate UTF-8 and reject inputs that have surrogates.
-`utf8.len` will return `nil` followed by the byte offset, `utf8.codepoint` and `utf8.codes` will error.
-This matches how other kinds of input errors were previously handled by those functions.
-
-Strings that are validated using `utf8.len` will now always work properly with `utf9.nfcnormalize`, `utf8.grafemes`, DataStore APIs and other Roblox engine functions. Custom per-character validation logic is no longer required.
-
-### Imprecise integer number warning
-
-Luau stores numbers as 64-bit floating-point values. Integer values up to 2^53 are supported, but higher numbers might experience rounding.
-For example, both 10000000000000000 and 9223372036854775808 are larger than 2^53, but match the rounding, while 10000000000000001 gets rounded down to 10000000000000000.
-In cases where rounding takes place, you will get a warning message.
-If the large value is intended and rounding can be ignored, just add ".0" to the number to remove the warning:
-
-```luau
-local a = 10000000000000001 -- Number literal exceeded available precision and was truncated to closest representable number
-local b = 10000000000000001.0 -- Ok, but rounds to 10000000000000000
-```
-
-### Leading `|` and `&` in types
-
-It is now possible to start your union and intersection types with a symbol. This can help align the type components more cleanly:
-
-```luau
-type Options =
-    | { tag: "cat", laziness: number }
-    | { tag: "dog", happiness: number }
-```
-
-You can find more information and examples in [the proposal](https://github.com/luau-lang/rfcs/blob/leading-bar-ampersand/docs/syntax-leading-bar-and-ampersand.md)
-
-## Native Code Generation
-
-As a reminder, Luau native code generation is now available by default on the server for all experiences.
-If you have missed it, you can find the last update in the announcement: https://devforum.roblox.com/t/luau-native-code-generation-preview-update/2961746
-
 ### Native function attribute
 
 For a better control of what code runs natively, we have introduced new syntax for function attributes:
@@ -123,6 +86,45 @@ Note that native compilation now supports properties/methods of the Vector3 type
 Even when native compiler doesn't have a specific optimization for a type, like Vector2, UDim2 or Part, if the type can be resolved, shorter code sequences are generated and more optimizations can be made between separate operations.
 
 We are working to extend type inference and faster inline operations for additional Vector3 methods and even operations on Vector2/CFrame in the future.
+
+## Runtime Changes
+
+### Stricter `utf8` library validation
+
+`utf8` library will now correctly validate UTF-8 and reject inputs that have surrogates.
+`utf8.len` will return `nil` followed by the byte offset, `utf8.codepoint` and `utf8.codes` will error.
+This matches how other kinds of input errors were previously handled by those functions.
+
+Strings that are validated using `utf8.len` will now always work properly with `utf9.nfcnormalize`, `utf8.grafemes`, DataStore APIs and other Roblox engine functions. Custom per-character validation logic is no longer required.
+
+### Imprecise integer number warning
+
+Luau stores numbers as 64-bit floating-point values. Integer values up to 2^53 are supported, but higher numbers might experience rounding.
+For example, both 10000000000000000 and 9223372036854775808 are larger than 2^53, but match the rounding, while 10000000000000001 gets rounded down to 10000000000000000.
+In cases where rounding takes place, you will get a warning message.
+If the large value is intended and rounding can be ignored, just add ".0" to the number to remove the warning:
+
+```luau
+local a = 10000000000000001 -- Number literal exceeded available precision and was truncated to closest representable number
+local b = 10000000000000001.0 -- Ok, but rounds to 10000000000000000
+```
+
+### Leading `|` and `&` in types
+
+It is now possible to start your union and intersection types with a symbol. This can help align the type components more cleanly:
+
+```luau
+type Options =
+    | { tag: "cat", laziness: number }
+    | { tag: "dog", happiness: number }
+```
+
+You can find more information and examples in [the proposal](https://github.com/luau-lang/rfcs/blob/leading-bar-ampersand/docs/syntax-leading-bar-and-ampersand.md)
+
+## Native Code Generation
+
+As a reminder, Luau native code generation is now available by default on the server for all experiences.
+If you have missed it, you can find the last update in the announcement: https://devforum.roblox.com/t/luau-native-code-generation-preview-update/2961746
 
 ## Analysis Improvements
 
