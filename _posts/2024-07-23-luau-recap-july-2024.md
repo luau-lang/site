@@ -1,3 +1,8 @@
+---
+layout: single
+title:  "Luau Recap: July 2024"
+---
+
 Hello everyone!
 
 While the Luau team is actively working on a big rewrite of the type inference and type checking engines (more news about that in the near future), we wanted to go over other changes and updates since our last recap back in October.
