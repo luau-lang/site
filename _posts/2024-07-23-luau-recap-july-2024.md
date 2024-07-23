@@ -9,8 +9,23 @@ While the Luau team is actively working on a big rewrite of the type inference a
 
 ## Native Code Generation
 
-As a reminder, Luau native code generation is now available by default on the server and in Studio for all experiences.
-If you have missed it, you can find the last update in the announcement: https://devforum.roblox.com/t/luau-native-code-generation-preview-update/2961746
+We are happy to announce that the native code feature is out from the 'Preview' state and is fully supported for X64 (Intel/AMD) or A64 (ARM) processor architectures.
+
+As a refresher, native code generation is the feature that allows Luau scripts that have been previously executed by interpreting bytecode inside the Luau VM to instead compile to machine code that the CPU understands and executes directly.
+
+Since the release of the Preview, we have worked on improving code performance, memory use of the system, correctness and stability.
+
+Some highlights:
+
+* Improved performance of the [bit32 library](https://luau-lang.org/library#bit32-library) functions
+* Improved performance of numerical loops
+* Optimized table array and property lookups
+* Added native support for new [buffer type](hhttps://luau-lang.org/library#buffer-library) operations
+* Code optimizations based on knowing which types are returned from operations
+* Code optimizations based on function argument type annotations
+  * This includes support for [SIMD operations](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) for annotated vector arguments
+
+There are many other small improvements in generated code performance and size and we have plans for additional optimizations.
 
 ### Native function attribute
 
@@ -22,10 +37,6 @@ local function foo()
     ...
 end
 ```
-
-We have also prepared a video for you, going over the native code generation feature and best approaches on using it, including the new attribute:
-
-https://www.youtube.com/watch?v=llR_pNlJDQw
 
 This is the first attribute to become available and we are working on the ability to mark functions as deprecated using the `@deprecated` attribute. More on that [here](https://github.com/luau-lang/rfcs/blob/2335ab6db9353223fad0065294d15fdcd127c4ea/docs/syntax-attribute-functions-deprecated.md).
 
@@ -44,10 +55,10 @@ end
 
 Native compiler assumes that operations are most likely being performed on numbers and generates the appropriate fast path.
 
-But what if the function is actually called with a Vector3 type?
+But what if the function is actually called with a vector type?
 
 ```luau
-local intlPos = MulAddScaled(Part.Position, v, Vector3.new(12, 0, 0))
+local intlPos = MulAddScaled(Part.Position, v, vector(12, 0, 0))
 ```
 
 To handle this, a slower path was generated to handle any other potential type of the argument. Because this path is not chosen as the first possible option, extra checking overhead prevents code from running as fast as it can.
@@ -55,15 +66,17 @@ To handle this, a slower path was generated to handle any other potential type o
 When we announced the last update, we had already added some support for following the types used as arguments.
 
 ```luau
-local function MulAddScaled(a: Vector3, b: Vector3, c: Vector3)
+local function MulAddScaled(a: vector, b: vector, c: vector)
     return a * b * 0.75 + c * 0.25
 end
 ```
 
+> **_NOTE:_** `vector` type is not enabled by default, check out `defaultOptions` and `setupVectorHelpers` functions in `Conformance.test.cpp` file as an example of the `vector` library setup.
+
 Since then, we have extended this to support type information on locals, following complex types and even inferring results of additional operations.
 
 ```luau
-type Vertex = { p: Vector3, uv: Vector3, n: Vector3, t: Vector3, b: Vector3, h: number }
+type Vertex = { p: vector, uv: vector, n: vector, t: vector, b: vector, h: number }
 type Mesh = { vertices: {Vertex}, indices: {number} }
 
 function calculate_normals(mesh: Mesh)
@@ -72,12 +85,12 @@ function calculate_normals(mesh: Mesh)
         local b = mesh.vertices[mesh.indices[i + 1]]
         local c = mesh.vertices[mesh.indices[i + 2]]
 
-        local vba = a.p - b.p -- Inferred as a Vector3 operation
+        local vba = a.p - b.p -- Inferred as a vector operation
         local vca = a.p - c.p
 
-        local n = vba:Cross(vca) -- Knows that Cross returns Vector3
+        local n = vba:Cross(vca) -- Knows that Cross returns vector
 
-        a.n += n -- Inferred as a Vector3 operation
+        a.n += n -- Inferred as a vector operation
         b.n += n
         c.n += n
     end
@@ -86,11 +99,13 @@ end
 
 As can be seen, often it's enough to annotate the type of the data structure and correct fast-path vector code will be generated from that without having to specify the type of each local or temporary.
 
-Note that native compilation now supports properties/methods of the Vector3 type like `Magnitude`, `Unit`, `Dot`, `Cross`, `Floor` and `Ceil` allowing generation of CPU code that is multiple times faster than a generic Roblox API call.
+> **_NOTE:_** Advanced inference and operation lowering is enabled by using custom `HostIrHooks` callbacks. Check out 'Vector' test with 'IrHooks' option in `Conformance.test.cpp` and `ConformanceIrHooks.h` file for an example of the setup.
 
-Even when native compiler doesn't have a specific optimization for a type, like Vector2, UDim2 or Part, if the type can be resolved, shorter code sequences are generated and more optimizations can be made between separate operations.
+Note that support for native lowering hooks allows generation of CPU code that is multiple times faster than a generic metatable call.
 
-We are working to extend type inference and faster inline operations for additional Vector3 methods and even operations on Vector2/CFrame in the future.
+Even when native compiler doesn't have a specific optimization for a type, if the type can be resolved, shorter code sequences are generated and more optimizations can be made between separate operations.
+
+> **_NOTE:_** `HostIrHooks` callbacks also enable type inference and lowering for your custom userdata types. Check out 'NativeUserdata' test with 'IrHooks' option in `Conformance.test.cpp` and `ConformanceIrHooks.h` file for an example of the setup.
 
 ## Runtime changes
 
@@ -100,7 +115,7 @@ We are working to extend type inference and faster inline operations for additio
 `utf8.len` will return `nil` followed by the byte offset, `utf8.codepoint` and `utf8.codes` will error.
 This matches how other kinds of input errors were previously handled by those functions.
 
-Strings that are validated using `utf8.len` will now always work properly with `utf8.nfcnormalize`, `utf8.graphemes`, DataStore APIs and other Roblox engine functions. Custom per-character validation logic is no longer required.
+Strings that are validated using `utf8.len` will now always work properly with `utf8.nfcnormalize` and `utf8.graphemes` functions. Custom per-character validation logic is no longer required to check if a string is valid under `utf8` requirements.
 
 ### Imprecise integer number warning
 
@@ -126,7 +141,7 @@ type Options =
     | { tag: "dog", happiness: number }
 ```
 
-You can find more information and examples in [the proposal](https://github.com/luau-lang/rfcs/blob/leading-bar-ampersand/docs/syntax-leading-bar-and-ampersand.md) 
+You can find more information and examples in [the proposal](https://github.com/luau-lang/rfcs/blob/leading-bar-ampersand/docs/syntax-leading-bar-and-ampersand.md)
 
 ## Analysis Improvements
 
@@ -148,13 +163,9 @@ For example, `tostring(1e+30)` now outputs '1e+30' instead of '1.e+30'. This imp
 * Construction of tables with 17-32 properties or 33-64 array elements is now 30% faster.
 * `table.concat` method is now 2x faster when the separator is not used and 40% faster otherwise.
 * `table.maxn` method is now 5-14x faster.
-* Vector3 constants are now stored in the constant table and avoid runtime construction.
+* vector constants are now stored in the constant table and avoid runtime construction.
 * Operations like 5/x and 5-x with any constant on the left-hand-side are now performed faster, one less minor thing to think about!
 * It is no longer possible to crash the server on a hang in the `string` library methods.
-
-## Buffer library and type
-
-As a reminder, `buffer` data type announced as a beta [here](https://devforum.roblox.com/t/introducing-luau-buffer-type-beta/2724894) has been out of beta since December with additional use cases added in February. We've seen some feedback that people were not aware of the availability, so we use this opportunity as a reminder!
 
 ## Luau as a supported language on GitHub
 
