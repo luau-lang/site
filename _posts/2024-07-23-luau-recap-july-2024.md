@@ -13,7 +13,7 @@ Luau has recently adopted a Hawaiian monk seal mascot named Hina, after the Hawa
 
 Please welcome Hina the Seal!
 
-![Hina the Seal](https://github.com/luau-lang/rfcs/blob/master/mascot.png?raw=true)
+![Hina the Seal]({{ site.url }}{{ site.baseurl }}/assets/images/mascot.png)
 
 ## Native Code Generation
 
