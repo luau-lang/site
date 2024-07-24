@@ -7,6 +7,14 @@ Hello everyone!
 
 While the Luau team is actively working on a big rewrite of the type inference and type checking engines (more news about that in the near future), we wanted to go over other changes and updates since our last recap back in October.
 
+## Official Luau mascot
+
+Luau has recently adopted a Hawaiian monk seal mascot named Hina, after the Hawaiian goddess of the moon.
+
+Please welcome Hina the Seal!
+
+![Hina the Seal]({{ site.url }}{{ site.baseurl }}/assets/images/mascot.png)
+
 ## Native Code Generation
 
 We are happy to announce that the native code feature is out from the 'Preview' state and is fully supported for X64 (Intel/AMD) or A64 (ARM) processor architectures.
