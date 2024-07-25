@@ -62,9 +62,9 @@ litfieldlist ::= litfield {fieldsep litfield} [fieldsep]
 litfield ::= [NAME '='] literal
 
 literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
-litlist ::= literal {‘,’ literal}
+litlist ::= literal {',' literal}
 
-pars ::= ‘(’ [litlist] ‘)’ | littable | STRING 
+pars ::= '(' [litlist] ')' | littable | STRING 
 parattr ::= NAME [pars]
 attribute ::= '@' NAME | '@[' parattr {',' parattr} ']'
 attributes ::= {attribute}
