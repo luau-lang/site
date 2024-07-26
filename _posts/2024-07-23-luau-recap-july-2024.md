@@ -28,7 +28,7 @@ Some highlights:
 * Improved performance of the [bit32 library](https://luau-lang.org/library#bit32-library) functions
 * Improved performance of numerical loops
 * Optimized table array and property lookups
-* Added native support for new [buffer type](hhttps://luau-lang.org/library#buffer-library) operations
+* Added native support for new [buffer type](https://luau-lang.org/library#buffer-library) operations
 * Code optimizations based on knowing which types are returned from operations
 * Code optimizations based on function argument type annotations
   * This includes support for [SIMD operations](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) for annotated vector arguments
