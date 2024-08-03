@@ -618,6 +618,37 @@ local value = numericValue :: any             -- ok, all expressions may be cast
 local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'boolean' conversion
 ```
 
+## Type functions (yet to be released as of August 5)
+
+Type functions refer to functions that operate on types rather than values. They allow types to be manipulated and transformed, enabling the computation of new types based on existing ones. In Luau, type functions can be defined with the following syntax:
+```luau
+type function f(...)
+    -- implementation of the type function
+end
+```
+
+To modify types within type functions, we can use the `type` userdata and its methods [documented here](todo-add-link-here). Note that this userdata is *only* available in the context of type functions. An example of a type function is:
+```luau
+type function makeOptional(tbl)
+    if not tbl:is("table") then
+        error("Argument is not a table")
+    end
+
+    for k, v in tbl:getprops() do
+        tbl:setprop(k, type.getunion(v, type.niltype))
+    end
+
+    return tbl
+end
+
+type Person = {name: string, age: number}
+local bob: makeOptional<Person> = {name = "Bob"} -- {name: string?, age: number?}
+```
+
+In this example, the makeOptional type function takes a table type and modifies its properties to be optional by iterating through the properties and creating a union of the original type and the nil type.
+
+Note: This feature is currently in beta and has several limitations. We are in the first iteration of this feature. For more details, please read the RFC [here](todo-add-link-here).
+
 ## Roblox types
 
 Roblox supports a rich set of classes and data types, [documented here](https://developer.roblox.com/en-us/api-reference). All of them are readily available for the type checker to use by their name (e.g. `Part` or `RaycastResult`).
