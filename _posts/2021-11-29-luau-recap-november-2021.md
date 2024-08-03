@@ -10,7 +10,7 @@ Luau is our new language that you can read more about at [https://luau-lang.org]
 ## Type packs in type aliases
 
 Type packs are the construct Luau uses to represent a sequence of types. We've had syntax for generic type packs for a while now, and it sees use in generic functions, but it hasn't been available in type aliases. That has changed, and it is now syntactically legal to write the following type alias:
-```lua
+```luau
 type X<A...> = () -> A...
 type Y = X<number, string>
 ```
@@ -36,7 +36,7 @@ You might think that C++ is a scary language and you can't contribute to Luau. I
 
 ## Library improvements
 
-```lua
+```luau
 function bit32.countlz(n: number): number
 function bit32.countrz(n: number): number
 ```

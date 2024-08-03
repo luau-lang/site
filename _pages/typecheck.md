@@ -18,13 +18,13 @@ There are three modes currently available. They must be annotated on the top few
 
 As for the other two, they are largely similar but with one important difference: in nonstrict mode, we infer `any` for most of the types if we couldn't figure it out early enough. This means that given this snippet:
 
-```lua
+```luau
 local foo = 1
 ```
 
 We can infer `foo` to be of type `number`, whereas the `foo` in the snippet below is inferred `any`:
 
-```lua
+```luau
 local foo
 foo = 1
 ```
@@ -35,7 +35,7 @@ However, given the second snippet in strict mode, the type checker would be able
 
 Luau's type system is structural by default, which is to say that we inspect the shape of two tables to see if they are similar enough. This was the obvious choice because Lua 5.1 is inherently structural.
 
-```lua
+```luau
 type A = {x: number, y: number, z: number?}
 type B = {x: number, y: number, z: number}
 
@@ -52,7 +52,7 @@ The Luau VM supports 9 primitive types: `nil`, `string`, `number`, `boolean`, `t
 
 The type checker also provides the builtin types [`unknown`](#unknown-type), [`never`](#never-type), and [`any`](#any-type).
 
-```lua
+```luau
 local s = "foo"
 local n = 1
 local b = true
@@ -64,7 +64,7 @@ print(a.x) -- Type checker believes this to be ok, but crashes at runtime.
 
 There's a special case where we intentionally avoid inferring `nil`. It's a good thing because it's never useful for a local variable to always be `nil`, thereby permitting you to assign things to it for Luau to infer that instead.
 
-```lua
+```luau
 local a
 local b = nil
 ```
@@ -73,7 +73,7 @@ local b = nil
 
 `unknown` is also said to be the _top_ type, that is it's a union of all types.
 
-```lua
+```luau
 local a: unknown = "hello world!"
 local b: unknown = 5
 local c: unknown = function() return 5 end
@@ -81,7 +81,7 @@ local c: unknown = function() return 5 end
 
 Unlike `any`, `unknown` will not allow itself to be used as a different type!
 
-```lua
+```luau
 local function unknown(): unknown
     return if math.random() > 0.5 then "hello world!" else 5
 end
@@ -93,7 +93,7 @@ local c: string | number = unknown() -- not ok
 
 In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](#type-refinements) on that variable.
 
-```lua
+```luau
 local x = unknown()
 if typeof(x) == "number" then
     -- x : number
@@ -104,7 +104,7 @@ end
 
 `never` is also said to be the _bottom_ type, meaning there doesn't exist a value that inhabits the type `never`. In fact, it is the _dual_ of `unknown`. `never` is useful in many scenarios, and one such use case is when type refinements proves it impossible:
 
-```lua
+```luau
 local x = unknown()
 if typeof(x) == "number" and typeof(x) == "string" then
     -- x : never
@@ -115,7 +115,7 @@ end
 
 `any` is just like `unknown`, except that it allows itself to be used as an arbitrary type without further checks or annotations. Essentially, it's an opt-out from the type system entirely.
 
-```lua
+```luau
 local x: any = 5
 local y: string = x -- no type errors here!
 ```
@@ -124,7 +124,7 @@ local y: string = x -- no type errors here!
 
 Let's start with something simple.
 
-```lua
+```luau
 local function f(x) return x end
 
 local a: number = f(1)     -- ok
@@ -136,7 +136,7 @@ In strict mode, the inferred type of this function `f` is `<A>(A) -> A` (take a 
 
 Similarly, we can infer the types of the parameters with ease. By passing a parameter into *anything* that also has a type, we are saying "this and that has the same type."
 
-```lua
+```luau
 local function greetingsHelper(name: string)
     return "Hello, " .. name
 end
@@ -157,7 +157,7 @@ From the type checker perspective, each table can be in one of three states. The
 
 An unsealed table is a table which supports adding new properties, which updates the tables type. Unsealed tables are created using table literals. This is one way to accumulate knowledge of the shape of this table.
 
-```lua
+```luau
 local t = {x = 1} -- {x: number}
 t.y = 2           -- {x: number, y: number}
 t.z = 3           -- {x: number, y: number, z: number}
@@ -167,7 +167,7 @@ However, if this local were written as `local t: { x: number } = { x = 1 }`, it 
 
 Furthermore, once we exit the scope where this unsealed table was created in, we seal it.
 
-```lua
+```luau
 local function vec2(x, y)
     local t = {}
     t.x = x
@@ -181,7 +181,7 @@ v2.z = 3 -- not ok
 
 Unsealed tables are *exact* in that any property of the table must be named by the type. Since Luau treats missing properties as having value `nil`, this means that we can treat an unsealed table which does not mention a property as if it mentioned the property, as long as that property is optional.
 
-```lua
+```luau
 local t = {x = 1}
 local u : { x : number, y : number? } = t -- ok because y is optional
 local v : { x : number, z : number } = t  -- not ok because z is not optional
@@ -191,7 +191,7 @@ local v : { x : number, z : number } = t  -- not ok because z is not optional
 
 A sealed table is a table that is now locked down. This occurs when the table type is spelled out explicitly via a type annotation, or if it is returned from a function.
 
-```lua
+```luau
 local t : { x: number } = {x = 1}
 t.y = 2 -- not ok
 ```
@@ -199,7 +199,7 @@ t.y = 2 -- not ok
 Sealed tables are *inexact* in that the table may have properties which are not mentioned in the type.
 As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer
 
-```lua
+```luau
 type Point1D = { x : number }
 type Point2D = { x : number, y : number }
 local p : Point2D = { x = 5, y = 37 }
@@ -210,7 +210,7 @@ local q : Point1D = p -- ok because Point2D has more properties than Point1D
 
 This typically occurs when the symbol does not have any annotated types or were not inferred anything concrete. In this case, when you index on a parameter, you're requesting that there is a table with a matching interface.
 
-```lua
+```luau
 local function f(t)
     return t.x + t.y
            --^   --^ {x: _, y: _}
@@ -225,7 +225,7 @@ f({x = 1})               -- not ok
 
 These are particularly useful for when your table is used similarly to an array.
 
-```lua
+```luau
 local t = {"Hello", "world!"} -- {[number]: string}
 print(table.concat(t, ", "))
 ```
@@ -236,7 +236,7 @@ Luau supports a concise declaration for array-like tables, `{T}` (for example, `
 
 The type inference engine was built from the ground up to recognize generics. A generic is simply a type parameter in which another type could be slotted in. It's extremely useful because it allows the type inference engine to remember what the type actually is, unlike `any`.
 
-```lua
+```luau
 type Pair<T> = {first: T, second: T}
 
 local strings: Pair<string> = {first="Hello", second="World"}
@@ -246,7 +246,7 @@ local numbers: Pair<number> = {first=1, second=2}
 ## Generic functions
 
 As well as generic type aliases like `Pair<T>`, Luau supports generic functions. These are functions that, as well as their regular data parameters, take type parameters. For example, a function which reverses an array is:
-```lua
+```luau
 function reverse(a)
   local result = {}
   for i = #a, 1, -1 do
@@ -256,7 +256,7 @@ function reverse(a)
 end
 ```
 The type of this function is that it can reverse an array, and return an array of the same type. Luau can infer this type, but if you want to be explicit, you can declare the type parameter `T`, for example:
-```lua
+```luau
 function reverse<T>(a: {T}): {T}
   local result: {T} = {}
   for i = #a, 1, -1 do
@@ -266,13 +266,13 @@ function reverse<T>(a: {T}): {T}
 end
 ```
 When a generic function is called, Luau infers type arguments, for example
-```lua
+```luau
 local x: {number} = reverse({1, 2, 3})
 local y: {string} = reverse({"a", "b", "c"})
 ```
 Generic types are used for built-in functions as well as user functions,
 for example the type of two-argument `table.insert` is:
-```lua
+```luau
 <T>({T}, T) -> ()
 ```
 
@@ -282,7 +282,7 @@ A union type represents *one of* the types in this set. If you try to pass a uni
 
 For example, what if this `string | number` was passed into something that expects `number`, but the passed in value was actually a `string`?
 
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 local onlyString: string = stringOrNumber -- not ok
@@ -295,7 +295,7 @@ Note: it's impossible to be able to call a function if there are two or more fun
 
 An intersection type represents *all of* the types in this set. It's useful for two main things: to join multiple tables together, or to specify overloadable functions.
 
-```lua
+```luau
 type XCoord = {x: number}
 type YCoord = {y: number}
 type ZCoord = {z: number}
@@ -307,7 +307,7 @@ local vec2: Vector2 = {x = 1, y = 2}        -- ok
 local vec3: Vector3 = {x = 1, y = 2, z = 3} -- ok
 ```
 
-```lua
+```luau
 type SimpleOverloadedFunction = ((string) -> number) & ((number) -> string)
 
 local f: SimpleOverloadedFunction
@@ -328,7 +328,7 @@ Luau's type system also supports singleton types, which means it's a type that r
 
 > We do not currently support numbers as types. For now, this is intentional.
 
-```lua
+```luau
 local foo: "Foo" = "Foo" -- ok
 local bar: "Bar" = foo   -- not ok
 local baz: string = foo  -- ok
@@ -343,7 +343,7 @@ This happens all the time, especially through [type refinements](#type-refinemen
 
 Luau permits assigning a type to the `...` variadic symbol like any other parameter:
 
-```lua
+```luau
 local function f(...: number)
 end
 
@@ -355,7 +355,7 @@ f(1, "string") -- not ok
 
 In type annotations, this is written as `...T`:
 
-```lua
+```luau
 type F = (...number) -> ...string
 ```
 
@@ -365,7 +365,7 @@ Multiple function return values as well as the function variadic parameter use a
 
 When a type alias is defined, generic type pack parameters can be used after the type parameters:
 
-```lua
+```luau
 type Signal<T, U...> = { f: (T, U...) -> (), data: T }
 ```
 
@@ -373,7 +373,7 @@ type Signal<T, U...> = { f: (T, U...) -> (), data: T }
 
 It is also possible for a generic function to reference a generic type pack from the generics list:
 
-```lua
+```luau
 local function call<T, U...>(s: Signal<T, U...>, ...: U...)
     s.f(s.data, ...)
 end
@@ -381,7 +381,7 @@ end
 
 Generic types with type packs can be instantiated by providing a type pack:
 
-```lua
+```luau
 local signal: Signal<string, (number, number, boolean)> = --
 
 call(signal, 1, 2, false)
@@ -389,7 +389,7 @@ call(signal, 1, 2, false)
 
 There are also other ways to instantiate types with generic type pack parameters:
 
-```lua
+```luau
 type A<T, U...> = (T) -> U...
 
 type B = A<number, ...string> -- with a variadic type pack
@@ -399,7 +399,7 @@ type D = A<number, ()> -- with an empty type pack
 
 Trailing type pack argument can also be provided without parentheses by specifying variadic type arguments:
 
-```lua
+```luau
 type List<Head, Rest...> = (Head, Rest...) -> ()
 
 type B = List<number> -- Rest... is ()
@@ -413,7 +413,7 @@ type D = Returns<> -- T... is ()
 
 Type pack parameters are not limited to a single one, as many as required can be specified:
 
-```lua
+```luau
 type Callback<Args..., Rets...> = { f: (Args...) -> Rets... }
 
 type A = Callback<(number, string), ...number>
@@ -423,7 +423,7 @@ type A = Callback<(number, string), ...number>
 
 One common pattern we see with existing Lua/Luau code is the following OO code. While Luau is capable of inferring a decent chunk of this code, it cannot pin down on the types of `self` when it spans multiple methods.
 
-```lua
+```luau
 local Account = {}
 Account.__index = Account
 
@@ -454,7 +454,7 @@ There's the next problem: the type of `self` is not shared across methods of `Ac
 
 We can see there's a lot of problems happening here. This is a case where you will have to guide Luau, but using the power of top-down type inference you only need to do this in _exactly one_ place!
 
-```lua
+```luau
 type AccountImpl = {
     __index: AccountImpl,
     new: (name: string, balance: number) -> Account,
@@ -497,7 +497,7 @@ local account = Account.new("Alexander", 500)
 
 Tagged unions are just union types! In particular, they're union types of tables where they have at least _some_ common properties but the structure of the tables are different enough. Here's one example:
 
-```lua
+```luau
 type Ok<T> = { type: "ok", value: T }
 type Err<E> = { type: "err", error: E }
 type Result<T, E> = Ok<T> | Err<E>
@@ -505,7 +505,7 @@ type Result<T, E> = Ok<T> | Err<E>
 
 This `Result<T, E>` type can be discriminated by using type refinements on the property `type`, like so:
 
-```lua
+```luau
 if result.type == "ok" then
     -- result is known to be Ok<T>
     -- and attempting to index for error here will fail
@@ -531,7 +531,7 @@ Here are all the ways you can refine:
 And they can be composed with many of `and`/`or`/`not`. `not`, just like `~=`, will flip the resulting refinements, that is `not x` will refine `x` to be falsy.
 
 Using truthy test:
-```lua
+```luau
 local maybeString: string? = nil
 
 if maybeString then
@@ -546,7 +546,7 @@ end
 ```
 
 Using `type` test:
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 if type(stringOrNumber) == "string" then
@@ -561,7 +561,7 @@ end
 ```
 
 Using equality test:
-```lua
+```luau
 local myString: string = f()
 
 if myString == "hello" then
@@ -571,7 +571,7 @@ end
 ```
 
 And as said earlier, we can compose as many of `and`/`or`/`not` as we wish with these refinements:
-```lua
+```luau
 local function f(x: any, y: any)
     if (x == "hello" or x == "bye") and type(y) == "string" then
         -- x is of type "hello" | "bye"
@@ -585,7 +585,7 @@ end
 ```
 
 `assert` can also be used to refine in all the same ways:
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 assert(type(stringOrNumber) == "string")
@@ -599,20 +599,20 @@ local onlyNumber: number = stringOrNumber -- not ok
 Expressions may be typecast using `::`.  Typecasting is useful for specifying the type of an expression when the automatically inferred type is too generic.
 
 For example, consider the following table constructor where the intent is to store a table of names:
-```lua
+```luau
 local myTable = {names = {}}
 table.insert(myTable.names, 42)         -- Inserting a number ought to cause a type error, but doesn't
 ```
 
 In order to specify the type of the `names` table a typecast may be used: 
 
-```lua
+```luau
 local myTable = {names = {} :: {string}}
 table.insert(myTable.names, 42)         -- not ok, invalid 'number' to 'string' conversion
 ```
 
 A typecast itself is also type checked to ensure the conversion is made to a subtype of the expression's type or `any`:
-```lua
+```luau
 local numericValue = 1
 local value = numericValue :: any             -- ok, all expressions may be cast to 'any'
 local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'boolean' conversion
@@ -628,7 +628,7 @@ All enums are also available to use by their name as part of the `Enum` type lib
 
 Finally, we can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
 
-```lua
+```luau
 local part = Instance.new("Part")
 local basePart: BasePart = part
 ```
@@ -639,7 +639,7 @@ Note that many of these types provide some properties and methods in both lowerC
 
 Let's say that we have two modules, `Foo` and `Bar`. Luau will try to resolve the paths if it can find any `require` in any scripts. In this case, when you say `script.Parent.Bar`, Luau will resolve it as: relative to this script, go to my parent and get that script named Bar.
 
-```lua
+```luau
 -- Module Foo
 local Bar = require(script.Parent.Bar)
 
@@ -652,7 +652,7 @@ print(Bar.FakeProperty) -- not ok
 Bar.NewProperty = true -- not ok
 ```
 
-```lua
+```luau
 -- Module Bar
 export type Baz = string
 
@@ -668,6 +668,6 @@ There are some caveats here though. For instance, the require path must be resol
 ### Cyclic module dependencies
 
 Cyclic module dependencies can cause problems for the type checker.  In order to break a module dependency cycle a typecast of the module to `any` may be used:
-```lua
+```luau
 local myModule = require(MyModule) :: any
 ```

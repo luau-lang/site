@@ -30,7 +30,7 @@ While our work continues to respond to the feedback we receive, our team members
 Type constraint resolver now remembers constraints placed on individual table fields.
 
 This should fix false-positive errors reported after making sure the optional table field is present:
-```lua
+```luau
 --!strict
 local t: {value: number?} = {value = 2}
 
@@ -40,7 +40,7 @@ end
 ```
 
 And it can also refine field type to a more specific one:
-```lua
+```luau
 --!strict
 local t: {value: string|number} = {value = 2}
 
@@ -54,7 +54,7 @@ Like before, combining multiple conditions using 'and' and 'not' is also support
 ---
 
 Constructing arrays with different values for optional/union types are now also supported for individual table fields and in functions call arguments:
-```lua
+```luau
 --!strict
 type Foo = {x: number | string, b: number?}
 
@@ -82,7 +82,7 @@ Finally, we have fixed an issue with Roblox class field access using indexing li
 We have added a new linter check for duplicate local variable definitions.
 
 It is created to find duplicate names in cases like these:
-```lua
+```luau
 local function foo(a1, a2, a2) -- Function argument 'a2' already defined on column 24
 local a1, a2, a2 = f() -- Variable 'a2' already defined on column 11
 

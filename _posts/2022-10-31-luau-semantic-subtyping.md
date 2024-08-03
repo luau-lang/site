@@ -9,7 +9,7 @@ Luau is the first programming language to put the power of semantic subtyping in
 ## Minimizing false positives
 
 One of the issues with type error reporting in tools like the Script Analysis widget in Roblox Studio is *false positives*. These are warnings that are artifacts of the analysis, and don’t correspond to errors which can occur at runtime. For example, the program
-```lua
+```luau
   local x = CFrame.new()
   local y
   if (math.random()) then
@@ -30,7 +30,7 @@ While inaccuracies are inevitable, we try to remove them whenever possible, sinc
 ## Subtyping as a source of false positives
 
 One of the sources of false positives in Luau (and many other similar languages like TypeScript or Flow) is *subtyping*. Subtyping is used whenever a variable is initialized or assigned to, and whenever a function is called: the type system checks that the type of the expression is a subtype of the type of the variable. For example, if we add types to the above program
-```lua
+```luau
   local x : CFrame = CFrame.new()
   local y : Vector3 | CFrame
   if (math.random()) then
@@ -45,7 +45,7 @@ then the type system checks that the type of `CFrame` multiplication is a subtyp
 Subtyping is a very useful feature, and it supports rich type constructs like type union (`T | U`) and intersection (`T & U`). For example, `number?` is implemented as a union type `(number | nil)`, inhabited by values that are either numbers or `nil`.
 
 Unfortunately, the interaction of subtyping with intersection and union types can have odd results. A simple (but rather artificial) case in older Luau was:
-```lua
+```luau
   local x : (number?) & (string?) = nil
   local y : nil = nil
   y = x -- Type '(number?) & (string?)' could not be converted into 'nil'
@@ -131,7 +131,7 @@ We can reduce graph coloring to semantic subtyping by coding up a graph as a Lua
 
 For example, coloring a three-node, two color graph can be done using types:
 
-```lua
+```luau
 type Red = "red"
 type Blue = "blue"
 type Color = Red | Blue
@@ -145,7 +145,7 @@ function which returns `false` when a constraint is violated. Each
 overload encodes one constraint. For example a line has constraints
 saying that adjacent nodes cannot have the same color:
 
-```lua
+```luau
 type Line = Coloring
   & ((Red) -> (Red) -> (Color) -> false)
   & ((Blue) -> (Blue) -> (Color) -> false)
@@ -155,7 +155,7 @@ type Line = Coloring
 
 A triangle is similar, but the end points also cannot have the same color:
 
-```lua
+```luau
 type Triangle = Line
   & ((Red) -> (Color) -> (Red) -> false)
   & ((Blue) -> (Color) -> (Blue) -> false)
@@ -228,7 +228,7 @@ For these two reasons (which are largely about ergonomics rather than anything t
 The other difference between Luau’s type system and off-the-shelf semantic subtyping is that Luau does not support all negated types.
 
 The common case for wanting negated types is in typechecking conditionals:
-```lua
+```luau
 -- initially x has type T
 if (type(x) == "string") then
   --  in this branch x has type T & string

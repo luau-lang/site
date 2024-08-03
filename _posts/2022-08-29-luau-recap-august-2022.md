@@ -15,7 +15,7 @@ With generalized iteration released in May, custom containers are easier than ev
 
 Simply, tables now honor the `__len` metamethod, and `rawlen` is also added with similar semantics as `rawget` and `rawset`:
 
-```lua
+```luau
 local my_cool_container = setmetatable({ items = { 1, 2 } }, {
     __len = function(self) return #self.items end
 })
@@ -32,7 +32,7 @@ We've added two new types, `never` and `unknown`. These two types are the opposi
 
 Type inference may infer a variable to have the type `never` if and only if the set of possible types becomes empty, for example through type refinements.
 
-```lua
+```luau
 function f(x: string | number)
     if typeof(x) == "string" and typeof(x) == "number" then
         -- x: never
@@ -44,7 +44,7 @@ This is useful because we still needed to ascribe a type to `x` here, but the ty
 
 Conversely, `unknown` can be used to enforce a stronger contract than `any`. That is, `unknown` and `any` are similar in terms of allowing every type to inhabit them, and other than  `unknown` or `any`, `any` allows itself to inhabit into a different type, whereas `unknown` does not.
 
-```lua
+```luau
 function any(): any return 5 end
 function unknown(): unknown return 5 end
 
@@ -57,7 +57,7 @@ local y: string = unknown()
 
 To be able to do this soundly, you must apply type refinements on a variable of type `unknown`.
 
-```lua
+```luau
 local u = unknown()
 
 if typeof(u) == "string" then
@@ -71,7 +71,7 @@ A use case of `unknown` is to enforce type safety at implementation sites for da
 
 We had a bug in the parser which erroneously allowed argument names in type packs that didn't fold into a function type. That is, the below syntax did not generate a parse error when it should have.
 
-```lua
+```luau
 Foo<(a: number, b: string)>
 ```
 
@@ -98,7 +98,7 @@ We've also introduced a new lint called `ComparisonPrecedence`. It fires in two 
 
 In languages that uses `!` to negate the boolean i.e. `!x == y` looks fine because `!x` _visually_ binds more tightly than Lua's equivalent, `not x`. Unfortunately, the precedences here are identical, that is `!x == y` is `(!x) == y` in the same way that `not x == y` is `(not x) == y`. We also apply this on other operators e.g. `x <= y == y`.
 
-```lua
+```luau
 -- not X == Y is equivalent to (not X) == Y; consider using X ~= Y, or wrap one of the expressions in parentheses to silence
 if not x == y then end
 
@@ -118,7 +118,7 @@ As a special exception, this lint pass will not warn for cases like `x == not y`
 
 Fix a bug where widening was a little too happy to fire in the case of function calls returning singleton types or union thereof. This was an artifact of the logic that knows not to infer singleton types in cases that makes no sense to.
 
-```lua
+```luau
 function f(): "abc" | "def"
     return if math.random() > 0.5 then "abc" else "def"
 end
@@ -131,7 +131,7 @@ local x: "abc" | "def" = f()
 
 The function `my_cool_lower` is a function `<a...>(t: t1) -> a... where t1 = {+ lower: (t1) -> a... +}`. 
 
-```lua
+```luau
 function my_cool_lower(t)
     return t:lower()
 end
@@ -139,7 +139,7 @@ end
 
 Even though `t1` is a table type, we know `string` is a subtype of `t1` because `string` also has `lower` which is a subtype of `t1`'s `lower`, so this call site now type checks.
 
-```lua
+```luau
 local s: string = my_cool_lower("HI")
 ```
 

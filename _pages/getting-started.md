@@ -10,7 +10,7 @@ To get started with Luau you need to use `luau` command line binary to run your 
 
 To create your own testing script, create a new file with `.luau` as the extension:
 
-```lua
+```luau
 function ispositive(x)
     return x > 0
 end
@@ -34,7 +34,7 @@ Note that there are no warnings about calling ``ispositive()`` with a string, or
 
 Now modify the script to include ``--!strict`` at the top:
 
-```lua
+```luau
 --!strict
 
 function ispositive(x)
@@ -60,7 +60,7 @@ test.luau(7,18): TypeError: Type 'string' could not be converted into 'number'
 
 You can add annotations to locals, arguments, and function return types. Among other things, annotations can help enforce that you don't accidentally do something stupid. Here's how we would add annotations to ``ispositive()``:
 
-```lua
+```luau
 --!strict
 
 function ispositive(x : number) : boolean
@@ -74,7 +74,7 @@ result = ispositive(1)
 
 Now we've told explicitly told Luau that ``ispositive()`` accepts a number and returns a boolean. This wasn't strictly (pun intended) necessary in this case, because Luau's inference was able to deduce this already. But even in this case, there are advantages to explicit annotations. Imagine that later we decide to change ``ispositive()`` to return a string value:
 
-```lua
+```luau
 --!strict
 
 function ispositive(x : number) : boolean
@@ -99,7 +99,7 @@ test.luau(7,9): TypeError: Type 'string' could not be converted into 'boolean'
 
 The fix is simple; just change the annotation to declare the return type as a string:
 
-```lua
+```luau
 --!strict
 
 function ispositive(x : number) : string
@@ -123,7 +123,7 @@ test.luau(12,10): TypeError: Type 'string' could not be converted into 'boolean'
 
 If we update the type of the local variable, everything is good. Note that we could also just let Luau infer the type of ``result`` by changing it to the single line version ``local result = ispositive(1)``.
 
-```lua
+```luau
 --!strict
 
 function ispositive(x : number) : string

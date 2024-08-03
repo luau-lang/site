@@ -24,7 +24,7 @@ This framework is extensible and we have plans for future improvements with `a =
 It is now also possible to get better type information inside `else` blocks of an `if` statement.
 
 A few examples to see the constraint resolver in action:
-```lua
+```luau
 function say_hello(name: string?)
     -- extra parentheses were enough to trip the old typechecker
     if (name) then 
@@ -34,7 +34,7 @@ function say_hello(name: string?)
     end
 end
 ```
-```lua
+```luau
 function say_hello(name: string?, surname: string?)
     -- but now we handle that and more complex expressions as well
     if not (name and surname) then

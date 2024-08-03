@@ -13,7 +13,7 @@ However, we also worked on unrelated improvements during this time that are summ
 
 Indexing table intersections using `x["prop"]` syntax has been fixed and no longer reports a false positive error:
 
-```lua
+```luau
 type T = { foo: string } & { bar: number }
 local x: T = { foo = "1", bar = 2 }
 
@@ -24,7 +24,7 @@ Generic `T...` type is now convertible to `...any` variadic parameter.
 
 This solves issues people had with variadic functions and variadic argument:
 
-```lua
+```luau
 local function foo(...: any)
     print(...)
 end
@@ -65,7 +65,7 @@ We have fixed the search for the closest executable breakpoint line.
 Previously, breakpoints might have been skipped in `else` blocks at the end of a function.
 This simplified example shows the issue:
 
-```lua
+```luau
 local function foo(isIt)
     if isIt then
         print("yes")

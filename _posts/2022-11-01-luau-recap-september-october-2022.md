@@ -19,7 +19,7 @@ We are pleased to announce that a major component of minimizing false
 positives has landed, *semantic subtyping*, which removes a class of false positives caused
 by failures of subtyping.  For example, in the program
 
-```lua
+```luau
   local x : CFrame = CFrame.new()
   local y : Vector3 | CFrame
   if (math.random()) then
@@ -33,7 +33,7 @@ by failures of subtyping.  For example, in the program
 an error is reported, even though there is no problem at runtime. This
 is because `CFrame`'s multiplication has two overloads:
 
-```lua
+```luau
     ((CFrame, CFrame) -> CFrame)
   & ((CFrame, Vector3) -> Vector3)
 ```
@@ -41,7 +41,7 @@ is because `CFrame`'s multiplication has two overloads:
 The current syntax-driven algorithm for subtyping is not sophisticated
 enough to realize that this is a subtype of the desired type:
 
-```lua
+```luau
   (CFrame, Vector3 | CFrame) -> (Vector3 | CFrame)
 ```
 

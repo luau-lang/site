@@ -13,7 +13,7 @@ Type refinements handle constraints placed on variables inside conditional block
 
 In the following example, while variable `a` is declared to have type `number?`, inside the `if` block we know that it cannot be `nil`:
 
-```lua
+```luau
 local function f(a: number?)
     if a ~= nil then
         a *= 2 -- no type errors
@@ -28,7 +28,7 @@ But there are cases where `if` is used to exit the function early, making the fo
 
 We now correctly preserve such refinements and you should be able to remove `assert` function calls that were only used to get rid of false positive errors about types being `nil`.
 
-```lua
+```luau
 local function f(x: string?)
     if not x then return end
 
@@ -38,7 +38,7 @@ end
 
 Throwing calls like `error()` or `assert(false)` instead of a `return` statement are also recognized.
 
-```lua
+```luau
 local function f(x: string?)
     if not x then error('first argument is nil') end
 
@@ -70,7 +70,7 @@ You may have noticed linter warnings about places where these functions are used
 
 When table key type is defined to be a union of string singletons, those keys can now autocomplete in locations marked as '^':
 
-```lua
+```luau
 type Direction = "north" | "south" | "east" | "west"
 
 local a: {[Direction]: boolean} = {[^] = true}
@@ -96,7 +96,7 @@ Finally, a fix was made to table array part resizing that brings large improveme
 
 Aside from performance, a correctness issue was fixed in multi-assignment expressions.
 
-```lua
+```luau
 arr[1], n = n, n - 1
 ```
 
@@ -115,7 +115,7 @@ You may have seen error messages like `Type 'string' cannot be converted to 'str
 
 This is true in what is called Covariant use contexts, but doesn't hold in Invariant use contexts, like in the example below:
 
-```lua
+```luau
 local a: { x: Model }
 local b: { x: Instance } = a -- Type 'Model' could not be converted into 'Instance' in an invariant context
 ```

@@ -11,7 +11,7 @@ Let's dive in!
 
 Luau now has a floor division operator.  It is spelled `//`:
 
-```lua
+```luau
 local a = 10 // 3 -- a == 3
 a //= 2           -- a == 1
 ```
@@ -43,7 +43,7 @@ We continue to work on many code size and performance improvements; here's a sho
 
 The `break` and `continue` keywords can now be used in loop bodies to refine variables. This was contributed by a community member - thank you, [AmberGraceSoftware](https://github.com/AmberGraceSoftware)!
 
-```lua
+```luau
 function f(objects: { { value: string? } })
     for _, object in objects do
         if not object.value then
@@ -57,7 +57,7 @@ end
 
 When type information is present, we will now emit a warning when `#` or `ipairs` is used on a table that has no numeric keys or indexers. This helps avoid common bugs like using `#t == 0` to check if a dictionary is empty.
 
-```lua
+```luau
 local message = { data = { 1, 2, 3 } }
 
 if #message == 0 then -- Using '#' on a table without an array part is likely a bug
@@ -70,7 +70,7 @@ Finally, some uses of `getfenv`/`setfenv` are now flagged as deprecated. We do n
 
 We used to have a bug that would arise in the following situation:
 
-```lua
+```luau
 --!strict
 type Direction = "Left" | "Right"
 local dir: Direction = "Left"
@@ -85,21 +85,21 @@ We used to suggest `Left` and `Right` even though they are not valid completions
 
 We've also added a complete suggestion for anonymous functions if one would be valid at the requested position.  For example:
 
-```lua
+```luau
 local p = Instance.new('Part')
 p.Touched:Connect(
 ```
 
 You will see a completion suggestion `function (anonymous autofilled)`.  Selecting that will cause the following to be inserted into your code:
 
-```lua
+```luau
 local p = Instance.new('Part')
 p.Touched:Connect(function(otherPart: BasePart)  end
 ```
 
 We also fixed some confusing editor feedback in the following case:
 
-```lua
+```luau
 game:FindFirstChild(
 ```
 
