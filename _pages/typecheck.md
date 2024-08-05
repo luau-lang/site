@@ -621,14 +621,14 @@ local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'bo
 ## Type functions (yet to be released as of August 5)
 
 Type functions refer to functions that operate on types rather than values. They allow types to be manipulated and transformed, enabling the computation of new types based on existing ones. In Luau, type functions can be defined with the following syntax:
-```luau
+```lua
 type function f(...)
     -- implementation of the type function
 end
 ```
 
 To modify types within type functions, we can use the `type` userdata and its methods [documented here](todo-add-link-here). Note that this userdata is *only* available in the context of type functions. An example of a type function is:
-```luau
+```lua
 type function makeOptional(tbl)
     if not tbl:is("table") then
         error("Argument is not a table")
@@ -648,6 +648,101 @@ local bob: makeOptional<Person> = {name = "Bob"} -- {name: string?, age: number?
 In this example, the makeOptional type function takes a table type and modifies its properties to be optional by iterating through the properties and creating a union of the original type and the nil type.
 
 Note: This feature is currently in beta and has several limitations. We are in the first iteration of this feature. For more details, please read the RFC [here](todo-add-link-here).
+
+<table>
+  <thead>
+	  <tr>
+		  <th>Method</th>
+		  <th>Description</th>
+		</tr>
+	</thead>
+	<tbody>
+	  <tr>
+		  <td>__index(table, index)</td>
+		  <td>Fires when table[index] is indexed, if table[index] is nil. Can also be set to a table, in which case that table will be indexed.</td>
+		</tr>
+	  <tr>
+		  <td>__newindex(table, index, value)</td>
+		  <td>Fires when table[index] tries to be set (table[index] = value), if table[index] is nil. Can also be set to a table, in which case that table will be indexed.</td>
+		</tr>
+	  <tr>
+		  <td>__call(table, ...)</td>
+		  <td>Fires when the table is called like a function, ... is the arguments that were passed.</td>
+		</tr>
+	  <tr>
+		  <td>__concat(table, value)</td>
+		  <td>Fires when the .. concatenation operator is used on the table.</td>
+		</tr>
+	  <tr>
+		  <td>__unm(table)</td>
+		  <td>Fires when the unary – operator is used on the table.</td>
+		</tr>
+	  <tr>
+		  <td>__add(table, value)</td>
+		  <td>The + addition operator.</td>
+		</tr>
+	  <tr>
+		  <td>__sub(table, value)</td>
+		  <td>The – subtraction operator.</td>
+		</tr>
+	  <tr>
+		  <td>__mul(table, value)</td>
+		  <td>The * mulitplication operator.</td>
+		</tr>
+	  <tr>
+		  <td>__div(table, value)</td>
+		  <td>The / division operator.</td>
+		</tr>
+	  <tr>
+		  <td>__idiv(table, value)</td>
+		  <td>The // floor division operator.</td>
+	 	</tr>
+	  <tr>
+		  <td>__mod(table, value)</td>
+		  <td>The % modulus operator.</td>
+		</tr>
+	  <tr>
+		  <td>__pow(table, value)</td>
+		  <td>The ^ exponentiation operator.</td>
+		</tr>
+	  <tr>
+		  <td>__tostring(table)</td>
+		  <td>Fired when tostring is called on the table.</td>
+		</tr>
+	  <tr>
+		  <td>__metatable</td>
+		  <td>If present, locks the metatable so getmetatable will return this instead of the metatable and setmetatable will error. Non-function value.</td>
+		</tr>
+	  <tr>
+		  <td>__eq(table, value)</td>
+		  <td>The == equal to operator¹</td>
+		</tr>
+	  <tr>
+		  <td>__lt(table, value)</td>
+		  <td>The &lt; less than operator¹</td>
+		</tr>
+	  <tr>
+		  <td>__le(table, value)</td>
+		  <td>The &lt;= operator¹</td>
+		</tr>
+	  <tr>
+		  <td>__mode</td>
+		  <td>Used in weak tables, declaring whether the keys and/or values of a table are weak. **Note:** References to Roblox instances are never weak. Tables that hold such references will never be garbage collected.</td>
+		</tr>
+	  <tr>
+		  <td>__gc(table)</td>
+		  <td>Fired when the table is garbage-collected. **Note:** On Roblox, this metamethod is disabled.</td>
+		</tr>
+	  <tr>
+		  <td>__len(table)</td>
+		  <td>Fired when the # length operator is used on the Object.</td>
+		</tr>
+	  <tr>
+		  <td>__iter(table)</td>
+		  <td>Used to denote a custom iterator when using generalized iteration.</td>
+	  </tr>
+	</tbody>
+</table>
 
 ## Roblox types
 
