@@ -212,9 +212,14 @@
 
     async function shareScript() {
         var sourceCode = editor.getValue();
-        var shareStr = await encodeShareString(editor.getValue());
+        var shareStr
+        try {
+            shareStr = await encodeShareString(editor.getValue());
+        } catch (e) {
+            console.error('Error encoding share string', e)
+        }
         if (!shareStr) {
-            alert("There was an error encoding the share string.");
+            alert("There was an error encoding the share string. Your browser may not support the share feature.");
             return;
         }
 
