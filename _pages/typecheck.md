@@ -620,7 +620,7 @@ local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'bo
 
 ## Type functions (yet to be released)
 
-Type functions refer to functions that operate on types rather than values. They allow types to be manipulated and transformed, enabling the computation of new types based on existing ones. In Luau, type functions can be defined with the following syntax:
+Type functions refer to functions that operate on types rather than values. They allow types to be manipulated and transformed, enabling the computation of new types based on existing ones. Type functions can be defined with the following syntax:
 ```lua
 type function f(...)
     -- implementation of the type function
@@ -647,7 +647,7 @@ local bob: partial<Person> = {name = "Bob"} -- {name: string?, age: number?}
 
 In this example, the `partial` type function takes a table type and iterates through the properties and modifies them to be optional. 
 
-Note: This feature is currently in beta and has several limitations. We are in the first iteration of this feature. For more details about the `type` userdata and the state of type functions, please read the RFC [here](todo-add-link-here).
+This feature is currently in beta and has several limitations. We are in the first iteration of this feature. For more details about the `type` userdata and the state of type functions, please read the RFC [here](https://rfcs.luau-lang.org/user-defined-type-functions.html).
 
 ## Roblox types
 
