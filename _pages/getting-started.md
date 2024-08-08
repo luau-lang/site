@@ -4,6 +4,8 @@ title: Getting Started
 toc: true
 ---
 
+Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts. Luau is integrated with RobloxStudio and is automatically enabled with the `--!strict` flag at the top of any scripts. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).
+
 To get started with Luau you need to use `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
 
 ## Creating a script
