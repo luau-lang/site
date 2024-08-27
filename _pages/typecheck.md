@@ -197,7 +197,7 @@ t.y = 2 -- not ok
 ```
 
 Sealed tables are *inexact* in that the table may have properties which are not mentioned in the type.
-As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer
+As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer properties.
 
 ```lua
 type Point1D = { x : number }
