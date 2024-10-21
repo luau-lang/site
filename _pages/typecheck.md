@@ -635,12 +635,12 @@ local part = Instance.new("Part")
 local basePart: BasePart = part
 ```
 
-Finally, Roblox types can be refined using `isA`:
+Finally, Roblox types can be refined using `IsA`:
 
 ```lua
 local function getText(x : Instance) : string
-    if x:isA("TextLabel") or x:isA("TextButton") or x:isA("TextBox") then
-		return child.Text
+    if x:IsA("TextLabel") or x:IsA("TextButton") or x:IsA("TextBox") then
+        return child.Text
     end
     return ""
 end
