@@ -48,7 +48,7 @@ local b2: B = a1 -- not ok
 
 ## Builtin types
 
-The Luau VM supports 9 primitive types: `nil`, `string`, `number`, `boolean`, `table`, `function`, `thread`, `userdata`, and `buffer`. Of these, `table` and `function` are not represented by name, but have their dedicated syntax as covered in this [syntax document](syntax), and `userdata` is represented by [concrete types](#roblox-types); other types can be specified by their name.
+The Luau VM supports 10 primitive types: `nil`, `string`, `number`, `boolean`, `table`, `function`, `thread`, `userdata`, `vector`, and `buffer`. Of these, `table` and `function` are not represented by name, but have their dedicated syntax as covered in this [syntax document](syntax), `userdata` is represented by [concrete types](#roblox-types), while `vector` is not representable by name at all; other types can be specified by their name.
 
 The type checker also provides the builtin types [`unknown`](#unknown-type), [`never`](#never-type), and [`any`](#any-type).
 
@@ -197,7 +197,7 @@ t.y = 2 -- not ok
 ```
 
 Sealed tables are *inexact* in that the table may have properties which are not mentioned in the type.
-As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer
+As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer properties.
 
 ```lua
 type Point1D = { x : number }
@@ -521,14 +521,16 @@ Which works out because `value: T` exists only when `type` is in actual fact `"o
 
 ## Type refinements
 
-When we check the type of any lvalue (a global, a local, or a property), what we're doing is we're refining the type, hence "type refinement." The support for this is arbitrarily complex, so go crazy!
+When we check the type of any lvalue (a global, a local, or a property), what we're doing is we're refining the type, hence "type refinement." The support for this is arbitrarily complex, so go at it!
 
 Here are all the ways you can refine:
 1. Truthy test: `if x then` will refine `x` to be truthy.
 2. Type guards: `if type(x) == "number" then` will refine `x` to be `number`.
-3. Equality: `x == "hello"` will refine `x` to be a singleton type `"hello"`.
+3. Equality: `if x == "hello" then` will refine `x` to be a singleton type `"hello"`.
 
-And they can be composed with many of `and`/`or`/`not`. `not`, just like `~=`, will flip the resulting refinements, that is `not x` will refine `x` to be falsy.
+And they can be composed with many of `and`/`or`/`not`. `not`, just like `~=`, will flip the resulting refinements, that is `not x` will refine `x` to be falsy. 
+
+The `assert(..)` function may also be used to refine types instead of `if/then`.
 
 Using truthy test:
 ```lua
@@ -626,11 +628,22 @@ When one type inherits from another type, the type checker models this relations
 
 All enums are also available to use by their name as part of the `Enum` type library, e.g. `local m: Enum.Material = part.Material`.
 
-Finally, we can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
+We can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
 
 ```lua
 local part = Instance.new("Part")
 local basePart: BasePart = part
+```
+
+Finally, Roblox types can be refined using `isA`:
+
+```lua
+local function getText(x : Instance) : string
+    if x:isA("TextLabel") or x:isA("TextButton") or x:isA("TextBox") then
+		return child.Text
+    end
+    return ""
+end
 ```
 
 Note that many of these types provide some properties and methods in both lowerCase and UpperCase; the lowerCase variants are deprecated, and the type system will ask you to use the UpperCase variants instead.

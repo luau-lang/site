@@ -5,6 +5,7 @@
         <textarea rows="10" cols="80" id="script"></textarea>
         <div class="button-group">
             <button onclick="executeScript(); return false;">Run</button>
+            <button onclick="shareScript(); return false;">Share</button>
             <input type="checkbox" checked="true" id="output-clear" />
             <label for="output-clear">Clear Output</label>
         </div>
@@ -89,7 +90,73 @@
 <script src="assets/js/luau_mode.js"></script>
 <!-- CodeMirror Luau Editor (MUST BE LOADED AFTER CODEMIRROR!) -->
 <script>
+    var MAX_QUERY_PARAM_LENGTH = 0x7FF;
+    function getValueFromQueryString(key) {
+        return new URLSearchParams(window.location.search).get(key);
+    }
+    async function compressString(str) {
+        if (!TextEncoder || !CompressionStream || !Response || !Blob) return btoa(str);
+        console.info('Using gzip compression');
+        console.info('Original string length:', str.length);
+        console.info('base64encoded string length:', btoa(str).length);
+        var encoder = new TextEncoder();
+        var uint8Array = encoder.encode(str);
 
+        var compressedStream = new Response(
+            new Blob([uint8Array]).stream().pipeThrough(new CompressionStream('gzip'))
+        ).arrayBuffer();
+
+        var compressedArrayBuffer = await compressedStream;
+        var compressedUint8Array = new Uint8Array(compressedArrayBuffer);
+
+        var compressedString = btoa(String.fromCharCode(...compressedUint8Array));
+        console.info('compressed string length:', compressedString.length);
+        return compressedString
+    }
+
+    async function decompressString(str) {
+        if (!TextDecoder || !DecompressionStream || !Response || !Blob) return atob(str);
+        console.info('Using gzip decompression');
+        var decoder = new TextDecoder();
+        var compressedUint8Array = new Uint8Array(
+            atob(str).split('').map(c => c.charCodeAt(0))
+        );
+
+        var decompressedStream = new Response(
+            new Blob([compressedUint8Array]).stream().pipeThrough(new DecompressionStream('gzip'))
+        ).arrayBuffer();
+
+        var decompressedArrayBuffer = await decompressedStream;
+        return decoder.decode(decompressedArrayBuffer);
+    }
+
+    async function decodeShareString(str) {
+        if (!str) return null;
+        try {
+            return await decompressString(decodeURIComponent(str));
+        } catch(e) {
+            console.error('Error parsing share string:', e);
+            return null
+        }
+    }
+
+    async function encodeShareString(str) {
+        try {
+            return encodeURIComponent(await compressString(str));
+        } catch (e) {
+            console.error('Error parsing share string:', e);
+        }
+    }
+
+    function maybeClearOutput() {
+        var output_clear = document.getElementById("output-clear");
+        if (output_clear.checked) {
+            var output_box = document.getElementById("output");
+            output_box.value = '';
+        }
+    }
+
+    var textValue = "print(\"Hello World!\")\n";
     var editor = CodeMirror.fromTextArea(document.getElementById("script"), {
         theme: localStorage.getItem('theme'),
         mode: "luau",
@@ -99,7 +166,7 @@
         indentWithTabs: true,
         indentUnit: 4
     });
-    editor.setValue("print(\"Hello World!\")\n");
+    editor.setValue(textValue);
     editor.addKeyMap({
         "Ctrl-Enter": function (cm) {
             executeScript();
@@ -129,11 +196,7 @@
             lastError = undefined;
         }
 
-        var output_clear = document.getElementById("output-clear");
-        if (output_clear.checked) {
-            var output_box = document.getElementById("output");
-            output_box.value = '';
-        }
+        maybeClearOutput()
 
         var err = Module.ccall('executeScript', 'string', ['string'], [editor.getValue()]);
         if (err) {
@@ -147,6 +210,46 @@
         }
     }
 
+    async function shareScript() {
+        var sourceCode = editor.getValue();
+        var shareStr
+        try {
+            shareStr = await encodeShareString(editor.getValue());
+        } catch (e) {
+            console.error('Error encoding share string', e)
+        }
+        if (!shareStr) {
+            alert("There was an error encoding the share string. Your browser may not support the share feature.");
+            return;
+        }
+
+        if (shareStr.length > MAX_QUERY_PARAM_LENGTH) {
+            alert("Source code is too long to be shared.");
+            return;
+        }
+
+        window.history.pushState({}, document.title, "?share=" + shareStr);
+
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(window.location);
+                maybeClearOutput()
+                output("Copied share link to clipboard.");
+            } catch (e) {
+                console.error(e)
+                prompt("Share Link: ", window.location);
+            }
+        } else {
+            prompt("Share Link: ", window.location);
+        }
+    }
+
+    async function loadSharedString() {
+        var sharedCode = await decodeShareString(getValueFromQueryString("share"));
+        if (!sharedCode) return;
+        editor.setValue(sharedCode);
+    }
+    loadSharedString();
 </script>
 <!-- Luau WASM (async fetch; should be the last line) -->
 <script async src="https://github.com/luau-lang/luau/releases/latest/download/Luau.Web.js"></script>

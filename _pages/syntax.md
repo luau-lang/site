@@ -270,18 +270,18 @@ print(`Welcome to {
 The sequence of two opening braces {{"`{{`"}} is rejected with a parse error.
 This restriction is made to prevent developers using other programming languages with a similar feature from trying to attempt that as a way to escape a single `{` and getting unexpected results in Luau.
 
-Luau currently does not support backtick string literals as type annotations, therefore `` type Foo = `Foo` `` is invalid syntax.
+Luau currently does not support backtick string literals in type annotations, therefore `` type Foo = `Foo` `` is invalid syntax.
 
 Unlike single and double-quoted string literals, backtick string literals must always be wrapped in parentheses for function calls:
 ```lua
-print`hello` -- invalid syntax
 print "hello" -- valid 
+print`hello` -- invalid syntax
+print(`hello`) -- valid
 ```
 
 ## Floor division (`//`)
 
-Luau supports the floor division operator (`//`) as an ergonomic alternative to `math.floor`.
-Floor division uses the compound assignment operator (`//=`) and the metamethod `__idiv`, with syntax and semantics that follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1). 
+Luau supports floor division, including its operator (`//`), its compound assignment operator (`//=`), and overloading metamethod (`__idiv`), as an ergonomic alternative to `math.floor`.
 
 For numbers, `a // b` is equal to `math.floor(a / b)`:
 ```lua
@@ -290,7 +290,9 @@ print(n // 2) --> 3
 n //= 3
 print(n) --> 2
 ```
-When `b` is 0, `a // b` results in infinity or NaN as appropriate.
 
+Note that it's possible to get `inf`, `-inf`, or `NaN` with floor division; when `b` is `0`, `a // b` results in positive or negative infinity, and when both `a` and `b` are `0`, `a // b` results in NaN.
 
+For native vectors, `c // d` applies `math.floor` to each component of the vector `c`. Therefore `c // d` is equivalent to `vector.create(math.floor(c.x / d), math.floor(c.y / b), math.floor(c.z / b))`.
 
+Floor division syntax and semantics follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1) where applicable.
