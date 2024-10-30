@@ -28,10 +28,10 @@ laststat = 'return' [explist] | 'break' | 'continue'
 
 funcname = NAME {'.' NAME} [':' NAME]
 funcbody = ['<' GenericTypeList '>'] '(' [parlist] ')' [':' ReturnType] block 'end'
-parlist = bindinglist [',' '...' [':' GenericTypePack | Type]]
+
+parlist = bindinglist [',' '...' [':' (GenericTypePack | Type)]] | '...' [':' (GenericTypePack | Type)]
 
 explist = {exp ','} exp
-namelist = NAME {',' NAME}
 
 binding = NAME [':' Type]
 bindinglist = binding [',' bindinglist] (* equivalent of Lua 5.1 'namelist', except with optional type annotations *)
