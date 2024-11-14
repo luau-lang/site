@@ -428,6 +428,7 @@ function table.unpack<V>(a: {V}, f: number?, t: number?): ...V
 ```
 
 Returns all values of `a` with indices in `[f..t]` range. `f` defaults to 1 and `t` defaults to `#a`.
+Note that if you want to unpack varargs packed with `table.pack` you have to specify the index fields because `table.unpack` doesn't automatically use the `n` field that `table.pack` creates. Example usage for packed varargs: `table.unpack(args, 1, args.n)`
 
 ```
 function table.move<V>(a: {V}, f: number, t: number, d: number, tt: {V}?)
