@@ -102,8 +102,7 @@ VariadicTypePack = '...' Type
 ReturnType = Type | TypePack | GenericTypePack | VariadicTypePack
 TableIndexer = '[' Type ']' ':' Type
 TableProp = NAME ':' Type
-TablePropOrIndexer = ['read' | 'write'] (TableProp | TableIndexer)
-PropList = TablePropOrIndexer {fieldsep TablePropOrIndexer} [fieldsep]
+PropList = TableProp [fieldsep PropList] | TableIndexer {fieldsep TableProp} 
 TableType = '{' Type '}' | '{' [PropList] '}'
 FunctionType = ['<' GenericTypeList '>'] '(' [BoundTypeList] ')' '->' ReturnType
 ```
