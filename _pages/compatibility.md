@@ -48,6 +48,7 @@ Sandboxing challenges are [covered in the dedicated section](sandbox).
 | feature | status | notes |
 |---------|--------|------|
 | yieldable pcall/xpcall | ✔️ | |
+| yieldable xpcall error handler | ❌ | no strong use cases, VM complexity and performance implications |
 | yieldable metamethods | ❌ | significant performance implications |
 | ephemeron tables | ❌ | this complicates and slows down the garbage collector esp. for large weak tables |
 | emergency garbage collector | 🤷‍ | Luau runs in environments where handling memory exhaustion in emergency situations is not tenable |
