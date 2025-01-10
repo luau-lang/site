@@ -254,7 +254,8 @@ Given the significand and a binary exponent, returns a number `s * 2^e`.
 function math.lerp(a: number, b: number, t: number): number
 ```
 
-Linearly interpolated between number value a and b using factor t `a + (b - a) * t`.
+Linearly interpolated between number value a and b using factor t, returns a number `a + (b - a) * t`.
+Note if t is equal to 1 b will be returned rather than executing the calculation.
 
 ```
 function math.log10(n: number): number
