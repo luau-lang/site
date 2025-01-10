@@ -251,6 +251,12 @@ function math.ldexp(s: number, e: number): number
 Given the significand and a binary exponent, returns a number `s * 2^e`.
 
 ```
+function math.lerp(a: number, b: number, c: number): number
+```
+
+Applies linear interpolation using the given variables a, b and c, returns `a + (b - a) * c`.
+
+```
 function math.log10(n: number): number
 ```
 
