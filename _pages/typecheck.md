@@ -684,3 +684,63 @@ Cyclic module dependencies can cause problems for the type checker.  In order to
 ```lua
 local myModule = require(MyModule) :: any
 ```
+
+## Type functions
+
+Type functions are functions that operate on types instead of runtime values. They can use the [types](library#types-library) library transform existing types or create new ones.
+
+Many common type functions are available through the community [TypeForge](https://github.com/cameronpcampbell/typeforge) library.
+
+Here's a simplified implementation of the builtin type function `keyof`. It takes a table type and returns its property names as a [union](typecheck#union-types) of [singletons](typecheck#singleton-types-aka-literal-types).
+
+```luau
+type function simple_keyof(ty)
+    -- Ignoring unions or intersections of tables for simplicity.
+    if not ty:is("table") then
+        error("Can only call keyof on tables.")
+    end
+
+    local union = nil
+
+    for property in ty:properties() do
+        union = if union then types.unionof(union, property) else property
+    end
+
+    return if union then union else types.singleton(nil)
+end
+
+type person = {
+    name: string,
+    age: number,
+}
+--- keys = "age" | "name"
+type keys = simple_keyof<person>
+```
+
+### Type function envrionment
+
+In addition to the [types](library#types-library) library, type functions have access to:
+
+* `assert`, `errror`, `print`
+* `next`, `ipairs`, `pairs`
+* `select`, `unpack`
+* `getmetatable`, `setmetatable`
+* `rawget`, `rawset`, `rawlen`, `raweq`
+* `tonumber`, `tostring`
+* `type`, `typeof`
+* `math` library
+* `table` library
+* `string` library
+* `bit32` library
+* `utf8` library
+* `buffer` library
+
+### Type function limitations
+
+Limitations are subject to change.
+
+1. Can't access types or types functions from other modules.
+2. No typechecking for type function implementations.
+3. Can't accept or create generic arguments.
+4. Can only accept variadic arguments from other type functions, not directly.
+5. Can't set function parameter names.
