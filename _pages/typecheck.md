@@ -750,6 +750,44 @@ Limitations are subject to change.
 ### `types` library properties
 
 ```luau
+types.any
+```
+
+The [any](typecheck#any-type) `type`.
+
+```luau
+types.unknown
+```
+
+The [unknown](typecheck#unknown-type) `type`.
+
+```luau
+types.never
+```
+
+The [never](typecheck#never-type) `type`.
+
+```luau
+types.boolean
+```
+
+The boolean `type`.
+
+```luau
+types.number
+```
+
+The number `type`.
+
+```luau
+types.string
+```
+
+The string `type`.
+
+## `types` library functions
+
+```luau
 types.singleton(arg: string | boolean | nil): type
 ```
 
