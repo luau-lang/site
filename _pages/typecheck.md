@@ -687,7 +687,7 @@ local myModule = require(MyModule) :: any
 
 ## Type functions
 
-Type functions are functions that operate on types instead of runtime values. They can use the [types](library#types-library) library transform existing types or create new ones.
+Type functions are functions that operate on types instead of runtime values. They can use the [types](library#types-library) library to transform existing types or create new ones.
 
 Many common type functions are available through the community [TypeForge](https://github.com/cameronpcampbell/typeforge) library.
 
