@@ -735,17 +735,6 @@ In addition to the [types](#types-library) library, type functions have access t
 * `utf8` library
 * `buffer` library
 
-### Type function limitations
-
-Limitations may be lifted in the future.
-
-1. Can't access user-defined types.
-2. Can only access type functions from the same module.
-3. No typechecking for type function implementations.
-4. Can't accept or create generic arguments.
-5. Can only accept variadic arguments from other type functions, not directly.
-6. Can't set function parameter names.
-
 ## types library
 
 The `types` library is used to create and transform types, and can only be used within [type functions](#type-functions).
@@ -821,15 +810,13 @@ types.newtable(props: { [type]: type | { read: type?, write: type? } }?, indexer
 Returns a fresh, mutable table `type`. Property keys must be string singleton `type`s. The table's metatable is set if one is provided.
 
 ```luau
-types.newfunction(parameters: { head: {type}?, tail: type? }, returns: { head: {type}?, tail: type? })
+types.newfunction(parameters: { head: {type}?, tail: type? }, returns: { head: {type}?, tail: type? }?, generics: {type}?): type
 ```
 
 Returns a fresh, mutable function `type`, using the ordered parameters of `head` and the variadic tail of `tail`.
 
-Generics and parameter names can't currently be set.
-
 ```luau
-types.copy(arg: type)
+types.copy(arg: type): type
 ```
 
 Returns a deep copy of the argument type.
