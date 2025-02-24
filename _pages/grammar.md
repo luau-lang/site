@@ -22,16 +22,16 @@ stat = varlist '=' explist |
     attributes 'function' funcname funcbody |
     attributes 'local' 'function' NAME funcbody |
     'local' bindinglist ['=' explist] |
-    ['export'] 'type' NAME ['<' GenericTypeListWithDefaults '>'] '=' Type
+    ['export'] 'type' NAME ['<' GenericTypeListWithDefaults '>'] '=' Type |
+    ['export'] 'type' 'function' NAME funcbody
 
 laststat = 'return' [explist] | 'break' | 'continue'
 
 funcname = NAME {'.' NAME} [':' NAME]
 funcbody = ['<' GenericTypeList '>'] '(' [parlist] ')' [':' ReturnType] block 'end'
-parlist = bindinglist [',' '...' [':' GenericTypePack | Type]]
+parlist = bindinglist [',' '...' [':' (GenericTypePack | Type)]] | '...' [':' (GenericTypePack | Type)]
 
 explist = {exp ','} exp
-namelist = NAME {',' NAME}
 
 binding = NAME [':' Type]
 bindinglist = binding [',' bindinglist] (* equivalent of Lua 5.1 'namelist', except with optional type annotations *)
@@ -62,9 +62,9 @@ litfieldlist ::= litfield {fieldsep litfield} [fieldsep]
 litfield ::= [NAME '='] literal
 
 literal ::= 'nil' | 'false' | 'true' | NUMBER | STRING | littable
-litlist ::= literal {‘,’ literal}
+litlist ::= literal {',' literal}
 
-pars ::= ‘(’ [litlist] ‘)’ | littable | STRING 
+pars ::= '(' [litlist] ')' | littable | STRING 
 parattr ::= NAME [pars]
 attribute ::= '@' NAME | '@[' parattr {',' parattr} ']'
 attributes ::= {attribute}
@@ -98,10 +98,11 @@ TypeParams = (Type | TypePack | VariadicTypePack | GenericTypePack) [',' TypePar
 TypePack = '(' [TypeList] ')'
 GenericTypePack = NAME '...'
 VariadicTypePack = '...' Type
-ReturnType = Type | TypePack
+ReturnType = Type | TypePack | GenericTypePack | VariadicTypePack
 TableIndexer = ['read' | 'write'] '[' Type ']' ':' Type
 TableProp = ['read' | 'write'] NAME ':' Type
 PropList = TableProp [fieldsep PropList] | TableIndexer {fieldsep TableProp} 
+
 TableType = '{' Type '}' | '{' [PropList] '}'
 FunctionType = ['<' GenericTypeList '>'] '(' [BoundTypeList] ')' '->' ReturnType
 ```

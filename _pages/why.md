@@ -23,4 +23,4 @@ As for the runtime, we had to rewrite the interpreter from scratch to get substa
 
 The garbage collector and the core libraries represent more of an incremental change, where we used Lua 5.1 as a baseline but we're continuing to rewrite these as well with performance in mind.
 
-While Luau doesn't currently implement JIT/AOT, this is likely to happen at some point; beyond the usual implementation challenges and security concerns, one significant limitation is that we don't have access to JIT on many platforms so for us maintaining excellent interpreted performance for gameplay and application code is more important than reaching peak FLOPS on numerical code.
+While Luau initially didn't include a JIT/AOT, native code generation has since been implemented for x64/arm64 platform as an optional component.

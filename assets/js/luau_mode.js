@@ -53,7 +53,10 @@
   
       "table.clear","table.clone","table.concat","table.create","table.find","table.freeze","table.insert","table.isfrozen","table.maxn","table.move","table.pack","table.remove","table.sort","table.unpack",
 
-      "utf8.char","utf8.charpattern","utf8.codepoint","utf8.codes","utf8.len","utf8.offset"
+      "utf8.char","utf8.charpattern","utf8.codepoint","utf8.codes","utf8.len","utf8.offset",
+
+      "vector.create", "vector.magnitude", "vector.normalize", "vector.cross", "vector.dot", "vector.angle",
+      "vector.floor", "vector.ceil", "vector.abs", "vector.sign", "vector.clamp", "vector.max", "vector.min"
     ]);
     var keywords = wordRE(["and","break","elseif","false","nil","not","or","return",
                            "true","function", "end", "if", "then", "else", "do",
