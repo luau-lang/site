@@ -716,7 +716,7 @@ type person = {
 type keys = simple_keyof<person>
 ```
 
-### Type function envrionment
+### Type function environment
 
 In addition to the [types](#types-library) library, type functions have access to:
 
