@@ -748,6 +748,8 @@ Limitations may be lifted in the future.
 
 ## types library
 
+The `types` library is used to create and transform types, and can only be used within [type functions](#type-functions).
+
 ### `types` library properties
 
 ```luau
@@ -798,31 +800,31 @@ Returns the [singleton](typecheck#singleton-types-aka-literal-types) type of the
 types.negationof(arg: type): type
 ```
 
-Returns the immutable negated type of the argument.
+Returns an immutable negation of the argument type.
 
 ```luau
 types.unionof(first: type, second: type, ...: type): type
 ```
 
-Returns the immutable [union type](typecheck#union-types) of at least two arguments.
+Returns an immutable [union](typecheck#union-types) of two or more arguments.
 
 ```luau
 types.intersectionof(first: type, second: type, ...: type): type
 ```
 
-Returns the immutable [intersection type](typecheck#intersection-types) of at least two arguments.
+Returns an immutable [intersection](typecheck#intersection-types) of two or more arguments.
 
 ```luau
 types.newtable(props: { [type]: type | { read: type?, write: type? } }?, indexer: { index: type, readresult: type, writeresult: type? }?, metatable: type?): type
 ```
 
-Returns a mutable table `type`. Property keys must be string singleton `type`s. The table's metatable is set if one is provided.
+Returns a fresh, mutable table `type`. Property keys must be string singleton `type`s. The table's metatable is set if one is provided.
 
 ```luau
 types.newfunction(parameters: { head: {type}?, tail: type? }, returns: { head: {type}?, tail: type? })
 ```
 
-Returns a mutable function `type`, using the ordered parameters of `head` and the variadic tail of `tail`.
+Returns a fresh, mutable function `type`, using the ordered parameters of `head` and the variadic tail of `tail`.
 
 ```luau
 types.copy(arg: type)
