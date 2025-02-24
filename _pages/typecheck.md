@@ -689,7 +689,6 @@ local myModule = require(MyModule) :: any
 
 Type functions are functions that operate on types instead of runtime values. They can use the [types](#types-library) library to transform existing types or create new ones.
 
-Many common type functions are available through the community [TypeForge](https://github.com/cameronpcampbell/typeforge) library.
 
 Here's a simplified implementation of the builtin type function `keyof`. It takes a table type and returns its property names as a [union](typecheck#union-types) of [singletons](typecheck#singleton-types-aka-literal-types).
 
