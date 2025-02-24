@@ -1058,3 +1058,4 @@ vector.min(...: vector): vector
 ```
 
 Applies `math.min` to the corresponding components of the input vectors. Includes the fourth component in _4-wide mode_. Equivalent to `vector.create(math.min((...).x), math.min((...).y), math.min((...).z), math.min((...).w))`.
+
