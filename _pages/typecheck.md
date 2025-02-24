@@ -826,6 +826,8 @@ types.newfunction(parameters: { head: {type}?, tail: type? }, returns: { head: {
 
 Returns a fresh, mutable function `type`, using the ordered parameters of `head` and the variadic tail of `tail`.
 
+Generics and parameter names can't currently be set.
+
 ```luau
 types.copy(arg: type)
 ```
