@@ -737,13 +737,14 @@ In addition to the [types](#types-library) library, type functions have access t
 
 ### Type function limitations
 
-Limitations are subject to change.
+Limitations may be lifted in the future.
 
-1. Can't access types or types functions from other modules.
-2. No typechecking for type function implementations.
-3. Can't accept or create generic arguments.
-4. Can only accept variadic arguments from other type functions, not directly.
-5. Can't set function parameter names.
+1. Can't access user-defined types.
+2. Can only access type functions from the same module.
+3. No typechecking for type function implementations.
+4. Can't accept or create generic arguments.
+5. Can only accept variadic arguments from other type functions, not directly.
+6. Can't set function parameter names.
 
 ## types library
 
