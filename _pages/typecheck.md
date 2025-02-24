@@ -684,3 +684,357 @@ Cyclic module dependencies can cause problems for the type checker.  In order to
 ```lua
 local myModule = require(MyModule) :: any
 ```
+
+## Type functions
+
+Type functions are functions that run during analysis time and operate on types, instead of runtime values. They can use the [types](#types-library) library to transform existing types or create new ones.
+
+
+Here's a simplified implementation of the builtin type function `keyof`. It takes a table type and returns its property names as a [union](typecheck#union-types) of [singletons](typecheck#singleton-types-aka-literal-types).
+
+```luau
+type function simple_keyof(ty)
+    -- Ignoring unions or intersections of tables for simplicity.
+    if not ty:is("table") then
+        error("Can only call keyof on tables.")
+    end
+
+    local union = nil
+
+    for property in ty:properties() do
+        union = if union then types.unionof(union, property) else property
+    end
+
+    return if union then union else types.singleton(nil)
+end
+
+type person = {
+    name: string,
+    age: number,
+}
+--- keys = "age" | "name"
+type keys = simple_keyof<person>
+```
+
+### Type function envrionment
+
+In addition to the [types](#types-library) library, type functions have access to:
+
+* `assert`, `errror`, `print`
+* `next`, `ipairs`, `pairs`
+* `select`, `unpack`
+* `getmetatable`, `setmetatable`
+* `rawget`, `rawset`, `rawlen`, `raweq`
+* `tonumber`, `tostring`
+* `type`, `typeof`
+* `math` library
+* `table` library
+* `string` library
+* `bit32` library
+* `utf8` library
+* `buffer` library
+
+## types library
+
+The `types` library is used to create and transform types, and can only be used within [type functions](#type-functions).
+
+### `types` library properties
+
+```luau
+types.any
+```
+
+The [any](typecheck#any-type) `type`.
+
+```luau
+types.unknown
+```
+
+The [unknown](typecheck#unknown-type) `type`.
+
+```luau
+types.never
+```
+
+The [never](typecheck#never-type) `type`.
+
+```luau
+types.boolean
+```
+
+The boolean `type`.
+
+```luau
+types.number
+```
+
+The number `type`.
+
+```luau
+types.string
+```
+
+The string `type`.
+
+## `types` library functions
+
+```luau
+types.singleton(arg: string | boolean | nil): type
+```
+
+Returns the [singleton](typecheck#singleton-types-aka-literal-types) type of the argument.
+
+```luau
+types.negationof(arg: type): type
+```
+
+Returns an immutable negation of the argument type.
+
+```luau
+types.unionof(first: type, second: type, ...: type): type
+```
+
+Returns an immutable [union](typecheck#union-types) of two or more arguments.
+
+```luau
+types.intersectionof(first: type, second: type, ...: type): type
+```
+
+Returns an immutable [intersection](typecheck#intersection-types) of two or more arguments.
+
+```luau
+types.newtable(props: { [type]: type | { read: type?, write: type? } }?, indexer: { index: type, readresult: type, writeresult: type? }?, metatable: type?): type
+```
+
+Returns a fresh, mutable table `type`. Property keys must be string singleton `type`s. The table's metatable is set if one is provided.
+
+```luau
+types.newfunction(parameters: { head: {type}?, tail: type? }, returns: { head: {type}?, tail: type? }?, generics: {type}?): type
+```
+
+Returns a fresh, mutable function `type`, using the ordered parameters of `head` and the variadic tail of `tail`.
+
+```luau
+types.copy(arg: type): type
+```
+
+Returns a deep copy of the argument type.
+
+### `type` instance
+
+`type` instances can have extra properties and methods described in subsections depending on its tag.
+
+```luau
+type.tag: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class"
+```
+
+An immutable property holding the type's tag.
+
+```luau
+__eq(arg: type): boolean
+```
+
+Overrides the `==` operator to return `true` if `self` is syntactically equal to `arg`. This excludes semantically equivalent types, `true | false` is unequal to `boolean`.
+
+```luau
+type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class")
+```
+
+Returns `true` if `self` has the argument as its tag.
+
+### Singleton `type` instance
+
+```luau
+singleton_type:value(): boolean | nil | "string"
+```
+
+Returns the singleton's actual value, like `true` for `types.singleton(true)`.
+
+### Table `type` instance
+
+```luau
+table_type:setproperty(key: type, value: type?)
+```
+
+Sets key-value pair in the table's properties, with the same type for reading from and writing to the table.
+
+- If `key` doesn't exist in the table, does nothing.
+- If `value` is `nil`, the property is removed.
+
+```luau
+table_type:setreadproperty(key: type, value: type?)
+```
+
+Sets the key-value pair used for reading from the table's properties.
+
+- If `key` doesn't exist in the table, does nothing.
+- If `value` is `nil`, the property is removed.
+
+```luau
+table_type:setwriteproperty(key: type, value: type?)
+```
+
+Sets the key-value pair used for writing to the table's properties.
+
+- If `key` doesn't exist in the table, does nothing.
+- If `value` is `nil`, the property is removed.
+
+```luau
+table_type:readproperty(key: type): type?
+```
+
+Returns the type used for reading values from this property, or `nil` if the property doesn't exist.
+
+```luau
+table_type:writeproperty(key: type): type?
+```
+
+Returns the type used for writing values to this property, or `nil` if the property doesn't exist.
+
+```luau
+table_type:properties(): { [type]: { read: type?, write: type? } }
+```
+
+Returns a table mapping property keys to their read and write types.
+
+```luau
+table_type:setindexer(index: type, result: type)
+```
+
+Sets the table's indexer, using the same type for reads and writes.
+
+```luau
+table_type:setreadindexer(index: type, result: type)
+```
+
+Sets the table's indexer with the resulting read type.
+
+```luau
+table_type:setwriteindexer(index: type, result: type)
+```
+
+Sets the table's indexer with the resulting write type.
+
+```luau
+table_type:indexer(): { index: type, readresult: type, writeresult: type }
+```
+
+Returns the table's indexer as a table, or `nil` if it doesn't exist.
+
+```luau
+table_type:readindexer(): { index: type, result: type }?
+```
+
+Returns the table's indexer using the result's read type, or `nil` if it doesn't exist.
+
+```luau
+table_type:writeindexer()
+```
+
+Returns the table's indexer using the result's write type, or `nil` if it doesn't exist.
+
+```luau
+table_type:setmetatable(arg: type)
+```
+
+Sets the table's metatable.
+
+```luau
+table_type:metatable(): type?
+```
+
+Gets the table's metatable, or `nil` if it doesn't exist.
+
+### Function `type` instance
+
+```luau
+function_type:setparameters(head: {type}?, tail: type?)
+```
+
+Sets the function's parameters, with the ordered parameters in `head` and the variadic tail in `tail`.
+
+```luau
+function_type:parameters(): { head: {type}?, tail: type? }
+```
+
+Returns the function's parameters, with the ordered parameters in `head` and the variadic tail in `tail`.
+
+```luau
+function_type:setreturns(head: {type}?, tail: type?)
+```
+
+Sets the function's return types, with the ordered parameters in `head` and the variadic tail in `tail`.
+
+```luau
+function_type:returns(): { head: {type}?, tail: type? }
+```
+
+Returns the function's return types, with the ordered parameters in `head` and the variadic tail in `tail`.
+
+### Negation `type` instance
+
+```luau
+type:inner(): type
+```
+
+Returns the `type` being negated.
+
+### Union `type` instance
+
+```luau
+union_type:components(): {type}
+```
+
+Returns an array of the [unioned](typecheck#union-types) types.
+
+### Intersection `type` instance
+
+```luau
+intersection_type:components()
+```
+
+Returns an array of the [intersected](typecheck#intersection-types) types.
+
+### Class `type` instance
+
+```luau
+class_type:properties(): { [type]: { read: type?, write: type? } }
+```
+
+Returns the properties of the class with their respective `read` and `write` types.
+
+```luau
+class_type:readparent(): type?
+```
+
+Returns the `read` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+
+```luau
+class_type:writeparent(): type?
+```
+
+Returns the `write` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+
+```luau
+class_type:metatable(): type?
+```
+
+Returns the class' metatable or `nil` if it doesn't exist.
+
+```luau
+class_type:indexer(): { index: type, readresult: type, writeresult: type }?
+```
+
+Returns the class' indexer, or `nil` if it doesn't exist.
+
+```luau
+class_type:readindexer(): { index: type, result: type }?
+```
+
+Returns the class' indexer using the result's read type, or `nil` if it doesn't exist.
+
+```luau
+class_type:writeindexer(): { index: type, result: type }?
+```
+
+Returns the class' indexer using the result's write type, or `nil` if it doesn't exist.
