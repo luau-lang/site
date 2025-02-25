@@ -765,6 +765,12 @@ types.boolean
 The boolean `type`.
 
 ```luau
+types.buffer
+```
+
+The [buffer](library#buffer-library) `type`.
+
+```luau
 types.number
 ```
 
@@ -775,6 +781,12 @@ types.string
 ```
 
 The string `type`.
+
+```luau
+types.thread
+```
+
+The thread `type`.
 
 ## `types` library functions
 
@@ -820,12 +832,18 @@ types.copy(arg: type): type
 
 Returns a deep copy of the argument type.
 
+```luau
+types.generic(name: string?, ispack: boolean?): type
+```
+
+Creates a [generic](typecheck#generic-functions) named `name`. If `ispack` is `true`, the result is a [generic pack](typecheck#type-packs).
+
 ### `type` instance
 
 `type` instances can have extra properties and methods described in subsections depending on its tag.
 
 ```luau
-type.tag: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class"
+type.tag: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class" | "thread" | "buffer"
 ```
 
 An immutable property holding the type's tag.
@@ -837,7 +855,7 @@ __eq(arg: type): boolean
 Overrides the `==` operator to return `true` if `self` is syntactically equal to `arg`. This excludes semantically equivalent types, `true | false` is unequal to `boolean`.
 
 ```luau
-type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class")
+type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class" | "thread" | "buffer")
 ```
 
 Returns `true` if `self` has the argument as its tag.
@@ -845,15 +863,29 @@ Returns `true` if `self` has the argument as its tag.
 ### Singleton `type` instance
 
 ```luau
-singleton_type:value(): boolean | nil | "string"
+singletontype:value(): boolean | nil | "string"
 ```
 
 Returns the singleton's actual value, like `true` for `types.singleton(true)`.
 
+## Generic `type` instance
+
+```luau
+generictype:name(): string?
+```
+
+Returns the name of the [generic](typecheck#generic-functions) or `nil` if it has no name.
+
+```luau
+generictype:ispack(): boolean
+```
+
+Returns `true` if the [generic](typecheck#generic-functions) is a [pack](typecheck#type-packs), or `false` otherwise.
+
 ### Table `type` instance
 
 ```luau
-table_type:setproperty(key: type, value: type?)
+tabletype:setproperty(key: type, value: type?)
 ```
 
 Sets key-value pair in the table's properties, with the same type for reading from and writing to the table.
@@ -862,7 +894,7 @@ Sets key-value pair in the table's properties, with the same type for reading fr
 - If `value` is `nil`, the property is removed.
 
 ```luau
-table_type:setreadproperty(key: type, value: type?)
+tabletype:setreadproperty(key: type, value: type?)
 ```
 
 Sets the key-value pair used for reading from the table's properties.
@@ -871,7 +903,7 @@ Sets the key-value pair used for reading from the table's properties.
 - If `value` is `nil`, the property is removed.
 
 ```luau
-table_type:setwriteproperty(key: type, value: type?)
+tabletype:setwriteproperty(key: type, value: type?)
 ```
 
 Sets the key-value pair used for writing to the table's properties.
@@ -880,67 +912,67 @@ Sets the key-value pair used for writing to the table's properties.
 - If `value` is `nil`, the property is removed.
 
 ```luau
-table_type:readproperty(key: type): type?
+tabletype:readproperty(key: type): type?
 ```
 
 Returns the type used for reading values from this property, or `nil` if the property doesn't exist.
 
 ```luau
-table_type:writeproperty(key: type): type?
+tabletype:writeproperty(key: type): type?
 ```
 
 Returns the type used for writing values to this property, or `nil` if the property doesn't exist.
 
 ```luau
-table_type:properties(): { [type]: { read: type?, write: type? } }
+tabletype:properties(): { [type]: { read: type?, write: type? } }
 ```
 
 Returns a table mapping property keys to their read and write types.
 
 ```luau
-table_type:setindexer(index: type, result: type)
+tabletype:setindexer(index: type, result: type)
 ```
 
 Sets the table's indexer, using the same type for reads and writes.
 
 ```luau
-table_type:setreadindexer(index: type, result: type)
+tabletype:setreadindexer(index: type, result: type)
 ```
 
 Sets the table's indexer with the resulting read type.
 
 ```luau
-table_type:setwriteindexer(index: type, result: type)
+tabletype:setwriteindexer(index: type, result: type)
 ```
 
 Sets the table's indexer with the resulting write type.
 
 ```luau
-table_type:indexer(): { index: type, readresult: type, writeresult: type }
+tabletype:indexer(): { index: type, readresult: type, writeresult: type }
 ```
 
 Returns the table's indexer as a table, or `nil` if it doesn't exist.
 
 ```luau
-table_type:readindexer(): { index: type, result: type }?
+tabletype:readindexer(): { index: type, result: type }?
 ```
 
 Returns the table's indexer using the result's read type, or `nil` if it doesn't exist.
 
 ```luau
-table_type:writeindexer()
+tabletype:writeindexer()
 ```
 
 Returns the table's indexer using the result's write type, or `nil` if it doesn't exist.
 
 ```luau
-table_type:setmetatable(arg: type)
+tabletype:setmetatable(arg: type)
 ```
 
 Sets the table's metatable.
 
 ```luau
-table_type:metatable(): type?
+tabletype:metatable(): type?
 ```
 
 Gets the table's metatable, or `nil` if it doesn't exist.
@@ -948,28 +980,40 @@ Gets the table's metatable, or `nil` if it doesn't exist.
 ### Function `type` instance
 
 ```luau
-function_type:setparameters(head: {type}?, tail: type?)
+functiontype:setparameters(head: {type}?, tail: type?)
 ```
 
 Sets the function's parameters, with the ordered parameters in `head` and the variadic tail in `tail`.
 
 ```luau
-function_type:parameters(): { head: {type}?, tail: type? }
+functiontype:parameters(): { head: {type}?, tail: type? }
 ```
 
 Returns the function's parameters, with the ordered parameters in `head` and the variadic tail in `tail`.
 
 ```luau
-function_type:setreturns(head: {type}?, tail: type?)
+functiontype:setreturns(head: {type}?, tail: type?)
 ```
 
 Sets the function's return types, with the ordered parameters in `head` and the variadic tail in `tail`.
 
 ```luau
-function_type:returns(): { head: {type}?, tail: type? }
+functiontype:returns(): { head: {type}?, tail: type? }
 ```
 
 Returns the function's return types, with the ordered parameters in `head` and the variadic tail in `tail`.
+
+```luau
+functiontype:generics(): {type}
+```
+
+Returns an array of the function's [generic](typecheck#generic-functions) `type`s.
+
+```luau
+functiontype:setgenerics(generics: {type}?)
+```
+
+Sets the function's [generic](typecheck#generic-functions) `type`s.
 
 ### Negation `type` instance
 
@@ -982,7 +1026,7 @@ Returns the `type` being negated.
 ### Union `type` instance
 
 ```luau
-union_type:components(): {type}
+uniontype:components(): {type}
 ```
 
 Returns an array of the [unioned](typecheck#union-types) types.
@@ -990,7 +1034,7 @@ Returns an array of the [unioned](typecheck#union-types) types.
 ### Intersection `type` instance
 
 ```luau
-intersection_type:components()
+intersectiontype:components()
 ```
 
 Returns an array of the [intersected](typecheck#intersection-types) types.
@@ -998,43 +1042,37 @@ Returns an array of the [intersected](typecheck#intersection-types) types.
 ### Class `type` instance
 
 ```luau
-class_type:properties(): { [type]: { read: type?, write: type? } }
+classtype:properties(): { [type]: { read: type?, write: type? } }
 ```
 
 Returns the properties of the class with their respective `read` and `write` types.
 
 ```luau
-class_type:readparent(): type?
+classtype:parent(): type?
 ```
 
-Returns the `read` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+Returns the `type` of the class' parent class, or returns `nil` if the parent class doesn't exist.
 
 ```luau
-class_type:writeparent(): type?
-```
-
-Returns the `write` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
-
-```luau
-class_type:metatable(): type?
+classtype:metatable(): type?
 ```
 
 Returns the class' metatable or `nil` if it doesn't exist.
 
 ```luau
-class_type:indexer(): { index: type, readresult: type, writeresult: type }?
+classtype:indexer(): { index: type, readresult: type, writeresult: type }?
 ```
 
 Returns the class' indexer, or `nil` if it doesn't exist.
 
 ```luau
-class_type:readindexer(): { index: type, result: type }?
+classtype:readindexer(): { index: type, result: type }?
 ```
 
 Returns the class' indexer using the result's read type, or `nil` if it doesn't exist.
 
 ```luau
-class_type:writeindexer(): { index: type, result: type }?
+classtype:writeindexer(): { index: type, result: type }?
 ```
 
 Returns the class' indexer using the result's write type, or `nil` if it doesn't exist.
