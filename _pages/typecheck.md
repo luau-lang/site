@@ -868,7 +868,7 @@ singletontype:value(): boolean | nil | "string"
 
 Returns the singleton's actual value, like `true` for `types.singleton(true)`.
 
-## Generic `type` instance
+### Generic `type` instance
 
 ```luau
 generictype:name(): string?
