@@ -1048,10 +1048,16 @@ classtype:properties(): { [type]: { read: type?, write: type? } }
 Returns the properties of the class with their respective `read` and `write` types.
 
 ```luau
-classtype:parent(): type?
+classtype:readparent(): type?
 ```
 
-Returns the `type` of the class' parent class, or returns `nil` if the parent class doesn't exist.
+Returns the `read` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+
+```luau
+classtype:writeparent(): type?
+```
+
+Returns the `write` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
 
 ```luau
 classtype:metatable(): type?
