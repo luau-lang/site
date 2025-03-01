@@ -451,10 +451,10 @@ Creates a table with `n` elements; all of them (range `[1..n]`) are set to `v`. 
 Note that preallocation is only performed for the array portion of the table - using `table.create` on dictionaries is counter-productive.
 
 ```
-function table.find<V>(t: {V}, v: V): number?
+function table.find<V>(t: {V}, v: V, init: number?): number?
 ```
 
-Find the first element in the table that is equal to `v` and returns its index; the traversal stops at the first `nil`. If the element is not found, `nil` is returned instead.
+Find the first element in the table that is equal to `v` and returns its index; the traversal stops at the first `nil`. If the element is not found, `nil` is returned instead. The traversal starts at index `init` if specified, otherwise 1.
 
 ```
 function table.clear(t: table)
