@@ -613,11 +613,22 @@ local myTable = {names = {} :: {string}}
 table.insert(myTable.names, 42)         -- not ok, invalid 'number' to 'string' conversion
 ```
 
-A typecast itself is also type checked to ensure the conversion is made to a subtype of the expression's type or `any`:
+A typecast itself is also type checked to ensure that one of the conversion operands is the subtype of the other or `any`:
 ```lua
 local numericValue = 1
 local value = numericValue :: any             -- ok, all expressions may be cast to 'any'
 local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'boolean' conversion
+```
+
+When typecasting a variadic or the result of a function with multiple returns, only the first value will be preserved. The rest will be discarded.
+```luau
+function returnsMultiple(...): (number, number, number)
+    print(... :: string) -- "x"
+    return 1, 2, 3
+end
+
+print(returnsMultiple("x", "y", "z")) -- 1, 2, 3
+print(returnsMultiple("x", "y", "z") :: number) -- 1
 ```
 
 ## Roblox types
