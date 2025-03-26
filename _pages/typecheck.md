@@ -703,7 +703,7 @@ Type functions are functions that run during analysis time and operate on types,
 
 Here's a simplified implementation of the builtin type function `keyof`. It takes a table type and returns its property names as a [union](typecheck#union-types) of [singletons](typecheck#singleton-types-aka-literal-types).
 
-```luau
+```lua
 type function simple_keyof(ty)
     -- Ignoring unions or intersections of tables for simplicity.
     if not ty:is("table") then
