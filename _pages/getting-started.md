@@ -60,7 +60,7 @@ test.luau(7,18): TypeError: Type 'string' could not be converted into 'number'
 
 ## Annotations
 
-You can add annotations to locals, arguments, and function return types. Among other things, annotations can help enforce that you don't accidentally do something stupid. Here's how we would add annotations to ``ispositive()``:
+You can add annotations to locals, arguments, and function return types. Among other things, annotations can help enforce that you don't accidentally do something silly. Here's how we would add annotations to ``ispositive()``:
 
 ```lua
 --!strict
