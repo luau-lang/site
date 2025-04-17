@@ -481,11 +481,13 @@ end
 
 -- this annotation on `self` is the only _required_ annotation.
 function Account.deposit(self: Account, credit)
+    -- autocomplete on `self` works here!
     self.balance += credit
 end
 
 -- this annotation on `self` is the only _required_ annotation.
 function Account.withdraw(self: Account, debit)
+    -- autocomplete on `self` works here!
     self.balance -= debit
 end
 
