@@ -818,6 +818,15 @@ types.negationof(arg: type): type
 Returns an immutable negation of the argument type.
 
 ```luau
+types.optional(arg: type): type
+```
+
+Returns a version of the given type that is now optional.
+
+- If the given type is a [union type]((typecheck#union-types)), `nil` will be added unconditionally as a component.
+- Otherwise, the result will be a union of the given type and the `nil` type.
+
+```luau
 types.unionof(first: type, second: type, ...: type): type
 ```
 
@@ -903,27 +912,33 @@ Returns `true` if the [generic](typecheck#generic-functions) is a [pack](typeche
 tabletype:setproperty(key: type, value: type?)
 ```
 
-Sets key-value pair in the table's properties, with the same type for reading from and writing to the table.
+Sets the type of the property for the given `key`, using the same type for both reading from and writing to the table.
 
-- If `key` doesn't exist in the table, does nothing.
+- `key` is expected to be a string singleton type, naming the property.
+- `value` will be set as both the `read type` and `write type` of the property.
 - If `value` is `nil`, the property is removed.
 
 ```luau
 tabletype:setreadproperty(key: type, value: type?)
 ```
 
-Sets the key-value pair used for reading from the table's properties.
+Sets the type for reading from the property named by `key`, leaving the type for writing this property as-is.
 
-- If `key` doesn't exist in the table, does nothing.
+- `key` is expected to be a string singleton type, naming the property.
+- `value` will be set as the `read type`, the `write type` will be unchanged.
+- If `key` is not already present, only a `read type` will be set, making the property read-only.
 - If `value` is `nil`, the property is removed.
 
 ```luau
 tabletype:setwriteproperty(key: type, value: type?)
 ```
 
-Sets the key-value pair used for writing to the table's properties.
 
-- If `key` doesn't exist in the table, does nothing.
+Sets the type for writing to the property named by `key`, leaving the type for reading this property as-is.
+
+- `key` is expected to be a string singleton type, naming the property.
+- `value` will be set as the `write type`, the `read type` will be unchanged.
+- If `key` is not already present, only a `write type` will be set, making the property write-only.
 - If `value` is `nil`, the property is removed.
 
 ```luau
@@ -954,13 +969,13 @@ Sets the table's indexer, using the same type for reads and writes.
 tabletype:setreadindexer(index: type, result: type)
 ```
 
-Sets the table's indexer with the resulting read type.
+Sets the type resulting from reading from this table via indexing.
 
 ```luau
 tabletype:setwriteindexer(index: type, result: type)
 ```
 
-Sets the table's indexer with the resulting write type.
+Sets the type for writing to this table via indexing.
 
 ```luau
 tabletype:indexer(): { index: type, readresult: type, writeresult: type }
@@ -1066,19 +1081,19 @@ Returns the properties of the class with their respective `read` and `write` typ
 classtype:readparent(): type?
 ```
 
-Returns the `read` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+Returns the type of reading this class' parent, or returns `nil` if the parent class doesn't exist.
 
 ```luau
 classtype:writeparent(): type?
 ```
 
-Returns the `write` type of the class' parent class, or returns `nil` if the parent class doesn't exist.
+Returns the type for writing to this class' parent, or returns `nil` if the parent class doesn't exist.
 
 ```luau
 classtype:metatable(): type?
 ```
 
-Returns the class' metatable or `nil` if it doesn't exist.
+Returns the class' metatable, or `nil` if it doesn't exist.
 
 ```luau
 classtype:indexer(): { index: type, readresult: type, writeresult: type }?
@@ -1090,10 +1105,10 @@ Returns the class' indexer, or `nil` if it doesn't exist.
 classtype:readindexer(): { index: type, result: type }?
 ```
 
-Returns the class' indexer using the result's read type, or `nil` if it doesn't exist.
+Returns result type of reading from the class via indexing, or `nil` if it doesn't exist.
 
 ```luau
 classtype:writeindexer(): { index: type, result: type }?
 ```
 
-Returns the class' indexer using the result's write type, or `nil` if it doesn't exist.
+Returns the type for writing to the class via indexing, or `nil` if it doesn't exist.
