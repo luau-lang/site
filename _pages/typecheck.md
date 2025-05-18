@@ -735,7 +735,7 @@ type keys = simple_keyof<person>
 
 In addition to the [types](#types-library) library, type functions have access to:
 
-* `assert`, `errror`, `print`
+* `assert`, `error`, `print`
 * `next`, `ipairs`, `pairs`
 * `select`, `unpack`
 * `getmetatable`, `setmetatable`
