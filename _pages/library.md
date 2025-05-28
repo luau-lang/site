@@ -258,6 +258,12 @@ Linearly interpolated between number value `a` and `b` using factor `t`, general
 When `t` is exactly `1`, the value of `b` will be returned instead to ensure that when `t` is on the interval `[0, 1]`, the result of `lerp` will be on the interval `[a, b]`.
 
 ```
+math.map(x: number, inmin: number, inmax: number, outmin: number, outmax: number): number
+```
+
+Returns a value that represents `x` mapped linearly from the input range (`inmin` to `inmax`) to the output range (`outmin` to `outmax`).
+
+```
 function math.log10(n: number): number
 ```
 
@@ -950,6 +956,22 @@ Used to write data from a string into the buffer at a specified offset.
 If an optional 'count' is specified, only 'count' bytes are taken from the string.
 
 Count cannot be larger than the string length.
+
+```
+buffer.readbits(b: buffer, bitOffset: number, bitCount: number): number
+```
+
+Used to read a range of `bitCount` bits from the buffer, at specified offset `bitOffset`, into an unsigned integer.
+
+`bitCount` must be in `[0, 32]` range.
+
+```
+buffer.writebits(b: buffer, bitOffset: number, bitCount: number, value: number): ()
+```
+
+Used to write `bitCount` bits from `value` into the buffer at specified offset `bitOffset`.
+
+`bitCount` must be in `[0, 32]` range.
 
 ```
 function buffer.copy(target: buffer, targetOffset: number, source: buffer, sourceOffset: number?, count: number?): ()
