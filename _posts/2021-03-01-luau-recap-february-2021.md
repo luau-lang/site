@@ -3,9 +3,7 @@ layout: single
 title:  "Luau Recap: February 2021"
 ---
 
-Luau is our new language that you can read more about at [https://roblox.github.io/luau](https://roblox.github.io/luau). It's been a busy few months in Luau!
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-february-2021/).]
+It's been a busy few months in Luau!
 
 ## Infallible parser
 

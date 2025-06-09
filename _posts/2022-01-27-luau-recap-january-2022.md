@@ -3,12 +3,6 @@ layout: single
 title:  "Luau Recap: January 2022"
 ---
 
-Luau is our programming language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Find us on GitHub](https://github.com/Roblox/luau)!
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-january-2022/).]
-
 ## Performance improvements
 
 The implementation of `tostring` has been rewritten.  This change replaces the default number->string conversion with a

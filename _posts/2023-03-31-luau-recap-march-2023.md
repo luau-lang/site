@@ -5,8 +5,6 @@ title:  "Luau Recap: March 2023"
 
 How the time flies! The team has been busy since the last November Luau Recap working on some large updates that are coming in the future, but before those arrive, we have some improvements that you can already use!
 
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-march-2023/).]
-
 ## Improved type refinements
 
 Type refinements handle constraints placed on variables inside conditional blocks.

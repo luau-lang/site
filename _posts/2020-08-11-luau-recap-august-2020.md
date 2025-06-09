@@ -3,11 +3,9 @@ layout: single
 title:  "Luau Recap August 2020"
 ---
 
-As everyone knows by now, Luau is our new language stack that you can read more about at [https://roblox.github.io/luau](https://roblox.github.io/luau) and the month following June is August so let’s talk about changes, big and small, that happened since June!
+Let’s talk about changes, big and small, that happened since June!
 
 Many people work on these improvements, with the team slowly growing - thanks @Apakovtac, @EthicalRobot, @fun_enthusiast, @mrow_pizza and @zeuxcg!
-
-[Originally posted on the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-august-2020/).]
 
 ## Type annotations are safe to use in production!
 

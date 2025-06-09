@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: August 2021"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-august-2021/).]
-
 ## Editor features
 
 The Roblox Studio [Luau-Powered Autocomplete & Language Features Beta](https://devforum.roblox.com/t/script-editor-luau-powered-autocomplete-language-features-beta) that our team has been working on has finally been released!

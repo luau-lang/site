@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: March 2022"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-march-2022/).]
-
 ## Singleton types
 
 We added support for singleton types! These allow you to use string or

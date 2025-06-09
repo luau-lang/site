@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: October 2021"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-october-2021/).]
-
 ## if-then-else expression
 
 In addition to supporting standard if *statements*, Luau adds support for if *expressions*.

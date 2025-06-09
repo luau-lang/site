@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: June 2022"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-june-2022/).]
-
 # Lower bounds calculation
 
 A common problem that Luau has is that it primarily works by inspecting expressions in your program and narrowing the _upper bounds_ of the values that can inhabit particular variables.  In other words, each time we see a variable used, we eliminate possible sets of values from that variable's domain.
@@ -15,13 +11,13 @@ There are some important cases where this doesn't produce a helpful result.  Tak
 
 ```lua
 function find_first_if(vec, f)
-	for i, e in ipairs(vec) do
-		if f(e) then
-			return i
-		end
-	end
+    for i, e in ipairs(vec) do
+        if f(e) then
+            return i
+        end
+    end
 
-	return nil
+    return nil
 end
 ```
 

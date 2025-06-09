@@ -7,8 +7,6 @@ We continue to iterate on our language stack, working on many features for type 
 
 A lot of people work on these improvements; thanks @Apakovtac, @EthicalRobot, @fun_enthusiast, @xyzzyismagic, @zeuxcg!
 
-[Originally posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-february-2020/).]
-
 We were originally intending to ship the beta last year but had to delay it due to last minute bugs. However, it’s now live as a beta option on production! Go here to learn more:
 
 EDIT: Please DO NOT publish places with type annotations just yet as they will not work on production! This is why it’s a beta 🙂 However, please continue to experiment in Studio and give us feedback. We are reading everything and will be fixing reported bugs and discussing syntax / semantics issues some people brought up. Hello! We’ve been quietly working on building a type checker for Lua for quite some time now. It is now far enough along that we’d really like to hear what…
