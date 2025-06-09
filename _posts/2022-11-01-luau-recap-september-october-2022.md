@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: September & October 2022"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-september-october-2022/).]
-
 ## Semantic subtyping
 
 One of the most important goals for Luau is to avoid *false

@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: April 2022"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-april-2022/).]
-
 It's been a bit of a quiet month.  We mostly have small optimizations and bugfixes for you.
 
 It is now allowed to define functions on sealed tables that have string indexers.  These functions will be typechecked against the indexer type.  For example, the following is now valid:

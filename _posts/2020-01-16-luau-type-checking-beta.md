@@ -9,8 +9,6 @@ We’ve been quietly working on building a type checker for Lua for quite some t
 
 I am very happy to offer a beta test into the second half of the Luau effort.
 
-[Originally posted on the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-type-checking-beta/).]
-
 ## Beta Test
 
 First, a word of caution: In this test, we are changing the syntax of Lua. We are pretty sure that we’ve mostly gotten things right, but part of the reason we’re calling this a beta is that, if we learn that we’ve made a mistake, we’re going to go back and fix it even if it breaks compatibility.

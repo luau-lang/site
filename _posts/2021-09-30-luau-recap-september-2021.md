@@ -3,10 +3,6 @@ layout: single
 title:  "Luau Recap: September 2021"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org).
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-september-2021/).]
-
 ## Generic functions
 
 The big news this month is that generic functions are back!
@@ -32,7 +28,7 @@ type Swapper = { swap : <X, Y>(Point<X, Y>) -> Point<Y, X> }
 ```
 
 People may remember that back in
-[April](https://devforum.roblox.com/t/luau-recap-april-2021/) we
+[April](https://devforum.roblox.com/t/luau-recap-april-2021/1205599) we
 announced generic functions, but then had to disable them. That was
 because [DataBrain](https://devforum.roblox.com/u/databrain) discovered a [nasty
 interaction](https://devforum.roblox.com/t/recent-type-system-regressions-for-generic-parametered-functions/)

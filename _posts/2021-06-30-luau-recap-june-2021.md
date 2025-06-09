@@ -3,9 +3,7 @@ layout: single
 title:  "Luau Recap: June 2021"
 ---
 
-Luau is our new language that you can read more about at [https://roblox.github.io/luau](https://roblox.github.io/luau). Most of our team was busy working on improving Luau interaction with Roblox Studio for an upcoming feature this month, but we were able to add typechecking and performance improvements as well!
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-june-2021/).]
+Most of our team was busy working on improving Luau interaction with Roblox Studio for an upcoming feature this month, but we were able to add typechecking and performance improvements as well!
 
 ## Constraint Resolver
 

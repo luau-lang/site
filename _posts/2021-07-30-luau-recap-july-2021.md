@@ -3,9 +3,7 @@ layout: single
 title:  "Luau Recap: July 2021"
 ---
 
-Luau is our new language that you can read more about at [https://luau-lang.org](https://luau-lang.org). Our team was still busy working on upcoming Studio Beta feature for script editor, but we did fit in multiple typechecking improvements.
-
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-july-2021/).]
+Our team was still busy working on upcoming Studio Beta feature for script editor, but we did fit in multiple typechecking improvements.
 
 ## Typechecking improvements
 

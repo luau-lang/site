@@ -7,8 +7,6 @@ Our team is still spending a lot of time working on upcoming replacement for our
 
 However, we also worked on unrelated improvements during this time that are summarized here.
 
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-july-2023/).]
-
 ## Analysis improvements
 
 Indexing table intersections using `x["prop"]` syntax has been fixed and no longer reports a false positive error:

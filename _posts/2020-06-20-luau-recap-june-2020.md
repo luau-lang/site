@@ -9,11 +9,9 @@ anxiously glances at FIB3 thread that casts a huge shadow on this announcement, 
 
 Many people work on these improvements; thanks @Apakovtac, @EthicalRobot, @fun_enthusiast, @zeuxcg!
 
-[Originally posted on the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-june-2020/).]
-
 ## We have a website!
 
-Many developers told us on many occasions that as much as they love the recaps, it’s hard to know what the state of the language or libraries is if the only way to find out is to read through all updates. What’s the syntax extensions that Luau supports now? How do I use type checking? What’s the status of <my favorite feature> from Lua 5.x?
+Many developers told us on many occasions that as much as they love the recaps, it’s hard to know what the state of the language or libraries is if the only way to find out is to read through all updates. What’s the syntax extensions that Luau supports now? How do I use type checking? What’s the status of &lt;my favorite feature&gt; from Lua 5.x?
 
 Well, you can find all of this out here now: [https://roblox.github.io/luau/](https://roblox.github.io/luau/)
 

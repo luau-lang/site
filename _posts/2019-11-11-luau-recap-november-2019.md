@@ -5,8 +5,6 @@ title:  "Luau Recap: November 2019"
 
 A few months ago, we’ve released our new Lua implementation, Luau ([Faster Lua VM Released](https://devforum.roblox.com/t/faster-lua-vm-released/339587)) and made it the default for most platforms and configurations. Since then we’ve shipped many smaller changes that improved performance and expanded the usability of the VM. Many of them have been noted in release notes but some haven’t, so here’s a recap of everything that has happened in the Lua land since September!
 
-[Originally posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-november-2019/).]
-
 ## Debugger beta
 
 When we launched the new VM, we did it without the full debugger support. The reason for this is that the new VM is substantially different and the old implementation of the debugger (that relied on line hooks) just doesn’t work.

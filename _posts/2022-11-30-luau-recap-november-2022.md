@@ -5,8 +5,6 @@ title:  "Luau Recap: November 2022"
 
 While the team is busy to bring some bigger things in the future, we have made some small improvements this month.
 
-[Cross-posted to the [Roblox Developer Forum](https://devforum.roblox.com/t/luau-recap-november-2022/).]
-
 ## Analysis improvements
 
 We have improved tagged union type refinements to only include unhandled type cases in the `else` branch of the `if` statement:
