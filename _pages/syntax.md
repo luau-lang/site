@@ -207,7 +207,7 @@ for k, v in {1, 4, 9} do
 end
 ```
 
-Iteration can be extended for tables or userdata by implementing the `__iter` metamethod that is called before the iteration begins, and should return an iterator function like `next` (or a custom one):
+Further, iteration can be extended for tables or userdata by implementing the `__iter` metamethod which is called before the iteration begins, and should return an iterator function like `next` (or a custom one):
 
 ```lua
 local obj = { items = {1, 4, 9} }
