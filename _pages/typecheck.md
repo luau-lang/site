@@ -237,10 +237,14 @@ Luau supports a concise declaration for array-like tables, `{T}` (for example, `
 The type inference engine was built from the ground up to recognize generics. A generic is simply a type parameter in which another type could be slotted in. It's extremely useful because it allows the type inference engine to remember what the type actually is, unlike `any`.
 
 ```lua
-type Pair<T> = {first: T, second: T}
+type Pair<T> = {first: T, second: T }
+-- generics can also have defaults!
+type PairWithDefault<T = string> = Pair<T>
 
-local strings: Pair<string> = {first="Hello", second="World"}
-local numbers: Pair<number> = {first=1, second=2}
+local strings: Pair<string> = { first="Hello", second="World" }
+local numbers: Pair<number> = { first=1, second=2 }
+-- can just treat PairWithDefault as a type that doesnt have generics because it has all of its generics assigned a default!
+local more_strings: PairWithDefault = { first = "meow", second = "mrrp" }
 ```
 
 ## Generic functions
@@ -274,6 +278,12 @@ Generic types are used for built-in functions as well as user functions,
 for example the type of two-argument `table.insert` is:
 ```lua
 <T>({T}, T) -> ()
+```
+Note: Functions don't support having defaults assigned to generics, meaning the following is invalid
+```lua
+function meow<T = string>(mrrp: T)
+     print(mrrp .. " :3")
+end
 ```
 
 ## Union types
