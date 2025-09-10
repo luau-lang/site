@@ -154,7 +154,7 @@ Note that `f` can yield, which results in the entire coroutine yielding as well.
 function xpcall(f: function, e: function, args: ...any): (boolean, ...any)
 ```
 
-Calls function `f` with parameters `args`. If the function succeeds,  returns `true` followed by all return values of `f`. If the function raises an error, calls `e` with the error object as an argument, and returns `false` followed by all return values of `e`.
+Calls function `f` with parameters `args`. If the function succeeds,  returns `true` followed by all return values of `f`. If the function raises an error, calls `e` with the error object as an argument, and returns `false` followed by the first return value of `e`.
 Note that `f` can yield, which results in the entire coroutine yielding as well.
 `e` can neither yield nor error - if it does raise an error, `xpcall` returns with `false` followed by a special error message.
 
