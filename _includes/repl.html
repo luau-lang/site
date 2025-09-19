@@ -229,7 +229,11 @@
             return;
         }
 
-        window.history.pushState({}, document.title, "#" + shareStr);
+        var url = new URL(window.location);
+        url.hash = shareStr;
+        url.search = '';
+
+        window.history.pushState({}, null, url);
 
         if (navigator.clipboard) {
             try {
