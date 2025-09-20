@@ -90,7 +90,9 @@
 <script src="assets/js/luau_mode.js"></script>
 <!-- CodeMirror Luau Editor (MUST BE LOADED AFTER CODEMIRROR!) -->
 <script>
-    var MAX_QUERY_PARAM_LENGTH = 0x7FF;
+    // Supposedly the current URL size limit for chrome is 2MB, so we'll cap it at that.
+    // Practically at larger sizes the omnibar won't display it, but it should work just fine
+    var MAX_URL_FRAGMENT_LENGTH = 0x1FFFFF;
     function getValueFromQueryString(key) {
         return new URLSearchParams(window.location.search).get(key);
     }
@@ -98,7 +100,6 @@
         if (!TextEncoder || !CompressionStream || !Response || !Blob) return btoa(str);
         console.info('Using gzip compression');
         console.info('Original string length:', str.length);
-        console.info('base64encoded string length:', btoa(str).length);
         var encoder = new TextEncoder();
         var uint8Array = encoder.encode(str);
 
@@ -109,7 +110,7 @@
         var compressedArrayBuffer = await compressedStream;
         var compressedUint8Array = new Uint8Array(compressedArrayBuffer);
 
-        var compressedString = btoa(String.fromCharCode(...compressedUint8Array));
+        var compressedString = btoa(Array.from(compressedUint8Array, byte => String.fromCharCode(byte)).join(''));
         console.info('compressed string length:', compressedString.length);
         return compressedString
     }
@@ -134,7 +135,7 @@
         if (!str) return null;
         try {
             return await decompressString(decodeURIComponent(str));
-        } catch(e) {
+        } catch (e) {
             console.error('Error parsing share string:', e);
             return null
         }
@@ -223,12 +224,16 @@
             return;
         }
 
-        if (shareStr.length > MAX_QUERY_PARAM_LENGTH) {
+        if (shareStr.length > MAX_URL_FRAGMENT_LENGTH) {
             alert("Source code is too long to be shared.");
             return;
         }
 
-        window.history.pushState({}, document.title, "?share=" + shareStr);
+        var url = new URL(window.location);
+        url.hash = shareStr;
+        url.search = '';
+
+        window.history.pushState({}, null, url);
 
         if (navigator.clipboard) {
             try {
@@ -245,7 +250,10 @@
     }
 
     async function loadSharedString() {
-        var sharedCode = await decodeShareString(getValueFromQueryString("share"));
+        var sharedCode = await decodeShareString(
+            window.location.hash.substring(1) || // substring to remove the leading '#'
+            getValueFromQueryString("share") // for backwards compatibility
+        );
         if (!sharedCode) return;
         editor.setValue(sharedCode);
     }
