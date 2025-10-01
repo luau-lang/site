@@ -81,6 +81,12 @@ function rawget<K, V>(t: { [K]: V }, k: K): V?
 Performs a table lookup with index `k` and returns the resulting value, if present in the table, or nil. This operation bypasses metatables/`__index`.
 
 ```
+function rawlen<K, V>(t: { [K]: V } | string): number
+```
+
+Returns the raw length of the table or string. If it is a string, this operation is identical to `#str` or `string.len(str)`. This operation bypasses metatables/`__len`.
+
+```
 function rawset<K, V>(t: { [K] : V }, k: K, v: V)
 ```
 
