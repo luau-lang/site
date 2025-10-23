@@ -4,6 +4,7 @@
         <br>
         <textarea rows="10" cols="80" id="script"></textarea>
         <div class="button-group">
+            <button onclick="checkScript(); return false;">Typecheck</button>
             <button onclick="executeScript(); return false;">Run</button>
             <button onclick="shareScript(); return false;">Share</button>
             <input type="checkbox" checked="true" id="output-clear" />
@@ -157,6 +158,13 @@
         }
     }
 
+    function clearErrors() {
+        for (var i = 0; i < lastErrors.length; i++) {
+            editor.removeLineClass(lastErrors[i], "background", "line-error");
+        }
+        lastErrors = [];
+    }
+
     var textValue = "print(\"Hello World!\")\n";
     var editor = CodeMirror.fromTextArea(document.getElementById("script"), {
         theme: localStorage.getItem('theme'),
@@ -178,7 +186,7 @@
         }
     });
 
-    var lastError = undefined;
+    var lastErrors = [];
 
     function output(text) {
         var output_box = document.getElementById("output");
@@ -191,11 +199,29 @@
         'print': function (msg) { output(msg) }
     };
 
-    function executeScript() {
-        if (lastError) {
-            editor.removeLineClass(lastError, "background", "line-error");
-            lastError = undefined;
+    function checkScript() {
+        clearErrors();
+
+        maybeClearOutput()
+
+        var err = Module.ccall('checkScript', 'string', ['string'], [editor.getValue()]);
+        if (err) {
+            output('Errors:\n');
+            var errLines = err.split('\n');
+            for (var i = 0; i < errLines.length; i++) {
+                output(errLines[i]);
+                var err_line = parseInt(errLines[i]);
+                if (err_line) {
+                    lastErrors.push(editor.addLineClass(err_line - 1, "background", "line-error"));
+                }
+            }
+        } else {
+            output('No type errors found!');
         }
+    }
+
+    function executeScript() {
+        clearErrors();
 
         maybeClearOutput()
 
