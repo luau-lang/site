@@ -232,7 +232,7 @@
 
             var err_line = parseInt(err_text);
             if (err_line) {
-                lastError = editor.addLineClass(err_line - 1, "background", "line-error");
+                lastErrors.push(editor.addLineClass(err_line - 1, "background", "line-error"));
             }
         }
     }
