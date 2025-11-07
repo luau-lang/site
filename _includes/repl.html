@@ -9,6 +9,12 @@
             <button onclick="shareScript(); return false;">Share</button>
             <input type="checkbox" checked="true" id="output-clear" />
             <label for="output-clear">Clear Output</label>
+            <input type="checkbox" checked="true" id="new-solver" />
+            <label for="new-solver">Use New Solver</label>
+        </div>
+        <br>
+        <div class="message">
+            <em>Note: This demo defaults to using the New Solver in Strict Mode for typechecking.</em>
         </div>
     </div>
     <div>
@@ -150,6 +156,11 @@
         }
     }
 
+    function useNewSolver() {
+        var new_solver = document.getElementById("new-solver");
+        return new_solver.checked;
+    }
+
     function maybeClearOutput() {
         var output_clear = document.getElementById("output-clear");
         if (output_clear.checked) {
@@ -200,11 +211,11 @@
     };
 
     function checkScript() {
+        maybeClearOutput();
         clearErrors();
 
-        maybeClearOutput()
-
-        var err = Module.ccall('checkScript', 'string', ['string'], [editor.getValue()]);
+        output(useNewSolver() ? 'Using new solver for typechecking...' : 'Using old solver for typechecking...');
+        var err = Module.ccall('checkScript', 'string', ['string', 'number'], [editor.getValue(), useNewSolver() ? 1 : 0]);
         if (err) {
             output('Errors:\n');
             var errLines = err.split('\n');
@@ -221,9 +232,8 @@
     }
 
     function executeScript() {
+        maybeClearOutput();
         clearErrors();
-
-        maybeClearOutput()
 
         var err = Module.ccall('executeScript', 'string', ['string'], [editor.getValue()]);
         if (err) {
