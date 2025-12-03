@@ -1,8 +1,8 @@
----
+<!-- ---
 permalink: /typecheck
 title: Type checking
 toc: true
----
+--- -->
 
 Luau supports a gradual type system through the use of type annotations and type inference.
 
