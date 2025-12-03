@@ -37,7 +37,7 @@ pages:
       - title: Type Refinements
         url: /typecheck/type-refinements
       - title: Object Oriented Programs
-        url: /typecheck/object-oriented
+        url: /typecheck/object-oriented-programs
       - title: Type Functions
         url: /typecheck/type-functions
       - title: Roblox Types

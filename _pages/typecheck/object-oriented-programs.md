@@ -1,5 +1,5 @@
 ---
-permalink: /typecheck/object-oriented
+permalink: /typecheck/object-oriented-programs
 title: Object Oriented
 toc: true
 ---
