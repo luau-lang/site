@@ -25,9 +25,30 @@ pages:
     url: /compatibility
   - title: Typechecking
     url: /typecheck
+    children:
+      - title: Basic Types
+        url: /typecheck/basic-types
+      - title: Tables
+        url: /typecheck/tables
+      - title: Unions and Intersections
+        url: /typecheck/unions-and-intersections
+      - title: Generics
+        url: /typecheck/generics
+      - title: Type Refinements
+        url: /typecheck/type-refinements
+      - title: Object-Oriented Programming
+        url: /typecheck/object-oriented-programs
+      - title: Type Functions
+        url: /typecheck/type-functions
+      - title: Roblox Types
+        url: /typecheck/roblox-types
+      - title: Considerations
+        url: /typecheck/considerations
   - title: Profiling
     url: /profile
   - title: Library
     url: /library
+  - title: Type Function API Reference
+    url: /types-library
   - title: Grammar
     url: /grammar
