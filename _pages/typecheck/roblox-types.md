@@ -1,5 +1,5 @@
 ---
-permalink: /typecheck/roblox
+permalink: /typecheck/roblox-types
 title: Roblox Types
 toc: true
 ---

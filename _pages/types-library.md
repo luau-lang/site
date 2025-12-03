@@ -1,12 +1,10 @@
 ---
-permalink: /reference
-title: types reference
+permalink: /types-library
+title: types library
 toc: true
 ---
 
-## types library
-
-The `types` library is used to create and transform types, and can only be used within [type functions](#type-functions).
+The `types` library is used to create and transform types, and can only be used within [type functions](typecheck/type-functions).
 
 ### `types` library properties
 
@@ -14,19 +12,19 @@ The `types` library is used to create and transform types, and can only be used 
 types.any
 ```
 
-The [any](typecheck#any-type) `type`.
+The [any](typecheck/basic-types#any-type) `type`.
 
 ```luau
 types.unknown
 ```
 
-The [unknown](typecheck#unknown-type) `type`.
+The [unknown](typecheck/basic-types#unknown-type) `type`.
 
 ```luau
 types.never
 ```
 
-The [never](typecheck#never-type) `type`.
+The [never](typecheck/basic-types#never-type) `type`.
 
 ```luau
 types.boolean
@@ -64,7 +62,7 @@ The thread `type`.
 types.singleton(arg: string | boolean | nil): type
 ```
 
-Returns the [singleton](typecheck#singleton-types-aka-literal-types) type of the argument.
+Returns the [singleton](typecheck/basic-types#singleton-types-aka-literal-types) type of the argument.
 
 ```luau
 types.negationof(arg: type): type
@@ -78,20 +76,20 @@ types.optional(arg: type): type
 
 Returns a version of the given type that is now optional.
 
-- If the given type is a [union type]((typecheck#union-types)), `nil` will be added unconditionally as a component.
+- If the given type is a [union type](typecheck/unions-and-intersections#union-types), `nil` will be added unconditionally as a component.
 - Otherwise, the result will be a union of the given type and the `nil` type.
 
 ```luau
 types.unionof(first: type, second: type, ...: type): type
 ```
 
-Returns an immutable [union](typecheck#union-types) of two or more arguments.
+Returns an immutable [union](typecheck/unions-and-intersections#union-types) of two or more arguments.
 
 ```luau
 types.intersectionof(first: type, second: type, ...: type): type
 ```
 
-Returns an immutable [intersection](typecheck#intersection-types) of two or more arguments.
+Returns an immutable [intersection](typecheck/unions-and-intersections#intersection-types) of two or more arguments.
 
 ```luau
 types.newtable(props: { [type]: type | { read: type?, write: type? } }?, indexer: { index: type, readresult: type, writeresult: type? }?, metatable: type?): type
@@ -115,7 +113,7 @@ Returns a deep copy of the argument type.
 types.generic(name: string?, ispack: boolean?): type
 ```
 
-Creates a [generic](typecheck#generic-functions) named `name`. If `ispack` is `true`, the result is a [generic pack](typecheck#type-packs).
+Creates a [generic](typecheck/generics#generic-functions) named `name`. If `ispack` is `true`, the result is a [generic pack](typecheck/basic-types#type-packs).
 
 ### `type` instance
 
@@ -153,13 +151,13 @@ Returns the singleton's actual value, like `true` for `types.singleton(true)`.
 generictype:name(): string?
 ```
 
-Returns the name of the [generic](typecheck#generic-functions) or `nil` if it has no name.
+Returns the name of the [generic](typecheck/generics#generic-functions) or `nil` if it has no name.
 
 ```luau
 generictype:ispack(): boolean
 ```
 
-Returns `true` if the [generic](typecheck#generic-functions) is a [pack](typecheck#type-packs), or `false` otherwise.
+Returns `true` if the [generic](typecheck/generics#generic-functions) is a [pack](typecheck/basic-types#type-packs), or `false` otherwise.
 
 ### Table `type` instance
 
@@ -292,13 +290,13 @@ Returns the function's return types, with the ordered parameters in `head` and t
 functiontype:generics(): {type}
 ```
 
-Returns an array of the function's [generic](typecheck#generic-functions) `type`s.
+Returns an array of the function's [generic](typecheck/generics#generic-functions) `type`s.
 
 ```luau
 functiontype:setgenerics(generics: {type}?)
 ```
 
-Sets the function's [generic](typecheck#generic-functions) `type`s.
+Sets the function's [generic](typecheck/generics#generic-functions) `type`s.
 
 ### Negation `type` instance
 
@@ -314,7 +312,7 @@ Returns the `type` being negated.
 uniontype:components(): {type}
 ```
 
-Returns an array of the [unioned](typecheck#union-types) types.
+Returns an array of the [unioned](typecheck/unions-and-intersections#union-types) types.
 
 ### Intersection `type` instance
 
@@ -322,7 +320,7 @@ Returns an array of the [unioned](typecheck#union-types) types.
 intersectiontype:components()
 ```
 
-Returns an array of the [intersected](typecheck#intersection-types) types.
+Returns an array of the [intersected](typecheck/unions-and-intersections#intersection-types) types.
 
 ### Class `type` instance
 

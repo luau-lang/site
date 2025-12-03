@@ -1,5 +1,5 @@
 ---
-permalink: /typecheck/refinements
+permalink: /typecheck/type-refinements
 title: Type Refinements
 toc: true
 ---

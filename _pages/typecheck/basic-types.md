@@ -6,7 +6,7 @@ toc: true
 
 ## Builtin types
 
-The Luau VM supports 10 primitive types: `nil`, `string`, `number`, `boolean`, `table`, `function`, `thread`, `userdata`, `vector`, and `buffer`. Of these, `table` and `function` are not represented by name, but have their dedicated syntax as covered in this [syntax document](syntax), `userdata` is represented by [concrete types](#roblox-types), while `vector` is not representable by name at all; other types can be specified by their name.
+The Luau VM supports 10 primitive types: `nil`, `string`, `number`, `boolean`, `table`, `function`, `thread`, `userdata`, `vector`, and `buffer`. Of these, `table` and `function` are not represented by name, but have their dedicated syntax as covered in this [syntax document](../syntax), `userdata` is represented by [concrete types](roblox-types), while `vector` is not representable by name at all; other types can be specified by their name.
 
 The type checker also provides the builtin types [`unknown`](#unknown-type), [`never`](#never-type), and [`any`](#any-type).
 
@@ -49,7 +49,7 @@ local b: number = unknown() -- not ok
 local c: string | number = unknown() -- not ok
 ```
 
-In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](#type-refinements) on that variable.
+In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](type-refinements) on that variable.
 
 ```lua
 local x = unknown()
@@ -90,7 +90,7 @@ local b: string = f("foo") -- ok
 local c: string = f(true)  -- not ok
 ```
 
-In strict mode, the inferred type of this function `f` is `<A>(A) -> A` (take a look at [generics](#generics)), whereas in nonstrict we infer `(any) -> any`. We know this is true because `f` can take anything and then return that. If we used `x` with another concrete type, then we would end up inferring that.
+In strict mode, the inferred type of this function `f` is `<A>(A) -> A` (take a look at [generics](generics)), whereas in nonstrict we infer `(any) -> any`. We know this is true because `f` can take anything and then return that. If we used `x` with another concrete type, then we would end up inferring that.
 
 Similarly, we can infer the types of the parameters with ease. By passing a parameter into *anything* that also has a type, we are saying "this and that has the same type."
 
@@ -202,4 +202,4 @@ local t: true = true -- ok
 local f: false = false -- ok
 ```
 
-This happens all the time, especially through [type refinements](#type-refinements) and is also incredibly useful when you want to enforce program invariants in the type system! See [tagged unions](#tagged-unions) for more information.
+This happens all the time, especially through [type refinements](type-refinements) and is also incredibly useful when you want to enforce program invariants in the type system! See [tagged unions](unions-and-intersections#tagged-unions) for more information.
