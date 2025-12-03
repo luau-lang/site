@@ -1,6 +1,6 @@
 ---
 permalink: /typecheck/object-oriented-programs
-title: Object Oriented
+title: Object-Oriented Programming
 toc: true
 ---
 

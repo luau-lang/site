@@ -1,6 +1,6 @@
 ---
 permalink: /types-library
-title: types library
+title: Type Function API Reference
 toc: true
 ---
 

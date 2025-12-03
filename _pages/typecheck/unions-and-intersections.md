@@ -1,6 +1,6 @@
 ---
 permalink: /typecheck/unions-and-intersections
-title: Union and Intersection Types
+title: Unions and Intersections
 toc: true
 ---
 

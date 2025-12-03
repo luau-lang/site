@@ -28,15 +28,15 @@ pages:
     children:
       - title: Basic Types
         url: /typecheck/basic-types
-      - title: Table Types
+      - title: Tables
         url: /typecheck/tables
-      - title: Union and Intersection Types
+      - title: Unions and Intersections
         url: /typecheck/unions-and-intersections
       - title: Generics
         url: /typecheck/generics
       - title: Type Refinements
         url: /typecheck/type-refinements
-      - title: Object Oriented Programs
+      - title: Object-Oriented Programming
         url: /typecheck/object-oriented-programs
       - title: Type Functions
         url: /typecheck/type-functions
@@ -48,7 +48,7 @@ pages:
     url: /profile
   - title: Library
     url: /library
-  - title: Types Library
+  - title: Type Function API Reference
     url: /types-library
   - title: Grammar
     url: /grammar

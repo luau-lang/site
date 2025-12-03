@@ -1,6 +1,6 @@
 ---
 permalink: /typecheck/tables
-title: Table Types
+title: Tables
 toc: true
 ---
 
