@@ -52,7 +52,7 @@ end
 
 ## LocalShadow (4)
 
-In Luau, it is valid to shadow locals and globals with a local variable, including doing it in the same function. This can result in subtle bugs, since the shadowing may not be obvious to the reader. This warning detects cases where local variables shadow other local variables in the same function, or global variables used in the script; for more cases of detected shadowing see `LocalShadowPedantic`.
+In Luau, it is valid to shadow locals and globals with a local variable, including doing it in the same function. This can result in subtle bugs, since the shadowing may not be obvious to the reader. This warning detects cases where local variables shadow other local variables in the same function, or global variables used in the script.
 
 ```lua
 local function foo()
