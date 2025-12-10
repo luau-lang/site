@@ -4,9 +4,9 @@ title: Getting Started
 toc: true
 ---
 
-Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts. Luau is integrated with RobloxStudio and is automatically enabled with the `--!strict` flag at the top of any scripts. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).
+Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts, and is also integrated with Roblox Studio. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).
 
-To get started with Luau you need to use `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
+To get started with Luau, you can use the `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
 
 ## Creating a script
 
@@ -30,9 +30,9 @@ print(isfoo(1))
 
 You can now run the file using `luau test.luau` and analyze it using `luau-analyze test.luau`.
 
-Note that there are no warnings about calling ``ispositive()`` with a string, or calling ``isfoo()`` a number. This is because the type checking uses non-strict mode by default, which is lenient in how it infers types used by the program.
+Note that there are no warnings about calling ``ispositive()`` with a string, or calling ``isfoo()`` with a number. This is because Luau's type checking uses non-strict mode by default, which only reports errors if it's certain a program will error at runtime.
 
-## Type inference
+## Type checking
 
 Now modify the script to include ``--!strict`` at the top:
 
@@ -47,9 +47,9 @@ print(ispositive(1))
 print(ispositive("2"))
 ```
 
-In ``strict`` mode, Luau will infer types based on analysis of the code flow. There is also ``nonstrict`` mode, where analysis is more conservative and types are more frequently inferred as ``any`` to reduce cases where legitimate code is flagged with warnings.
+We just mentioned ``nonstrict`` mode, where we only report errors if we can prove that a program will error at runtime. We also have ``strict`` mode, which will report errors if a program might error at runtime.
 
-In this case, Luau will use the ``return x > 0`` statement to infer that ``ispositive()`` is a function taking a number and returning a boolean. Note that in this case, it was not necessary to add any explicit type annotations.
+In this case, Luau will use the ``return x > 0`` statement to infer that ``ispositive()`` is a function taking a number and returning a boolean. Note that in this case, we were able to determine the type of `ispositive` without the presence of any explicit type annotations.
 
 Based on Luau's type inference, the analysis tool will now flag the incorrect call to ``ispositive()``:
 
