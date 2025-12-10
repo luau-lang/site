@@ -4,9 +4,9 @@ title: Getting Started
 toc: true
 ---
 
-Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts, and is integrated with RobloxStudio. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).
+Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts, and is also integrated with Roblox Studio. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).
 
-To get started with Luau you can use the `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
+To get started with Luau, you can use the `luau` command line binary to run your code and `luau-analyze` to run static analysis (including type checking and linting). You can download these from [a recent release](https://github.com/luau-lang/luau/releases).
 
 ## Creating a script
 
@@ -47,7 +47,7 @@ print(ispositive(1))
 print(ispositive("2"))
 ```
 
-We just introduced ``nonstrict`` mode, where we only report errors if we can prove that a program will error at runtime. We also have ``strict`` mode, which will report errors if a program might error at runtime.
+We just mentioned ``nonstrict`` mode, where we only report errors if we can prove that a program will error at runtime. We also have ``strict`` mode, which will report errors if a program might error at runtime.
 
 In this case, Luau will use the ``return x > 0`` statement to infer that ``ispositive()`` is a function taking a number and returning a boolean. Note that in this case, we were able to determine the type of `ispositive` without the presence of any explicit type annotations.
 
