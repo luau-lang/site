@@ -1,6 +1,6 @@
 ---
-permalink: /compatibility
-title: Compatibility
+slug: compatibility
+title: Compatibility with Lua
 toc: true
 ---
 

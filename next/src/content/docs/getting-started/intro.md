@@ -1,7 +1,8 @@
 ---
-permalink: /getting-started
-title: Getting Started
-toc: true
+slug: getting-started
+title: An introduction to Luau
+sidebar:
+  order: 1
 ---
 
 Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua 5.1. Luau ships as a command line tool for running, analyzing, and linting your Luau scripts, and is also integrated with Roblox Studio. Roblox developers should also visit our [Creator Docs Luau Section](https://create.roblox.com/docs/luau).

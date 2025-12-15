@@ -1,6 +1,6 @@
 ---
 slug: types
-title: Typechecking Overview
+title: An introduction to Luau types
 sidebar:
   order: 1
 ---

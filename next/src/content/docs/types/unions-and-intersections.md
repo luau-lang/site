@@ -1,6 +1,6 @@
 ---
 slug: types/unions-and-intersections
-title: Unions and Intersections
+title: Union and Intersection Types
 sidebar:
   order: 4
 ---

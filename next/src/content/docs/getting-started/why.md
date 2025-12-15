@@ -1,6 +1,8 @@
 ---
-permalink: /why
+slug: why
 title: Why Luau?
+sidebar:
+  order: 2
 ---
 
 Around 2006, [Roblox](https://www.roblox.com) started using Lua 5.1 as a scripting language for games. Over the years the runtime had to be tweaked to provide a safe, secure sandboxed environment; we gradually started accumulating small library changes and tweaks.

@@ -1,6 +1,6 @@
 ---
 slug: types/generics
-title: Generics
+title: Generics and Polymorphism
 sidebar:
   order: 5
 ---

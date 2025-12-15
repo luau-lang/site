@@ -1,7 +1,8 @@
 ---
-permalink: /performance
-title: Performance
-toc: true
+slug: performance
+title: How we make Luau fast
+sidebar:
+  order: 1
 ---
 
 One of main goals of Luau is to enable high performance code, with gameplay code being the main use case. This can be viewed as two separate goals:

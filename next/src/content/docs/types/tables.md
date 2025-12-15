@@ -1,6 +1,6 @@
 ---
 slug: types/tables
-title: Tables
+title: Table Types
 sidebar:
   order: 3
 ---

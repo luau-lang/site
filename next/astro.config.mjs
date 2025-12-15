@@ -4,9 +4,7 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-  redirects: {
-    "/getting-started": "/getting-started/intro",
-  },
+  redirects: {},
 
   integrations: [
     starlight({
@@ -22,6 +20,10 @@ export default defineConfig({
         {
           label: "Getting Started",
           autogenerate: { directory: "getting-started" },
+        },
+        {
+          label: "Advanced Users",
+          autogenerate: { directory: "guides" },
         },
         {
           label: "Type System",

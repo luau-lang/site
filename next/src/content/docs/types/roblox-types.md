@@ -1,6 +1,6 @@
 ---
 slug: types/roblox-types
-title: Roblox Types
+title: Foreign Types from the Embedder
 sidebar:
   order: 9
 ---

@@ -1,7 +1,8 @@
 ---
 permalink: /profile
-title: Profiling
-toc: true
+title: Profiling your Luau code
+sidebar:
+  order: 3
 ---
 
 One of main goals of Luau is to enable high performance code. To help with that goal, we are relentlessly optimizing the compiler and runtime - but ultimately, performance of their

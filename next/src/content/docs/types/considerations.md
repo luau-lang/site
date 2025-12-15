@@ -1,6 +1,6 @@
 ---
 slug: types/considerations
-title: Considerations
+title: Additional Considerations
 sidebar:
   order: 10
 ---
