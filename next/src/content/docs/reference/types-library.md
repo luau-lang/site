@@ -1,7 +1,8 @@
 ---
-permalink: /types-library
-title: Type Function API Reference
-toc: true
+slug: types-library
+title: Type Function Library
+sidebar:
+  order: 2
 ---
 
 The `types` library is used to create and transform types, and can only be used within [type functions](typecheck/type-functions).

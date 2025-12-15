@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/generics
+slug: types/generics
 title: Generics
-toc: true
+sidebar:
+  order: 5
 ---
 
 The type inference engine was built from the ground up to recognize generics. A generic is simply a type parameter in which another type could be slotted in. It's extremely useful because it allows the type inference engine to remember what the type actually is, unlike `any`.

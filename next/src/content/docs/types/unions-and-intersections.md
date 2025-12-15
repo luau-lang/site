@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/unions-and-intersections
+slug: types/unions-and-intersections
 title: Unions and Intersections
-toc: true
+sidebar:
+  order: 4
 ---
 
 ## Union types

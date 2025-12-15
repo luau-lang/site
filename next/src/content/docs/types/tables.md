@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/tables
+slug: types/tables
 title: Tables
-toc: true
+sidebar:
+  order: 3
 ---
 
 From the type checker perspective, each table can be in one of three states. They are: `unsealed table`, `sealed table`, and `generic table`. This is intended to represent how the table's type is allowed to change.

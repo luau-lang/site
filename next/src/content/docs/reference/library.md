@@ -1,7 +1,9 @@
 ---
-permalink: /library
-title: Library
-toc: true
+slug: library
+title: Standard Library
+description: The official reference for Luau's standard library.
+sidebar:
+  order: 1
 ---
 
 Luau comes equipped with a standard library of functions designed to manipulate the built-in data types. Note that the library is relatively minimal and doesn't expose ways for
@@ -1093,4 +1095,3 @@ vector.min(...: vector): vector
 ```
 
 Applies `math.min` to the corresponding components of the input vectors. Includes the fourth component in _4-wide mode_. Equivalent to `vector.create(math.min((...).x), math.min((...).y), math.min((...).z), math.min((...).w))`.
-

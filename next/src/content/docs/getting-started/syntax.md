@@ -1,7 +1,6 @@
 ---
-permalink: /syntax
-title: Syntax
-toc: true
+title: Luau Syntax
+description: An informal reference for Luau's syntax by example.
 ---
 
 Luau uses the baseline [syntax of Lua 5.1](https://www.lua.org/manual/5.1/manual.html#2). For detailed documentation, please refer to the Lua manual, this is an example:

@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/object-oriented-programs
+slug: types/object-oriented-programs
 title: Object-Oriented Programming
-toc: true
+sidebar:
+  order: 7
 ---
 
 ## Adding types for faux object oriented programs

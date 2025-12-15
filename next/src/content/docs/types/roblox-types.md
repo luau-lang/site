@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/roblox-types
+slug: types/roblox-types
 title: Roblox Types
-toc: true
+sidebar:
+  order: 9
 ---
 
 Roblox supports a rich set of classes and data types, [documented here](https://developer.roblox.com/en-us/api-reference). All of them are readily available for the type checker to use by their name (e.g. `Part` or `RaycastResult`).

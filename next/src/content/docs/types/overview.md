@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck
+slug: types
 title: Typechecking Overview
-toc: true
+sidebar:
+  order: 1
 ---
 
 Luau supports a gradual type system through the use of type annotations and type inference.

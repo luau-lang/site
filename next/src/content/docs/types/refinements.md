@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/type-refinements
+slug: types/type-refinements
 title: Type Refinements
-toc: true
+sidebar:
+  order: 6
 ---
 
 When we check the type of any lvalue (a global, a local, or a property), what we're doing is we're refining the type, hence "type refinement." The support for this is arbitrarily complex, so go at it!

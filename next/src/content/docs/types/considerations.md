@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/considerations
+slug: types/considerations
 title: Considerations
-toc: true
+sidebar:
+  order: 10
 ---
 
 ## Module interactions

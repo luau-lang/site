@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/type-functions
+slug: types/type-functions
 title: Type Functions
-toc: true
+sidebar:
+  order: 8
 ---
 
 Type functions are functions that run during analysis time and operate on types, instead of runtime values. They can use the [types](../types-library) library to transform existing types or create new ones.

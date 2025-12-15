@@ -1,7 +1,8 @@
 ---
-permalink: /typecheck/basic-types
+slug: types/basic-types
 title: Basic Types
-toc: true
+sidebar:
+  order: 2
 ---
 
 ## Builtin types
