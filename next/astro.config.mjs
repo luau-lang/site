@@ -9,8 +9,10 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Luau",
+      favicon: "./src/assets/images/luau-logo.svg",
       logo: {
         src: "./src/assets/images/luau-logo.svg",
+        alt: "The official logo of the Luau programming language, a white square embedded in a blue square on a 15 degree tilt with the word Luau printed on it."
       },
       components: {
         // Override the default `Header` component.
