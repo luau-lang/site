@@ -1,11 +1,12 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: Luau
+description: Luau is a fast, small, safe, gradually typed embeddable scripting language derived from Lua.
 template: splash # Remove or comment out this line to display the site sidebar on this page.
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: >
+    Luau (lowercase <em>u</em>, /ˈlu.aʊ/) is a fast, small, safe, gradually typed embeddable scripting language derived from Lua.
   image:
-    file: ../../assets/images/luau.png
+    file: ../../assets/images/mascot.png
   actions:
     - text: Getting Started 
       link: /getting-started/
@@ -18,23 +19,23 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
-
-<CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+<CardGrid>
+	<Card title="Performance" icon="rocket">
+	_Luau prioritizes consistently fast performance across platforms._ Roblox runs on a wide variety of devices: years-old Android and iOS cellphones, game consoles, laptop and desktop computers, and rackmount Linux servers. Native code generation is possible for some of these platforms, but not all. Luau has to be fast regardless. As such, we will always prioritize performance opportunities that apply across all platforms over those that specifically accelerate individual platforms.
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Safety" icon="approve-check-circle">
+	_Luau is type and memory safe_. Memory unsafety has consistently been one of the largest problems in the computing industry, with the vast majority of security vulnerabilities caused by memory unsafety. In the context of Roblox, security is especially important since we run incredible amounts of user-generated code on our own hardware, and on the hardware of all of our users. We've also built a best-in-class gradual type system to enable Luau developers to encode type invariants in their program, and statically rule out entire classes of program errors.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Accessibility" icon="pen">
+	_Luau should be accessible to programmers regardless of their experience level._ As the language used for developing experiences on Roblox, Luau clearly needs to be accessible to children who have never programmed before and want to learn to make games. However, Roblox also hosts a large, and ever-growing number of studios staffed by professional engineers writing games as their full-time job. External game studios like Remedy Entertainment and Digital Extremes are even leveraging Luau within their own in-house game engines. We need our language and tooling to scale across this wide range of backgrounds and experiences.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Delightfulness" icon="sun">
+	 _Luau is more than just the language and it’s more than the type system — it’s a toolbox._ Regardless of a user’s knowledge about types or their commitment to using them, Luau should offer accurate autocomplete, documentation hover, go-to-definition, refactoring, and so forth available to them directly within their editor. The experience of programming in Luau should be delightful!
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Emdeddability" icon="puzzle">
+	_Luau is a small programming language._ Luau, like Lua before it, is intentionally a small language. Its standard library is consciously minimalistic. An experienced developer can learn all of Luau’s built in libraries and runtime constructs in just a couple of hours. The overall size of the implementation is #### kilobytes, which makes it practical to embed in any application that needs programmability, even if the environment is fairly memory-constrained!
+	</Card>
+	<Card title="Compatibility" icon="setting">
+	Whenever possible, Luau aims to be backwards-compatible with Lua 5.1 and at the same time to incorporate features from later revisions of Lua. However, Luau is not a full superset of later versions of Lua - we do not always agree with Lua design decisions, and have different use cases and constraints. All post-5.1 Lua features, along with their support status in Luau, [are documented here](compatibility).
 	</Card>
 </CardGrid>

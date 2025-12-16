@@ -9,6 +9,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Luau",
+      logo: {
+        src: "./src/assets/images/luau-logo.svg",
+      },
       components: {
         // Override the default `Header` component.
         Header: "./src/components/Header.astro",
