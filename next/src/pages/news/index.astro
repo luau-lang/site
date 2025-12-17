@@ -1,15 +1,9 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro';
-template: 'splash'
-hasSidebar: false
 ---
 
-<StarlightPage frontmatter={{ title: 'My custom page', template: 'splash' }} hasSidebar=false>
-  <p>This is a custom page with a custom component:</p>
-
-  <AnchorHeading level="2" id="learn-more">Learn more</AnchorHeading>
-  <p>
-    <a href="https://starlight.astro.build/">Read more in the Starlight docs</a>
-  </p>
+<StarlightPage
+  frontmatter={{ title: 'Blog Index', template: 'splash' }}
+>
+  Example content.
 </StarlightPage>
