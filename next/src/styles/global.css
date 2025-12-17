@@ -10,6 +10,14 @@
   --font-mono: 'Builder Mono';
   --font-mono-fallback: 'Courier Builder Fallback';
 
+  --color-red: #DF281F;
+  --color-blue: #335FFF;
+  --color-yellow: #F2BA2A;
+  --color-green: #39C582;
+  --color-purple: #8A4CE8;
+  --color-orange: #E57D43;
+  --color-pink: #D45389;
+
   --color-accent-50: #335EFD;
   --color-accent-100: #2F57EA;
   --color-accent-200: #2B50D8;

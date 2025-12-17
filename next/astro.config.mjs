@@ -29,7 +29,6 @@ export default defineConfig({
         './src/fonts/font-face.css'
       ],
       components: {
-        // Override the default `Header` component.
         Header: "./src/components/Header.astro",
       },
       social: [
