@@ -1,4 +1,7 @@
 // @ts-check
+
+import path from "node:path";
+
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
@@ -14,6 +17,15 @@ export default defineConfig({
   },
 
   integrations: [
+    {
+      name: "luau-playground",
+      hooks: {
+        'astro:config:setup': function({ addWatchFile }) {
+          const remarkPlugin = path.resolve("src", "plugins", "remark-luau-playground.ts");
+          addWatchFile(remarkPlugin);
+        }
+      }
+    },
     starlight({
       title: "Luau",
       favicon: "/favicon.svg",
