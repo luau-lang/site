@@ -14,6 +14,7 @@ To get started with Luau, you can use the `luau` command line binary to run your
 To create your own testing script, create a new file with `.luau` as the extension:
 
 ```lua
+--!hidden mode=nonstrict
 function ispositive(x)
     return x > 0
 end
