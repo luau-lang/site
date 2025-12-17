@@ -13,7 +13,7 @@ export default defineConfig({
     starlight({
 	//   plugins: [starlightBlog()],
       title: "Luau",
-      favicon: "./src/assets/images/luau-logo.svg",
+      favicon: "/favicon.svg",
       logo: {
         src: "./src/assets/images/luau-logo.svg",
         alt: "The official logo of the Luau programming language, a white square embedded in a blue square on a 15 degree tilt with the word Luau printed on it."
@@ -32,6 +32,11 @@ export default defineConfig({
           icon: "github",
           label: "GitHub",
           href: "https://github.com/luau-lang/luau",
+        },
+        {
+          icon: "rss",
+          label: "RSS Feed",
+          href: "./feed.xml",
         },
       ],
       sidebar: [
