@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import starlightBlog from 'starlight-blog';
 
 import tailwindcss from "@tailwindcss/vite";
 import remarkLuauPlayground from "./src/plugins/remark-luau-playground";
@@ -16,7 +15,6 @@ export default defineConfig({
 
   integrations: [
     starlight({
-	//   plugins: [starlightBlog()],
       title: "Luau",
       favicon: "/favicon.svg",
       logo: {

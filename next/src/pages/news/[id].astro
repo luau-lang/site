@@ -1,0 +1,53 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection, render } from 'astro:content';
+import '../../styles/news-post.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('news');
+  const sorted = posts.sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+  
+  return sorted.map((post, index) => ({
+    params: { id: post.id },
+    props: { 
+      post,
+      prev: sorted[index + 1] || null,
+      next: sorted[index - 1] || null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+---
+
+<StarlightPage
+  frontmatter={{ 
+    title: post.data.title,
+    description: post.data.description,
+    template: 'splash',
+    prev: false,
+    next: false,
+  }}
+  hasSidebar={false}
+>
+  <p class="post-date">{new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+  <Content />
+  
+  <nav class="post-nav">
+    {prev && (
+      <a href={`/news/${prev.id}`} class="nav-link nav-prev">
+        <span class="nav-label">← Previous</span>
+        <span class="nav-title">{prev.data.title}</span>
+      </a>
+    )}
+    {next && (
+      <a href={`/news/${next.id}`} class="nav-link nav-next">
+        <span class="nav-label">Next →</span>
+        <span class="nav-title">{next.data.title}</span>
+      </a>
+    )}
+  </nav>
+  
+  <p class="back-link"><a href="/news">← Back to News</a></p>
+</StarlightPage>
