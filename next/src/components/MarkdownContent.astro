@@ -1,0 +1,21 @@
+---
+import Default from '@astrojs/starlight/components/MarkdownContent.astro'
+import '@astrojs/starlight/style/markdown.css';
+
+const isBlogPage = Astro.locals.starlightRoute.id.startsWith("news")
+---
+
+{
+  isBlogPage ? (
+  <div class="sl-markdown-content max-width-markdown-content"><slot /></div>
+  ) : (
+    <Default><slot/></Default>
+  )
+}
+
+<style>
+    .max-width-markdown-content {
+        margin: auto;
+        max-width: 100vh;
+    }
+</style>

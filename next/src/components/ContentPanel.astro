@@ -1,0 +1,47 @@
+---
+import Default from '@astrojs/starlight/components/ContentPanel.astro'
+
+const isBlogPage = Astro.locals.starlightRoute.id.startsWith("news")
+---
+
+{
+  isBlogPage ? (
+    <div class="content-panel">
+        <div class="sl-container"><slot /></div>
+    </div>
+  ) : (
+    <Default><slot/></Default>
+  )
+}
+
+<style>
+	@layer starlight.core {
+		.content-panel {
+			padding: 1.5rem var(--sl-content-pad-x);
+		}
+		.content-panel + .content-panel {
+			border-top: 1px solid var(--sl-color-hairline);
+		}
+		.sl-container {
+			max-width: var(--sl-content-width);
+		}
+
+		@media (min-width: 50rem)
+		{
+    		.sl-container {
+          		max-width: 56vw;
+          		margin: auto;
+    		}
+		}
+
+		.sl-container > :global(* + *) {
+			margin-top: 1.5rem;
+		}
+
+		@media (min-width: 72rem) {
+			.sl-container {
+				margin-inline: var(--sl-content-margin-inline, auto);
+			}
+		}
+	}
+</style>
