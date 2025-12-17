@@ -1,6 +1,6 @@
 ---
 slug: types/basic-types
-title: Basic Types
+title: Primitives and Simple Types
 sidebar:
   order: 2
 ---

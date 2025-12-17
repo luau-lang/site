@@ -3,6 +3,8 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import starlightBlog from 'starlight-blog';
 
+import tailwindcss from "@tailwindcss/vite";
+
 // https://astro.build/config
 export default defineConfig({
   redirects: {},
@@ -11,9 +13,16 @@ export default defineConfig({
     starlight({
 	//   plugins: [starlightBlog()],
       title: "Luau",
+      favicon: "./src/assets/images/luau-logo.svg",
       logo: {
         src: "./src/assets/images/luau-logo.svg",
+        alt: "The official logo of the Luau programming language, a white square embedded in a blue square on a 15 degree tilt with the word Luau printed on it."
       },
+      customCss: [
+        // Path to your Tailwind base styles:
+        './src/styles/global.css',
+        './src/fonts/font-face.css'
+      ],
       components: {
         // Override the default `Header` component.
         Header: "./src/components/Header.astro",
@@ -45,4 +54,8 @@ export default defineConfig({
       ],
     }),
   ],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
