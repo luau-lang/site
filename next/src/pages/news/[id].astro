@@ -1,6 +1,8 @@
 ---
+import { LinkCard } from '@astrojs/starlight/components';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { getCollection, render } from 'astro:content';
+import BetterLinkCard from '../../components/BetterLinkCard.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('news');
@@ -28,27 +30,19 @@ const { Content } = await render(post);
     prev: false,
     next: false,
   }}
-  hasSidebar={false}
 >
   <p class="post-date">{new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
   <Content />
 
   <nav class="post-nav">
     {prev && (
-      <a href={`/news/${prev.id}`} class="nav-link nav-prev">
-        <span class="nav-label">← Previous</span>
-        <span class="nav-title">{prev.data.title}</span>
-      </a>
+      <BetterLinkCard title={prev.data.title} href={`/news/${prev.id}`} class:list={["nav-link"]} direction="left" />
     )}
+    <BetterLinkCard title="Back to News" href="/news" class:list={["nav-link"]} direction="up" />
     {next && (
-      <a href={`/news/${next.id}`} class="nav-link nav-next">
-        <span class="nav-label">Next →</span>
-        <span class="nav-title">{next.data.title}</span>
-      </a>
+      <BetterLinkCard title={next.data.title} href={`/news/${next.id}`} class:list={["nav-link"]} direction="right" />
     )}
   </nav>
-
-  <p class="back-link"><a href="/news">← Back to News</a></p>
 </StarlightPage>
 
 <style>
@@ -58,43 +52,14 @@ const { Content } = await render(post);
         margin-bottom: 2rem;
     }
     .post-nav {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 1rem;
-        margin-top: 3rem;
-        padding-top: 2rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
         border-top: 1px solid var(--sl-color-gray-5);
     }
     .nav-link {
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--sl-color-gray-5);
-        max-width: 45%;
-    }
-    .nav-link:hover {
-        border-color: var(--sl-color-accent);
-        background: var(--sl-color-gray-6);
-    }
-    .nav-prev {
-        align-items: flex-start;
-    }
-    .nav-next {
-        align-items: flex-end;
-        margin-left: auto;
-    }
-    .nav-label {
-        font-size: 0.8rem;
-        color: var(--sl-color-gray-3);
-    }
-    .nav-title {
-        font-weight: 600;
-        color: var(--sl-color-white);
-    }
-    .back-link {
-        margin-top: 2rem;
-        text-align: center;
+        margin: 0;
     }
 </style>

@@ -42,6 +42,7 @@
   --color-gray-900: #202227;
   --color-gray-950: #191A1F;
 }
+
 :root {
   --sl-font: var(--font-sans), var(--font-sans-fallback), serif;
   --sl-font-mono: var(--font-mono), var(--font-mono-fallback), monospace;
