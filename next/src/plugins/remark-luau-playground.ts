@@ -20,57 +20,13 @@
 import type { Root, Code } from 'mdast';
 import type { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
-import LZString from 'lz-string';
-
-const PLAYGROUND_URL = 'https://play.luau.org';
-
-interface ShareState {
-  files: Record<string, string>;
-  active: string;
-  v: number;
-}
+import { PLAYGROUND_URL, buildPlaygroundUrl, calculateHeight } from '../lib/luau-playground';
 
 interface PluginOptions {
   /** Theme: "light" | "dark" | "auto" (default: "auto") */
   theme?: 'light' | 'dark' | 'auto';
   /** Override the playground URL */
   baseUrl?: string;
-}
-
-/**
- * Calculate iframe height based on number of lines in the active file
- * 
- * Layout breakdown:
- * - 44px: top bar
- * - 12px: top padding
- * - 19.6px per line (14px font * 1.4 line height)
- * - 12px: bottom padding
- * - 2px: fudge factor for sub-pixel rounding
- */
-function calculateHeight(files: Record<string, string>): string {
-  const activeFile = Object.keys(files)[0] || 'main.luau';
-  const content = files[activeFile] || '';
-  const lineCount = content.split('\n').length;
-  
-  const topBar = 44;
-  const verticalPadding = 12 * 2; // top + bottom
-  const lineHeight = 19.6;
-  const fudge = 2;
-  
-  const height = topBar + verticalPadding + (lineCount * lineHeight) + fudge;
-  return `${Math.ceil(height)}px`;
-}
-
-/**
- * Encode files to URL-safe format (same as main playground)
- */
-function encodeFiles(files: Record<string, string>, activeFile: string): string {
-  const state: ShareState = {
-    files,
-    active: activeFile,
-    v: 1,
-  };
-  return LZString.compressToEncodedURIComponent(JSON.stringify(state));
 }
 
 /**
@@ -118,9 +74,7 @@ function generateIframeHtml(
   files: Record<string, string>,
   options: Required<PluginOptions>
 ): string {
-  const activeFile = Object.keys(files)[0] || 'main.luau';
-  const encoded = encodeFiles(files, activeFile);
-  const src = `${options.baseUrl}/?embed=true&theme=${options.theme}#code=${encoded}`;
+  const src = buildPlaygroundUrl(files, options);
   const height = calculateHeight(files);
   
   return `<iframe
@@ -169,5 +123,4 @@ const remarkLuauPlayground: Plugin<[PluginOptions?], Root> = (options = {}) => {
 };
 
 export default remarkLuauPlayground;
-export { remarkLuauPlayground, parseFiles, encodeFiles };
-
+export { remarkLuauPlayground, parseFiles };
