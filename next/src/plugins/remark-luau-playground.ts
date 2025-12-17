@@ -68,14 +68,13 @@ function parseFiles(code: string): Record<string, string> {
     files[currentFile] = content;
   } else {
     // No --!file directives, treat entire content as main.luau
-    files['main.luau'] = code.trim();
+    files['main.luau'] = currentContent.join('\n').trim();
   }
 
   return files;
 }
 
 function parseHidden(code: string): ['old' | 'new' | null, 'nocheck' | 'nonstrict' | 'strict' | null] {
-  console.log("HERE WE ARE")
   const lines = code.split('\n');
 
   let mode = null;
