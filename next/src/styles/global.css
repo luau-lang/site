@@ -216,3 +216,7 @@
 .sl-markdown-content img {
     margin: 2em auto;
 }
+
+.sl-link-button.primary {
+    color: var(--color-white);
+}

@@ -40,7 +40,7 @@ export default defineConfig({
       ],
       components: {
         Header: "./src/components/Header.astro",
-        ContentPanel: "./src/components/ContentPanel.astro"
+        ContentPanel: "./src/components/ContentPanel.astro",
       },
       social: [
         {
