@@ -4,10 +4,15 @@ import starlight from "@astrojs/starlight";
 import starlightBlog from 'starlight-blog';
 
 import tailwindcss from "@tailwindcss/vite";
+import remarkLuauPlayground from "./src/plugins/remark-luau-playground";
 
 // https://astro.build/config
 export default defineConfig({
   redirects: {},
+
+  markdown: {
+    remarkPlugins: [remarkLuauPlayground],
+  },
 
   integrations: [
     starlight({
