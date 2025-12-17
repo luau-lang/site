@@ -9,7 +9,7 @@ Luau supports a gradual type system through the use of type annotations and type
 
 ## Type inference modes
 
-There are three modes currently available. They must be annotated on the top few lines among the comments.
+Luau offers three different modes that control how strictly it checks your types. You can set the mode by adding one of the following to the top of your file:
 
 * `--!nocheck`,
 * `--!nonstrict` (default), and
