@@ -1,7 +1,6 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { getCollection } from 'astro:content'
-import '../../styles/news-index.css';
 
 let allNews = await getCollection('news')
 allNews = allNews.sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
@@ -27,3 +26,41 @@ allNews = allNews.sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.da
     })}
   </div>
 </StarlightPage>
+
+<style>
+    .news-header {
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+    }
+    .news-intro {
+        font-size: 1.1rem;
+        color: var(--sl-color-gray-2);
+        line-height: 1.6;
+        margin: 0;
+    }
+    .news-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        max-width: 600px;
+    }
+    .post-card {
+        display: block;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .post-card:hover h2 {
+        color: var(--sl-color-accent);
+    }
+    .post-card h2 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        color: var(--sl-color-white);
+        transition: color 0.15s;
+    }
+    .news-list .post-date {
+        font-size: 0.85rem;
+        color: var(--sl-color-gray-3);
+    }
+</style>
