@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: October 2020"
+title:  "Recap: October 2020"
 date: 2020-10-30
 ---
 

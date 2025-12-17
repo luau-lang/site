@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: November 2021"
+title:  "Recap: November 2021"
 date: 2021-11-29
 ---
 
@@ -12,7 +12,7 @@ type Y = X<number, string>
 ```
 
 We've also added support for explicit type packs. Previously, it was impossible to instantiate a generic with two or more type pack parameters, because it wasn't clear where the first pack ended and the second one began. We have introduced a new syntax for this use case:
-```
+```lua
 type Fn<P..., R...> = (P...) -> R...
 type X = Fn<(number, string), (string, number)>
 ```

@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: March 2021"
+title:  "Recap: March 2021"
 date: 2021-03-29
 ---
 
@@ -8,7 +8,7 @@ It's been a busy month in Luau!
 ## Typed variadics
 
 Luau supports *variadic* functions, meaning ones which can take a variable number of arguments (varargs!) but previously there was no way to specify their type. Now you can!
-```
+```lua
 function f(x: string, ...: number)
   print(x)
   print(...)
@@ -19,7 +19,7 @@ f("lo", 5, 27)
 This function takes a string, plus as many numbers as you like, but if you try calling it with anything else, you'll get a type error, for example `f("oh", true)` gives an error "Type `boolean` could not be converted into `number`"
 
 Variadics can be used in function declarations, and function types, for example
-```
+```lua
 type T = {
   sum: (...number) -> number
 }
@@ -60,17 +60,17 @@ The call stack that is being displayed while stopped inside a coroutine frame wi
 
 Before:
 
-!["Old debugger"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-march-2021-debug-before.png)
+!["Old debugger"](../../assets/images/luau-recap-march-2021-debug-before.png)
 
 After:
 
-!["New debugger"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-march-2021-debug-after.png)
+!["New debugger"](../../assets/images/luau-recap-march-2021-debug-after.png)
 
 We have restored the ability to break on all errors inside the scripts.
 This is useful in cases where you need to track the location and state of an error that is triggered inside 'pcall'.
 For example, when the error that's triggered is not the one you expected.
 
-!["Break on all exceptions"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-march-2021-debug-dialog.png)
+!["Break on all exceptions"](../../assets/images/luau-recap-march-2021-debug-dialog.png)
 
 ## Library changes
 
@@ -80,7 +80,7 @@ For example, when the error that's triggered is not the one you expected.
 
 Luau now has a shiny new logo!
 
-!["New logo!"]({{ site.url }}{{ site.baseurl }}/assets/images/luau.png)
+!["New logo!"](../../assets/images/luau.png)
 
 ## Coming soon...
 

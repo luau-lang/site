@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: February 2022"
+title:  "Recap: February 2022"
 date: 2022-02-28
 ---
 

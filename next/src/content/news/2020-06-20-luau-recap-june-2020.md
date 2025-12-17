@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: June 2020"
+title:  "Recap: June 2020"
 date: 2020-06-20
 ---
 
@@ -61,11 +61,11 @@ Linter is the component that produces warnings about scripts; it’s otherwise k
 
 Most of the changes here this month are internal as they concern warnings that aren’t yet enabled in Studio (the web site linked above documents all warnings including ones that aren’t active yet but may become active), but once notable feature is that you can now opt out of individual warnings on a script-by-script basis by adding a --!nolint comment to the top of the script. For example, if you really REALLY *REALLY* like the `Game` global, you can add this to the top of the script:
 
-```
+```lua
 --!nolint DeprecatedGlobal
 ```
 Or, if you basically just want us to not issue any warnings ever, I guess you can add this:
-```
+```lua
 --!nocheck
 --!nolint
 ```
@@ -79,7 +79,7 @@ Well, this changes today. `os.clock` is now available if you need a high-precisi
 
 While `os.date()` is hopefully welcome, `os.clock` may raise some eyebrows - aren’t there enough timing functions in Roblox already? Well, this is nice if you are trying to port code from Lua 5.x to Luau, and there’s this
 
-![Oblig. xkcd]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-june-2020-xkcd.png)
+![Oblig. xkcd](../../assets/images/luau-recap-june-2020-xkcd.png)
 
 But really, most existing Roblox timing functions are… problematic.
 

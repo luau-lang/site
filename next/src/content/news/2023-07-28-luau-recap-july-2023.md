@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: July 2023"
+title:  "Recap: July 2023"
 date: 2023-07-28
 ---
 

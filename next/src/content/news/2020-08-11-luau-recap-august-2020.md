@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: August 2020"
+title:  "Recap: August 2020"
 date: 2020-08-11
 ---
 
@@ -13,11 +13,11 @@ When we started the Luau type checking beta, we’ve had a big warning sign in t
 
 This restriction is lifted now. All scripts with type annotations that parse & execute will continue to parse & execute forever. Crucially, for this to be true you must not be using old fat arrow syntax for functions, which we warned you about for about a month now:
 
-![Fat arrow deprecated]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-august-2020-arrow.png)
+![Fat arrow deprecated](../../assets/images/luau-recap-august-2020-arrow.png)
 
 … and must not be using the `__meta` property which no longer holds special meaning and we now warn you about that:
 
-![meta deprecated]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-august-2020-meta.png)
+![meta deprecated](../../assets/images/luau-recap-august-2020-meta.png)
 
 Part of the syntax finalization also involved changing the precedence on some type annotations and adding support for parentheses; notably, you can now mix unions and intersections if you know what that means (`(A & B) | C` is valid type syntax). Some complex type annotations changed their structure because of this - previously `(number) -> string & (string) -> string` was a correct way to declare an intersection of two function types, but now to keep it parsing the same way you need to put each function type in parentheses: `((number) -> string) & ((string) -> string)`.
 
@@ -37,13 +37,13 @@ A few standard functions in Luau are using format strings to dictate the behavio
 
 In all of these cases, it’s important to get the format strings right - typos in the format string can result in unpredictable behavior at runtime including errors. To help with that, we now have a new lint rule that parses the format strings and validates them according to the expected format.
 
-![String format]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-august-2020-format.png)
+![String format](../../assets/images/luau-recap-august-2020-format.png)
 
 Right now this support is limited to direct library calls (`string.format("%.2f", ...)` and literal strings used in these calls - we may lift some of these limitations later to include e.g. support for constant locals.
 
 Additionally, if you have type checking beta enabled, string.format will now validate the argument types according to the format string to help you get your `%d`s and `%s`es right.
 
-![String format]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-august-2020-format2.png)
+![String format](../../assets/images/luau-recap-august-2020-format2.png)
 
 ## Improvements to string. library
 
@@ -55,14 +55,14 @@ We’ve upgraded the Luau string library to follow Lua 5.3 implementation; speci
 This change also [inadvertently] makes `string.gsub` validation rules for replacement string stricter - previously `%` followed by a non-digit character was silently accepted in a replacement string, but now it generates an error. This accidentally broke our own localization script [Purchase Prompt broken in some games (% character in title)](https://devforum.roblox.com/t/purchase-prompt-broken-in-some-games-character-in-title/686237)), but we got no other reports, and this in retrospect is a good change as it makes future extensions to string replacement safe… It was impossible for us to roll the change back and due to a long release window because of an internal company holiday we decided to keep the change as is, although we’ll try to be more careful in the future.
 
 On a happier note, string.pack may seem daunting but is pretty easy to use to pack binary data to reduce your network traffic (note that binary strings aren’t safe to use in DataStores currently); I’ve posted an example in the release notes thread [Release Notes for 441](https://devforum.roblox.com/t/release-notes-for-441/686773) that allows you to pack a simple character state in 16 bytes like this:
-```
+```lua
 local characterStateFormat = "fffbbbB"
 
 local characterState = string.pack(characterStateFormat,
     posx, posy, posz, dirx * 127, diry * 127, dirz * 127, health)
 ```
 And unpack it like this after network transmission:
-```
+```lua
 local posx, posy, posz, dirx, diry, dirz, health =
     string.unpack(characterStateFormat, characterState)
 dirx /= 127

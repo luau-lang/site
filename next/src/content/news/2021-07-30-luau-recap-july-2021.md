@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: July 2021"
+title:  "Recap: July 2021"
 date: 2021-07-30
 ---
 

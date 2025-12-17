@@ -1,5 +1,5 @@
 ---
-title: Luau Recap November 2019
+title: "Recap: November 2019"
 date: 2019-11-11
 ---
 
@@ -13,7 +13,7 @@ We had to rebuild the low level implementation of the debugger from scratch - th
 
 To use this, simply make sure that you’re enrolled in the new Lua VM beta:
 
-![Enable New Lua VM]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-november-2019-option.png)
+![Enable New Lua VM](../../assets/images/luau-recap-november-2019-option.png)
 
 After this you can use the debugger as usual. If you see any bugs, please feel free to report them!
 

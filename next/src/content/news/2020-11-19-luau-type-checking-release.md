@@ -12,13 +12,13 @@ Today I’m incredibly excited to announce that the first release of [Luau](http
 When Luau code runs, every value has a certain type at runtime - a kind of value it stores. It could be a number, a string, a table, a Roblox Instance or one of many others. Thing is, some operations work on some types but don’t work on others!
 
 Consider this:
-```
+```lua
 local p = Instance.new("Part")
 p.Positio = Vector3.new(1,2,3)
 ```
 Is this code correct? No - there’s a typo. The way you get to find this typo is by running your code and eventually seeing an error message. Type checker tries to analyze your code before running, by assigning a type to each value based on what we know about how that value was produced, or based on the type you’ve explicitly told us using a new syntax extension, and can produce an error ahead of time:
 
-!["Positio not found in class Part"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-type-checking-release-screenshot.png)
+!["Positio not found in class Part"](../../assets/images/luau-type-checking-release-screenshot.png)
 
 This can require some effort up front, especially if you use strict mode, but it can save you valuable time in the future. It can be especially valuable if you have a large complex code base you need to maintain for years, as is the case with many top Roblox games.
 
@@ -36,7 +36,7 @@ As of this release, the default mode is nocheck. This means by default you actua
 
 However we highly encourage trying at least non-strict mode on your codebase. You can do this by opting into a different default via a Studio beta:
 
-!["Studio option"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-type-checking-release-studio-option.png)
+!["Studio option"](../../assets/images/luau-type-checking-release-studio-option.png)
 
 This beta only changes the default mode. Another way to change the mode is to prepend a `--!` comment to the script - you can do this manually for now, but if anyone in the community wants to release a plugin that does it automatically on selected scripts (+ descendants), that would be swell!
 
@@ -45,7 +45,7 @@ If you really want your code to be rock solid, we recommend trying out strict mo
 ## What are type annotations and how do I use them?
 
 Glad you asked! (please pretend you did) Type annotations are a way to tell the type checker what the type of a variable is. Consider this code in strict mode:
-```
+```lua
 function add(x, y)
     return x + y
 end
@@ -53,7 +53,7 @@ end
 Is this code correct? Well, that depends. `add(2, 3)` will work just fine. `add(Vector3.new(1, 2, 3), Vector3.new(4, 5, 6))` will work as well. But `add({}, nil)` probably isn’t a good idea.
 
 In strict mode, we will insist that the type checker knows the type of all variables, and you’ll need to help the type checker occasionally - by adding types after variable names separated by `:`:
-```
+```lua
 function add(x: number, y: number)
     return x + y
 end

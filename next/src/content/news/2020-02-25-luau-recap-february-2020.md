@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: February 2020"
+title:  "Recap: February 2020"
 date: 2020-02-25
 ---
 
@@ -23,7 +23,7 @@ We are also making the type checker more ergonomic and more correct. Two changes
 
  * Type aliases declared with `type X = Y` are now co-recursive, meaning that they can refer to each other, e.g.
 
-```
+```lua
 type array<T> = { [number]: T }
 
 type Wheel = { radius: number, car: Car }
@@ -77,7 +77,7 @@ We spent some time to improve error messages in various layers of the stack base
  * In some cases when calling the method with a `.` instead of `:`, we emitted a confusing error message at runtime (e.g. humanoid.LoadAnimation(animation)). We now properly emit the error message asking the user if `:` was intended.
  * The legacy global `ypcall` is now flagged as deprecated by script analysis
  * If you use a Unicode symbol in your source program outside of comments or string literals, we now produce a much more clear message, for example:
-```
+```lua
 local pi = 3․13 -- spoiler alert: this is not a dot!
 ```
 produces `Unexpected Unicode character: U+2024. Did you mean '.'?`

@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: July 2024"
+title:  "Recap: July 2024"
 date: 2024-07-23
 ---
 
@@ -13,7 +13,7 @@ Luau has recently adopted a Hawaiian monk seal mascot named Hina, after the Hawa
 
 Please welcome Hina the Seal!
 
-![Hina the Seal]({{ site.url }}{{ site.baseurl }}/assets/images/mascot.png)
+![Hina the Seal](../../assets/images/mascot.png)
 
 ## Native Code Generation
 

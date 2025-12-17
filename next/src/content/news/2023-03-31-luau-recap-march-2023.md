@@ -1,9 +1,9 @@
 ---
-title:  "Luau Recap: March 2023"
+title:  "Recap: March 2023"
 date: 2023-03-31
 ---
 
-How the time flies! The team has been busy since the last November Luau Recap working on some large updates that are coming in the future, but before those arrive, we have some improvements that you can already use!
+How the time flies! The team has been busy since the last November Recap:working on some large updates that are coming in the future, but before those arrive, we have some improvements that you can already use!
 
 ## Improved type refinements
 

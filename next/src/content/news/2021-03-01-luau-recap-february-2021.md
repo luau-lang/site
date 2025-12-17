@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: February 2021"
+title:  "Recap: February 2021"
 date: 2021-03-01
 ---
 
@@ -13,17 +13,17 @@ The first step in this is an *infallible* parser, that always returns an Abstrac
 
 The Luau parser now recovers from errors, which means, for example, we can give hints about programs in an IDE.
 
-![A type error after a syntax error]({{ site.url }}{{ site.baseurl }}/assets/images/type-error-after-syntax-error.png)
+![A type error after a syntax error](../../assets/images/type-error-after-syntax-error.png)
 
 ## Type assertions
 
 The Luau type checker can't know everything about your code, and sometimes it will produce type errors even when you know the code is correct. For example, sometimes the type checker can't work out the intended types, and gives a message such as "Unknown type used... consider adding a type annotation".
 
-!["Consider adding a type annotation"]({{ site.url }}{{ site.baseurl }}/assets/images/type-annotation-needed.png)
+!["Consider adding a type annotation"](../../assets/images/type-annotation-needed.png)
 
 Previously the only way to add an annotation was to put it on the *declaration* of the variable, but now you can put it on the *use* too.  A use of variable `x` at type `T` can be written `x :: T`. For example the type `any` can be used almost anywhere, so a common usage of type assertions is to switch off the type system by writing `x :: any`.
 
-!["A type assertion y:any"]({{ site.url }}{{ site.baseurl }}/assets/images/type-annotation-provided.png)
+!["A type assertion y:any"](../../assets/images/type-annotation-provided.png)
 
 ## Typechecking improvements
 
@@ -42,7 +42,7 @@ We are continuing to work on optimizing our VM and libraries to make sure idioma
  * Luau function calls are now ~3% faster in most cases; we also have more call optimizations coming up next month!
  * Modulo operation (%) is now a bit faster on Windows, resulting in ~2% performance improvement on some benchmarks
 
-!["Benchmark vs Lua 5.3"]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-february-2021-benchmark.png)
+!["Benchmark vs Lua 5.3"](../../assets/images/luau-recap-february-2021-benchmark.png)
 
 ## Debugger improvements
 
@@ -50,7 +50,7 @@ Our Luau VM implementation is focused on performance and provides a different AP
 
 The good news is that we have lifted that limitation and coroutines can now be debugged just like any regular function. This can especially help people who use Promise libraries that rely on coroutines internally.
 
-![Debugging a coroutine]({{ site.url }}{{ site.baseurl }}/assets/images/luau-recap-february-2021-debugger.png)
+![Debugging a coroutine](../../assets/images/luau-recap-february-2021-debugger.png)
 
 ## Library changes
 
@@ -61,14 +61,14 @@ In addition to that we found a small bug in `string.char` implementation that al
 ## Coming soon...
 
 * _Generic function types_ will soon be allowed!
-```
+```lua
 function id<a>(x: a): a
     return x
 end
 ```
 
 * _Typed variadics_ will soon allow types to be given to functions with varying numbers of arguments!
-```
+```lua
 function sum(...: number): number
     local result = 0
     for i,v in ipairs({...}) do

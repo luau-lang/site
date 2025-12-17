@@ -1,5 +1,5 @@
 ---
-title:  "Luau Recap: January 2022"
+title:  "Recap: January 2022"
 date: 2022-01-27
 ---
 
@@ -71,7 +71,7 @@ local x: T? = {w=4}
 
 We now report the following:
 
-```
+```lua
 Type 'x' could not be converted into 'T?'
 caused by:
   None of the union options are compatible. For example: Table type 'x' not compatible with type 'T' because the former is missing field 'x'
