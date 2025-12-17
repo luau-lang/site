@@ -27,6 +27,9 @@ const { title, description, direction, ...attributes } = Astro.props;
     {direction == "up" && (
       <Icon name="up-arrow" size="1.333em" class="icon rtl:flip" />
     ) }
+    {direction == "down" && (
+      <Icon name="down-arrow" size="1.333em" class="icon rtl:flip" />
+    ) }
 </div>
 
 <style>
