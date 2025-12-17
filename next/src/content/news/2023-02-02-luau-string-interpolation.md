@@ -9,7 +9,7 @@ In short, it's a safer and more ergonomic alternative over `string.format`.
 
 Here's a quick example of a string interpolation:
 
-```lua
+```luau
 local combos = {2, 7, 1, 8, 5}
 print(`The lock combination is {table.concat(combos)}. Again, {table.concat(combos, ", ")}.`)
 --> The lock combination is 27185. Again, 2, 7, 1, 8, 5.
@@ -17,7 +17,7 @@ print(`The lock combination is {table.concat(combos)}. Again, {table.concat(comb
 
 String interpolation also composes well with the `__tostring` metamethod.
 
-```lua
+```luau
 local balance = setmetatable({ value = 500 }, {
     __tostring = function(self)
         return "$" .. tostring(self.value)

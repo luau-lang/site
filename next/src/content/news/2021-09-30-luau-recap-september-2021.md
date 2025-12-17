@@ -8,7 +8,7 @@ date: 2021-09-30
 The big news this month is that generic functions are back!
 
 Luau has always supported type inference for generic functions, for example:
-```lua
+```luau
 type Point<X,Y> = { x: X, y: Y }
 function swap(p)
   return { x = p.y, y = p.x }
@@ -17,13 +17,13 @@ local p : Point<number, string> = swap({ x = "hi", y = 37 })
 local q : Point<boolean, string> = swap({ x = "hi", y = true })
 ```
 but up until now, there's been no way to write the type of `swap`, since Luau didn't have type parameters to functions (just regular old data parameters). Well, now you can:
-```lua
+```luau
 function swap<X, Y>(p : Point<X, Y>): Point<Y, X>
   return { x = p.y, y = p.x }
 end
 ```
 Generic functions can be used in function declarations, and function types too, for example
-```lua
+```luau
 type Swapper = { swap : <X, Y>(Point<X, Y>) -> Point<Y, X> }
 ```
 
@@ -37,7 +37,7 @@ write code that needed nested generic functions, which weren't
 supported back then.
 
 Well, now we do support nested generic functions, so you can write code like
-```lua
+```luau
 function mkPoint(x)
   return function(y)
     return { x = x, y = y }
@@ -45,7 +45,7 @@ function mkPoint(x)
 end
 ```
 and have Luau infer a type where a generic function returns a generic function
-```lua
+```luau
 function mkPoint<X>(x : X) : <Y>(Y) -> Point<X,Y>
   return function<Y>(y : Y) : Point<X,Y>
     return { x = x, y = y }
@@ -64,7 +64,7 @@ a subtype of `T`, so the type of `f(x)` is `U`.
 
 This works in many cases, but has problems with examples like registering
 callback event handlers. In code like
-```lua
+```luau
 part.Touched:Connect(function (other) ... end)
 ```
 if we try to typecheck this bottom-up, we have a problem because
@@ -101,7 +101,7 @@ In other typechecking news:
  * We improved the way that `return` statements interact with mutually recursive
    function declarations.
  * We improved parser recovery from code which looks like a function call (but isn't) such as
-```lua
+```luau
 local x = y
 (expr)[smth] = z
 ```

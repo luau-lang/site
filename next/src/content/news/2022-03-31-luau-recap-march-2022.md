@@ -13,20 +13,20 @@ literal, for example if a variable `x` has type `"foo"`, then `x ==
 Singleton types are particularly useful when combined with union types,
 for example:
 
-```lua
+```luau
 type Animals = "Dog" | "Cat" | "Bird"
 ```
 
 or:
 
-```lua
+```luau
 type Falsey = false | nil
 ```
 
 In particular, singleton types play well with unions of tables,
 allowing tagged unions (also known as discriminated unions):
 
-```lua
+```luau
 type Ok<T> = { type: "ok", value: T }
 type Err<E> = { type: "error", error: E }
 type Result<T, E> = Ok<T> | Err<E>
@@ -47,7 +47,7 @@ The RFC for singleton types is https://github.com/Roblox/luau/blob/master/rfcs/s
 
 A common idiom for programming with tables is to provide a public interface type, but to keep some of the concrete implementation private, for example:
 
-```lua
+```luau
 type Interface = {
     name: string,
 }
@@ -60,7 +60,7 @@ type Concrete = {
 
 Within a module, a developer might use the concrete type, but export functions using the interface type:
 
-```lua
+```luau
 local x: Concrete = {
     name = "foo",
     id = 123,

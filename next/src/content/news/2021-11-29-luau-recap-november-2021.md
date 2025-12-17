@@ -6,13 +6,13 @@ date: 2021-11-29
 ## Type packs in type aliases
 
 Type packs are the construct Luau uses to represent a sequence of types. We've had syntax for generic type packs for a while now, and it sees use in generic functions, but it hasn't been available in type aliases. That has changed, and it is now syntactically legal to write the following type alias:
-```lua
+```luau
 type X<A...> = () -> A...
 type Y = X<number, string>
 ```
 
 We've also added support for explicit type packs. Previously, it was impossible to instantiate a generic with two or more type pack parameters, because it wasn't clear where the first pack ended and the second one began. We have introduced a new syntax for this use case:
-```lua
+```luau
 type Fn<P..., R...> = (P...) -> R...
 type X = Fn<(number, string), (string, number)>
 ```
@@ -32,7 +32,7 @@ You might think that C++ is a scary language and you can't contribute to Luau. I
 
 ## Library improvements
 
-```lua
+```luau
 function bit32.countlz(n: number): number
 function bit32.countrz(n: number): number
 ```

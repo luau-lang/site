@@ -61,14 +61,14 @@ In addition to that we found a small bug in `string.char` implementation that al
 ## Coming soon...
 
 * _Generic function types_ will soon be allowed!
-```lua
+```luau
 function id<a>(x: a): a
     return x
 end
 ```
 
 * _Typed variadics_ will soon allow types to be given to functions with varying numbers of arguments!
-```lua
+```luau
 function sum(...: number): number
     local result = 0
     for i,v in ipairs({...}) do

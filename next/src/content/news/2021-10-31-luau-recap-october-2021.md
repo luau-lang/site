@@ -3,7 +3,7 @@ title:  "Recap: October 2021"
 date: 2021-10-31
 ---
 
-## if-then-else expression
+## `if-then-else` expression
 
 In addition to supporting standard if *statements*, Luau adds support for if *expressions*.
 Syntactically, `if-then-else` expressions look very similar to if statements.
@@ -11,7 +11,7 @@ However instead of conditionally executing blocks of code, if expressions condit
 Also, unlike if statements, if expressions do not terminate with the `end` keyword.
 
 Here is a simple example of an `if-then-else` expression:
-```lua
+```luau
 local maxValue = if a > b then a else b
 ```
 
@@ -21,7 +21,7 @@ it can also contain an arbitrary number of `elseif` clauses, like `if <expr> the
 Note that in either case, `else` is mandatory.  
 
 Here's is an example demonstrating `elseif`:
-```lua
+```luau
 local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
 ```
 
@@ -32,7 +32,7 @@ The `if-then-else` expression will behave as expected in all situations.
 
 New additions to the `table` library have arrived:
 
-```lua
+```luau
 function table.freeze(t)
 ```
 
@@ -41,7 +41,7 @@ If the input table is already frozen or has a protected metatable, the function 
 Note that the table is frozen in-place and is not being copied.
 Additionally, only `t` is frozen, and keys/values/metatable of `t` don't change their state and need to be frozen separately if desired.
 
-```lua
+```luau
 function table.isfrozen(t): boolean
 ```
 
@@ -53,7 +53,7 @@ We continue work on our type constraint resolver and have multiple improvements 
 
 We now resolve constraints that are created by `or` expressions.
 In the following example, by checking against multiple type alternatives, we learn that value is a union of those types:
-```lua
+```luau
 --!strict
 local function f(x: any)
     if type(x) == "number" or type(x) == "string" then
@@ -66,7 +66,7 @@ end
 Support for `or` constraints allowed us to handle additional scenarios with `and` and `not` expressions to reduce false positives after specific type guards.
 
 And speaking of type guards, we now correctly handle sub-class relationships in those checks:
-```lua
+```luau
 --!strict
 local function f(x: Part | Folder | string)
     if typeof(x) == "Instance" then
@@ -78,7 +78,7 @@ end
 ```
 
 One more fix handles the `a and b or c` expression when 'b' depends on 'a':
-```lua
+```luau
 --!strict
 function f(t: {x: number}?)
     local a = t and t.x or 5 -- 'a' is a 'number', no false positive errors here
@@ -86,7 +86,7 @@ end
 ```
 
 Of course, our new if-then-else expressions handle this case as well.
-```lua
+```luau
 --!strict
 function f(t: {x: number}?)
     local a = if t then t.x else 5 -- 'a' is a 'number', no false positive errors here
@@ -95,7 +95,7 @@ end
 
 ---
 We have extended bidirectional typechecking that was announced last month to propagate types in additional statements and expressions.
-```lua
+```luau
 --!strict
 function getSortFunction(): (number, number) -> boolean
     return function(a, b) return a > b end -- a and b are now known to be 'number' here
@@ -110,7 +110,7 @@ comp = function(a, b) return a < b end -- a and b are now known to be 'number' h
 We've also improved some of our messages with union types and optional types (unions types with `nil`).
 
 When optional types are used incorrectly, you get better messages. For example:
-```lua
+```luau
 --!strict
 function f(a: {number}?)
     return a[1] -- "Value of type '{number}?' could be nil" instead of "'{number}?' is not a table'
@@ -118,7 +118,7 @@ end
 ```
 
 When a property of a union type is accessed, but is missing from some of the options, we will report which options are not valid:
-```lua
+```luau
 --!strict
 type A = { x: number, y: number }
 type B = { x: number }

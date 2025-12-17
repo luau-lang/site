@@ -55,14 +55,14 @@ We’ve upgraded the Luau string library to follow Lua 5.3 implementation; speci
 This change also [inadvertently] makes `string.gsub` validation rules for replacement string stricter - previously `%` followed by a non-digit character was silently accepted in a replacement string, but now it generates an error. This accidentally broke our own localization script [Purchase Prompt broken in some games (% character in title)](https://devforum.roblox.com/t/purchase-prompt-broken-in-some-games-character-in-title/686237)), but we got no other reports, and this in retrospect is a good change as it makes future extensions to string replacement safe… It was impossible for us to roll the change back and due to a long release window because of an internal company holiday we decided to keep the change as is, although we’ll try to be more careful in the future.
 
 On a happier note, string.pack may seem daunting but is pretty easy to use to pack binary data to reduce your network traffic (note that binary strings aren’t safe to use in DataStores currently); I’ve posted an example in the release notes thread [Release Notes for 441](https://devforum.roblox.com/t/release-notes-for-441/686773) that allows you to pack a simple character state in 16 bytes like this:
-```lua
+```luau
 local characterStateFormat = "fffbbbB"
 
 local characterState = string.pack(characterStateFormat,
     posx, posy, posz, dirx * 127, diry * 127, dirz * 127, health)
 ```
 And unpack it like this after network transmission:
-```lua
+```luau
 local posx, posy, posz, dirx, diry, dirz, health =
     string.unpack(characterStateFormat, characterState)
 dirx /= 127

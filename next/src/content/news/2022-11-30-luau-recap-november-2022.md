@@ -9,7 +9,7 @@ While the team is busy to bring some bigger things in the future, we have made s
 
 We have improved tagged union type refinements to only include unhandled type cases in the `else` branch of the `if` statement:
 
-```lua
+```luau
 type Ok<T> = { tag: "ok", value: T }
 type Err = { tag: "error", msg: string }
 type Result<T> = Ok<T> | Err
@@ -29,7 +29,7 @@ For better inference, we updated the definition of `Enum.SomeType:GetEnumItems()
 
 Finally, if you use `and` operator on non-boolean values, `boolean` type will no longer be added by the type inference:
 
-```lua
+```luau
 local function f1(a: number?)
     -- 'x' is still a 'number?' and doesn't become 'boolean | number'
     local x = a and 5
@@ -40,20 +40,20 @@ end
 
 We now give an error when built-in types are being redefined:
 
-```lua
+```luau
 type string = number -- Now an error: Redefinition of type 'string'
 ```
 
 We also had a parse error missing in case you forgot your default type pack parameter value. We accepted the following code silently without raising an issue:
 
-```lua
+```luau
 type Foo<T... = > = nil -- Now an error: Expected type, got '>'
 ```
 
 Error about function argument count mismatch no longer points at the last argument, but instead at the function in question.
 So, instead of:
 
-```lua
+```luau
 function myfunction(a: number, b:number) end
 myfunction(123)
            ~~~
@@ -61,7 +61,7 @@ myfunction(123)
 
 We now highlight this:
 
-```lua
+```luau
 function myfunction(a: number, b:number) end
 myfunction(123)
 ~~~~~~~~~~
@@ -69,7 +69,7 @@ myfunction(123)
 
 If you iterate over a table value that could also be `nil`, you get a better explanation in the error message:
 
-```lua
+```luau
 local function f(t: {number}?)
     for i,v in t do -- Value of type {number}? could be nil
         --...
@@ -85,7 +85,7 @@ This was caused by Luau having both a primitive type `string` and a table type c
 
 Parsing now recovers with a more precise error message if you forget a comma in table constructor spanning multiple lines:
 
-```lua
+```luau
 local t = {
     a = 1
     b = 2 -- Expected ',' after table constructor element

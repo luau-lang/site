@@ -8,7 +8,7 @@ Our team was still busy working on upcoming Studio Beta feature for script edito
 ## Typechecking improvements
 
 A common complaint that we've received was a false-positive error when table with an optional or union element type is defined:
-```lua
+```luau
 --!strict
 type Foo = {x: number | string}
 local foos: {Foo} = {
@@ -17,7 +17,7 @@ local foos: {Foo} = {
 }
 ```
 This case is now handled and skipping optional fields is allowed as well:
-```lua
+```luau
 --!strict
 type Foo = {
     a: number,
@@ -31,7 +31,7 @@ local foos: {Foo} = {
 Current fix only handles table element type in assignments, but we plan to extend that to function call arguments and individual table fields.
 
 Like we've mentioned last time, we will continue working on our new type constraint resolver and this month it learned to handle more complex expressions (including type guards) inside `assert` conditions:
-```lua
+```luau
 --!strict
 local part = script.Parent:WaitForChild("Part")
 assert(part:IsA("BasePart"))
@@ -49,7 +49,7 @@ We now track only a single one that should be fixed next month.
 
 Another false positive error that was fixed involves tables with __call metatable function.
 We no longer report a type error when this method is invoked and we'll also make sure that given arguments match the function definition:
-```lua
+```luau
 --!strict
 local t = { x = 2 }
 
@@ -65,7 +65,7 @@ Please note that while call operator on a table is now handled, function types i
 ## Linter improvements
 
 A new 'TableOperations' lint check was added that will detect common correctness or performance issues with `table.insert` and `table.remove`:
-```lua
+```luau
 -- table.insert will insert the value before the last element, which is likely a bug; consider removing the second argument or wrap it in parentheses to silence
 table.insert(t, #t, 42)
 
@@ -86,7 +86,7 @@ table.insert(t, string.find("hello", "h"))
 ```
 
 Another new check is 'DuplicateConditions'. The name speaks for itself, `if` statement chains with duplicate conditions and expressions containing `and`/`or` operations with redundant parts will now be detected:
-```lua
+```luau
 if x then
     -- ...
 elseif not x then

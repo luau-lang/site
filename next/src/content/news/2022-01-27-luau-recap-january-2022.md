@@ -20,7 +20,7 @@ Make `tonumber(x)` ~2x faster by avoiding reparsing string arguments.
 
 The Luau compiler now optimizes table literals where keys are constant variables the same way as if they were constants, eg
 
-```lua
+```luau
 local r, g, b = 1, 2, 3
 local col = { [r] = 255, [g] = 0, [b] = 255 }
 ```
@@ -30,7 +30,7 @@ local col = { [r] = 255, [g] = 0, [b] = 255 }
 The `::` type assertion operator can now be used to coerce a value between any two related types.  Previously, it could
 only be used for downcasts or casts to `any`.  The following used to be invalid, but is now valid:
 
-```lua
+```luau
 local t = {x=0, y=0}
 local a = t :: {x: number}
 ```
@@ -39,7 +39,7 @@ local a = t :: {x: number}
 
 An issue surrounding table literals and indexers has been fixed:
 
-```lua
+```luau
 type RecolorMap = {[string]: RecolorMap | Color3}
 
 local hatRecolorMap: RecolorMap = {
@@ -61,7 +61,7 @@ When a type error involves a union (or an option), we now provide more context i
 
 For instance, given the following code:
 
-```lua
+```luau
 --!strict
 
 type T = {x: number}
@@ -71,7 +71,7 @@ local x: T? = {w=4}
 
 We now report the following:
 
-```lua
+```luau
 Type 'x' could not be converted into 'T?'
 caused by:
   None of the union options are compatible. For example: Table type 'x' not compatible with type 'T' because the former is missing field 'x'

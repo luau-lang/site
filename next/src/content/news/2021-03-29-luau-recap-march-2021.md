@@ -8,7 +8,7 @@ It's been a busy month in Luau!
 ## Typed variadics
 
 Luau supports *variadic* functions, meaning ones which can take a variable number of arguments (varargs!) but previously there was no way to specify their type. Now you can!
-```lua
+```luau
 function f(x: string, ...: number)
   print(x)
   print(...)
@@ -19,7 +19,7 @@ f("lo", 5, 27)
 This function takes a string, plus as many numbers as you like, but if you try calling it with anything else, you'll get a type error, for example `f("oh", true)` gives an error "Type `boolean` could not be converted into `number`"
 
 Variadics can be used in function declarations, and function types, for example
-```lua
+```luau
 type T = {
   sum: (...number) -> number
 }

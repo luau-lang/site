@@ -9,7 +9,7 @@ Luau is the first programming language to put the power of semantic subtyping in
 ## Minimizing false positives
 
 One of the issues with type error reporting in tools like the Script Analysis widget in Roblox Studio is *false positives*. These are warnings that are artifacts of the analysis, and don’t correspond to errors which can occur at runtime. For example, the program
-```lua
+```luau
   local x = CFrame.new()
   local y
   if (math.random()) then
@@ -30,7 +30,7 @@ While inaccuracies are inevitable, we try to remove them whenever possible, sinc
 ## Subtyping as a source of false positives
 
 One of the sources of false positives in Luau (and many other similar languages like TypeScript or Flow) is *subtyping*. Subtyping is used whenever a variable is initialized or assigned to, and whenever a function is called: the type system checks that the type of the expression is a subtype of the type of the variable. For example, if we add types to the above program
-```lua
+```luau
   local x : CFrame = CFrame.new()
   local y : Vector3 | CFrame
   if (math.random()) then
@@ -45,7 +45,7 @@ then the type system checks that the type of `CFrame` multiplication is a subtyp
 Subtyping is a very useful feature, and it supports rich type constructs like type union (`T | U`) and intersection (`T & U`). For example, `number?` is implemented as a union type `(number | nil)`, inhabited by values that are either numbers or `nil`.
 
 Unfortunately, the interaction of subtyping with intersection and union types can have odd results. A simple (but rather artificial) case in older Luau was:
-```lua
+```luau
   local x : (number?) & (string?) = nil
   local y : nil = nil
   y = x -- Type '(number?) & (string?)' could not be converted into 'nil'
@@ -131,7 +131,7 @@ We can reduce graph coloring to semantic subtyping by coding up a graph as a Lua
 
 For example, coloring a three-node, two color graph can be done using types:
 
-```lua
+```luau
 type Red = "red"
 type Blue = "blue"
 type Color = Red | Blue
@@ -145,7 +145,7 @@ function which returns `false` when a constraint is violated. Each
 overload encodes one constraint. For example a line has constraints
 saying that adjacent nodes cannot have the same color:
 
-```lua
+```luau
 type Line = Coloring
   & ((Red) -> (Red) -> (Color) -> false)
   & ((Blue) -> (Blue) -> (Color) -> false)
@@ -155,7 +155,7 @@ type Line = Coloring
 
 A triangle is similar, but the end points also cannot have the same color:
 
-```lua
+```luau
 type Triangle = Line
   & ((Red) -> (Color) -> (Red) -> false)
   & ((Blue) -> (Color) -> (Blue) -> false)
@@ -202,17 +202,17 @@ Because of these performance issues, we still use syntactic subtyping as our fir
 Off-the-shelf semantic subtyping is slightly different from what is implemented in Luau, because it requires models to be *set-theoretic*, which requires that inhabitants of function types “act like functions.” There are two reasons why we drop this requirement.
 
 **Firstly**, we normalize function types to an intersection of functions, for example a horrible mess of unions and intersections of functions:
-```
+```luau
 ((number?) -> number?) | (((number) -> number) & ((string?) -> string?))
 ```
 normalizes to an overloaded function:
-```
+```luau
 ((number) -> number?) & ((nil) -> (number | string)?)
 ```
 Set-theoretic semantic subtyping does not support this normalization, and instead normalizes functions to *disjunctive normal form* (unions of intersections of functions). We do not do this for ergonomic reasons: overloaded functions are idiomatic in Luau, but DNF is not, and we do not want to present users with such non-idiomatic types.
 
 Our normalization relies on rewriting away unions of function types:
-```
+```luau
 ((A) -> B) | ((C) -> D)   →   (A & C) -> (B | D) 
 ```
 This normalization is sound in our model, but not in set-theoretic models.
@@ -228,7 +228,7 @@ For these two reasons (which are largely about ergonomics rather than anything t
 The other difference between Luau’s type system and off-the-shelf semantic subtyping is that Luau does not support all negated types.
 
 The common case for wanting negated types is in typechecking conditionals:
-```lua
+```luau
 -- initially x has type T
 if (type(x) == "string") then
   --  in this branch x has type T & string
@@ -284,9 +284,9 @@ If you want to find out more about Luau and semantic subtyping, you might want t
 
 Some other languages which support semantic subtyping…
 
-* ℂDuce <https://www.cduce.org/>
-* Ballerina <https://ballerina.io>
-* Elixir <https://elixir-lang.org/>
-* eqWAlizer <https://github.com/WhatsApp/eqwalizer>
+* [ℂDuce](<https://www.cduce.org/>)
+* [Ballerina](<https://ballerina.io>)
+* [Elixir](<https://elixir-lang.org/>)
+* [eqWAlizer](<https://github.com/WhatsApp/eqwalizer>)
 
 And if you want to see the production code, it's in the C++ definitions of [tryUnifyNormalizedTypes](https://github.com/Roblox/luau/blob/d6aa35583e4be14304d2a17c7d11c8819756beb6/Analysis/src/Unifier.cpp#L868) and [NormalizedType](https://github.com/Roblox/luau/blob/d6aa35583e4be14304d2a17c7d11c8819756beb6/Analysis/include/Luau/Normalize.h#L134) in the [open source Luau repo](https://github.com/Roblox/luau).

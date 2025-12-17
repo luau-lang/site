@@ -9,7 +9,7 @@ A common problem that Luau has is that it primarily works by inspecting expressi
 
 There are some important cases where this doesn't produce a helpful result.  Take this function for instance:
 
-```lua
+```luau
 function find_first_if(vec, f)
     for i, e in ipairs(vec) do
         if f(e) then
@@ -39,7 +39,7 @@ Please try it out and let us know what you think!
 
 We have a known bug with certain kinds of cyclic types when lower-bounds calculation is enabled.  The following, for instance, is known to be problematic.
 
-```lua
+```luau
 type T = {T?}? -- spuriously reduces to {nil}?
 ```
 
@@ -49,7 +49,7 @@ We hope to have this fixed soon.
 
 Previously, the only way to create a sealed table was by with a literal empty table.  We have relaxed this somewhat: Any table created by a `{}` expression is considered to be unsealed within the scope where it was created:
 
-```lua
+```luau
 local T = {}
 T.x = 5 -- OK
 

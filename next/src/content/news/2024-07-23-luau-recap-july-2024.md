@@ -39,7 +39,7 @@ There are many other small improvements in generated code performance and size a
 
 For a better control of what code runs natively, we have introduced new syntax for function attributes:
 
-```lua
+```luau
 @native -- function compiles natively
 local function foo()
     ...
@@ -55,7 +55,7 @@ In certain situations, this means that the native compiler cannot be sure about 
 
 Consider a simple function, working on a few values:
 
-```lua
+```luau
 local function MulAddScaled(a, b, c)
     return a * b * 0.75 + c * 0.25
 end
@@ -65,7 +65,7 @@ Native compiler assumes that operations are most likely being performed on numbe
 
 But what if the function is actually called with a vector type?
 
-```lua
+```luau
 local intlPos = MulAddScaled(Part.Position, v, vector(12, 0, 0))
 ```
 
@@ -73,7 +73,7 @@ To handle this, a slower path was generated to handle any other potential type o
 
 When we announced the last update, we had already added some support for following the types used as arguments.
 
-```lua
+```luau
 local function MulAddScaled(a: vector, b: vector, c: vector)
     return a * b * 0.75 + c * 0.25
 end
@@ -83,7 +83,7 @@ end
 
 Since then, we have extended this to support type information on locals, following complex types and even inferring results of additional operations.
 
-```lua
+```luau
 type Vertex = { p: vector, uv: vector, n: vector, t: vector, b: vector, h: number }
 type Mesh = { vertices: {Vertex}, indices: {number} }
 
@@ -134,7 +134,7 @@ For example, both 10000000000000000 and 9223372036854775808 are larger than 2^53
 In cases where rounding takes place, you will get a warning message.
 If the large value is intended and rounding can be ignored, just add ".0" to the number to remove the warning:
 
-```lua
+```luau
 local a = 10000000000000001 -- Number literal exceeded available precision and was truncated to closest representable number
 local b = 10000000000000001.0 -- Ok, but rounds to 10000000000000000
 ```
@@ -143,7 +143,7 @@ local b = 10000000000000001.0 -- Ok, but rounds to 10000000000000000
 
 It is now possible to start your union and intersection types with a symbol. This can help align the type components more cleanly:
 
-```lua
+```luau
 type Options =
     | { tag: "cat", laziness: number }
     | { tag: "dog", happiness: number }

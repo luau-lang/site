@@ -7,7 +7,7 @@ It's been a bit of a quiet month.  We mostly have small optimizations and bugfix
 
 It is now allowed to define functions on sealed tables that have string indexers.  These functions will be typechecked against the indexer type.  For example, the following is now valid:
 
-```lua
+```luau
 local a : {[string]: () -> number} = {}
 
 function a.y() return 4 end -- OK
@@ -15,7 +15,7 @@ function a.y() return 4 end -- OK
 
 Autocomplete will now provide string literal suggestions for singleton types.  eg
 
-```lua
+```luau
 local function f(x: "a" | "b") end
 f("_") -- suggest "a" and "b"
 ```
@@ -25,7 +25,7 @@ Improve error recovery in the case where we encounter a type pack variable in a 
 When code does not pass enough arguments to a variadic function, the error feedback is now better.
 
 For example, the following script now produces a much nicer error message:
-```lua
+```luau
 type A = { [number]: number }
 type B = { [number]: string }
 
@@ -38,7 +38,7 @@ local b: B = a
 ```
 
 If the following code were to error because `Hello` was undefined, we would erroneously include the comment in the span of the error.  This is now fixed.
-```lua
+```luau
 type Foo = Hello -- some comment over here
 ```
 

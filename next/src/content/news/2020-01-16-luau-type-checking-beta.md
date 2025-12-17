@@ -45,7 +45,7 @@ Strict mode is expected to be more useful for more complex programs, but as a si
  
 Strict mode is not enabled by default. To turn it on, you need to add a special comment to the top of your source file.
 
-```lua
+```luau
 --!strict
 ```
 
@@ -59,7 +59,7 @@ You can write type annotations in 5 places:
  * In a type alias, and
  * After an expression using the new as keyword.
 
-```lua
+```luau
 local foo: number = 55
 
 function is_empty(param: string) => boolean
@@ -81,11 +81,11 @@ The special type any signifies that Luau shouldn’t try to track the type at al
 
 ### Tables
 Table types are surrounded by curly braces. Within the braces, you write a list of name: type pairs:
-```lua
+```luau
 type Point = {x: number, y: number}
 ```
 Table types can also have indexers. This is how you describe a table that is used like a hash table or an array.
-```lua
+```luau
 type StringArray = {[number]: string}
 
 type StringNumberMap = {[string]: number}
@@ -94,18 +94,18 @@ type StringNumberMap = {[string]: number}
 ### Functions
 
 Function types use a `=>` to separate the argument types from the return types.
-```lua
+```luau
 type Callback = (string) => number
 ```
 If a function returns more than one value, put parens around them all.
-```lua
+```luau
 type MyFunction = (string) => (boolean, number)
 ```
 
 ### Unions
 
 You can use a `|` symbol to indicate an “or” combination between two types. Use this when a value can have different types as the program runs.
-```lua
+```luau
 function ordinals(limit)
     local i = 0
     return function() => number | nil
@@ -123,7 +123,7 @@ end
 ### Options
 
 It’s pretty commonplace to have optional data, so there is extra syntax for describing a union between a type and `nil`. Just put a `?` on the end. Function arguments that can be `nil` are understood to be optional.
-```lua
+```luau
 function foo(x: number, y: string?) end
 
 foo(5, 'five') -- ok
@@ -134,7 +134,7 @@ foo(5, 4) -- not ok
 ### Type Inference
 
 If you don’t write a type annotation, Luau will try to figure out what it is.
-```lua
+```luau
 --!strict
 local Counter = {count=0}
 

@@ -12,7 +12,7 @@ Today I’m incredibly excited to announce that the first release of [Luau](http
 When Luau code runs, every value has a certain type at runtime - a kind of value it stores. It could be a number, a string, a table, a Roblox Instance or one of many others. Thing is, some operations work on some types but don’t work on others!
 
 Consider this:
-```lua
+```luau
 local p = Instance.new("Part")
 p.Positio = Vector3.new(1,2,3)
 ```
@@ -45,7 +45,7 @@ If you really want your code to be rock solid, we recommend trying out strict mo
 ## What are type annotations and how do I use them?
 
 Glad you asked! (please pretend you did) Type annotations are a way to tell the type checker what the type of a variable is. Consider this code in strict mode:
-```lua
+```luau
 function add(x, y)
     return x + y
 end
@@ -53,14 +53,14 @@ end
 Is this code correct? Well, that depends. `add(2, 3)` will work just fine. `add(Vector3.new(1, 2, 3), Vector3.new(4, 5, 6))` will work as well. But `add({}, nil)` probably isn’t a good idea.
 
 In strict mode, we will insist that the type checker knows the type of all variables, and you’ll need to help the type checker occasionally - by adding types after variable names separated by `:`:
-```lua
+```luau
 function add(x: number, y: number)
     return x + y
 end
 ```
 If you want to tell the type checker “assume this value can be anything and I will take responsibility”, you can use `any` type which will permit any value of any type.
 
-If you want to learn more about the type annotation syntax, you should read this [documentation on syntax](https://roblox.github.io/luau/syntax.html#type-annotations). We also have a somewhat more complete guide to type checking than this post can provide, that goes into more details on table types, OOP, Roblox classes and enums, interaction with require and other topics - [read it if you’re curious!](https://roblox.github.io/luau/typecheck.html).
+If you want to learn more about the type annotation syntax, you should read this [documentation on syntax](https://luau.org/syntax#type-annotations). We also have a somewhat more complete guide to type checking than this post can provide, that goes into more details on table types, OOP, Roblox classes and enums, interaction with require and other topics - [read it if you’re curious!](https://luau.org/typecheck).
 
 ## What happens when I get a type error?
 
