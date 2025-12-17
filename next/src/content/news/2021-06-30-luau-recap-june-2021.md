@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: June 2021"
 date: 2021-06-30
 ---

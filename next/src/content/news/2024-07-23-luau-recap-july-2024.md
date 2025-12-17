@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: July 2024"
 date: 2024-07-23
 ---

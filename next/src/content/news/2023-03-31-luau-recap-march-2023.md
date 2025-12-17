@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: March 2023"
 date: 2023-03-31
 ---

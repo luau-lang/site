@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau origins and evolution"
 author: Arseny Kapoulkine
 date: 2022-11-04

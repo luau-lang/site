@@ -1,5 +1,4 @@
 ---
-layout: single
 title: "String Interpolation"
 date: 2023-02-02
 ---

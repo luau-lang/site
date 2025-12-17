@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: February 2021"
 date: 2021-03-01
 ---

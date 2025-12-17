@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: October 2023"
 date: 2023-11-01
 ---

@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Semantic Subtyping in Luau"
 author: Alan Jeffrey
 date: 2022-10-31

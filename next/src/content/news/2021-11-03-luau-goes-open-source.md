@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Goes Open-Source"
 date: 2021-11-03
 ---

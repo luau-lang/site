@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: October 2021"
 date: 2021-10-31
 ---

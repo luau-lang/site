@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: March 2022"
 date: 2022-03-31
 ---

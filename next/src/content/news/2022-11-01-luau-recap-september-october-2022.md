@@ -1,5 +1,4 @@
 ---
-layout: single
 title:  "Luau Recap: September & October 2022"
 date: 2022-11-01
 ---
