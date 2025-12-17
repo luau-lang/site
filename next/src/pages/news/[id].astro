@@ -46,20 +46,24 @@ const { Content } = await render(post);
 </StarlightPage>
 
 <style>
-    .post-date {
-        color: var(--sl-color-gray-3);
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-    }
-    .post-nav {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--sl-color-gray-5);
-    }
-    .nav-link {
-        margin: 0;
-    }
+.post-date {
+    color: var(--sl-color-gray-3);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+.post-nav {
+    display: grid;
+    grid-template-columns: 100%;
+    gap: 1rem;
+
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+}
+
+@media (min-width: 50rem) {
+   	.post-nav {
+    	   grid-template-columns: 1fr 1fr 1fr;
+   	}
+}
 </style>
