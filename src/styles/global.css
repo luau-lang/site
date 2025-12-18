@@ -220,3 +220,7 @@
 .sl-link-button.primary {
     color: var(--color-white);
 }
+
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6):not(:where(.not-content *)), .site-title, #_top {
+    font-weight: 800;
+}

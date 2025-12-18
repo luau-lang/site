@@ -1,4 +1,4 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, z} from 'astro:content';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
 
@@ -93,5 +93,9 @@ function createGlobLoadFn(
 
 export const collections = {
 	docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
-	news: defineCollection({ loader: newsLoader(), schema: docsSchema() }),
+	news: defineCollection({ loader: newsLoader(), schema: docsSchema({
+  	extend: z.object({
+    	date: z.date()
+  	})
+	}) }),
 };

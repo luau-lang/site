@@ -22,9 +22,9 @@ const { icon, title, color } = Astro.props;
 <style>
 	@layer starlight.components {
 	    .card-colored {
-			--sl-color-text-accent: var(--color-blue-300);
 			--sl-color-text: var(--color-white);
 			color: var(--sl-color-text);
+			font-weight: 500;
 		}
 
 		.card {
@@ -38,7 +38,7 @@ const { icon, title, color } = Astro.props;
 			gap: clamp(0.5rem, calc(0.125rem + 1vw), 1rem);
 		}
 		.title {
-			font-weight: 600;
+			font-weight: 800;
 			font-size: var(--sl-text-h4);
 			color: var(--sl-color-text);
 			line-height: var(--sl-line-height-headings);
@@ -60,6 +60,9 @@ const { icon, title, color } = Astro.props;
 		/* dark theme for colored cards */
 		:root
 		{
+		    .card-colored {
+				--sl-color-text-accent: var(--color-extended-blue-400);
+			}
     	    .card-colored.card-bg-red {
     			background-color: var(--color-extended-red-700);
     			--sl-card-border: var(--color-extended-red-600);
@@ -95,6 +98,9 @@ const { icon, title, color } = Astro.props;
 		/* light theme for colored cards */
 		:root[data-theme='light']
 		{
+    		.card-colored {
+    		  --sl-color-text-accent: var(--color-extended-blue-1100);
+    		}
     	    .card-colored.card-bg-red {
     			background-color: var(--color-extended-red-600);
     			--sl-card-border: var(--color-extended-red-1000);
