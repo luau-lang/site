@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-Luau supports a gradual type system through the use of type annotations and type inference.
+Luau supports a gradual type system through the use of type annotations and type inference. These types are used to provide warnings, errors, and suggestions for our developers. Type checking helps you find bugs early - while you're writing code - rather than discovering when your program crashes at runtime.
 
 ## Type inference modes
 
@@ -15,22 +15,54 @@ Luau offers three different modes that control how strictly it checks your types
 * `--!nonstrict` (default), and
 * `--!strict`
 
-`nocheck` mode will simply not start the type inference engine whatsoever.
+##### `--!nocheck`
 
-As for the other two, they are largely similar but with one important difference: in nonstrict mode, we infer `any` for most of the types if we couldn't figure it out early enough. This means that given this snippet:
+`nocheck` mode completely disables the type inference engine for the file. 
 
-```lua
+With this mode enabled, we don't provide any feedback on the types, so scripts with errors (like following example that tries to add a `string` and a `number`) will not raise a typecheck error, even though the program errors when executed.
+
+Try pressing the `Check` and `Run` buttons to try out this snippet:
+
+```luau
+--!nocheck
 local foo = 1
+local x = "hello " + foo -- No error, type checking is disabled
+print(foo)
 ```
 
-We can infer `foo` to be of type `number`, whereas the `foo` in the snippet below is inferred `any`:
+If, instead, you want to catch these kinds of errors before running your code, you can enable type checking with the `--!nonstrict` or `--!strict` modes. Both of these modes analyze your types and provide helpful feedback, but they differ slightly in how strictly they enforce type safety.
 
-```lua
+##### `--!nonstrict`
+
+In `nonstrict` mode, the type checker is more forgiving: if we can't figure out what type something is early on, we infer the type could be anything (the `any` type) and let you proceed without errors.
+
+This means that if we define a variable without initializing it or specifying its type:
+
+```luau
+--!nonstrict
+
 local foo
 foo = 1
+foo = "hello " + foo -- Still no error, foo is 'any'
 ```
 
-However, given the second snippet in strict mode, the type checker would be able to infer `number` for `foo`.
+The type checker can't tell what type `foo` should be when it's first declared, so in `nonstrict` mode it infers `any` - allowing the addition to proceed without warnings, even though it will error at runtime.
+
+##### `--!strict`
+
+In `strict` mode, Luau is is smarter about tracking types across statements. Given the previous example now in `strict` mode:
+
+```luau
+--!strict
+
+local foo
+foo = 1
+foo = "hello " + foo
+```
+
+We finally see an error! The type checker sees `foo = 1` on line 4 and infers that `foo` must be a `number`. Then, when you try to add `"hello "` and `foo`, `strict` mode catches our error of trying to add a `string` and a `number`, which isn't allowed. (tip: hover over the erroneous lines to see the error message!)
+
+In `strict` mode, variables won't be inferred as `any` unless you explicitly annotate them that way. This means the type checker works harder to figure out what types your variables should be, catching more potential bugs before your code runs.
 
 ## Structural type system
 
