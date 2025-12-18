@@ -23,6 +23,7 @@ const { icon, title, color } = Astro.props;
 	@layer starlight.components {
 	    .card-colored {
 			--sl-color-text: var(--color-white);
+			--sl-color-white: var(--color-white);
 			color: var(--sl-color-text);
 			font-weight: 500;
 		}
@@ -99,7 +100,7 @@ const { icon, title, color } = Astro.props;
 		:root[data-theme='light']
 		{
     		.card-colored {
-    		  --sl-color-text-accent: var(--color-extended-blue-1100);
+    		  --sl-color-text-accent: var(--color-extended-blue-900);
     		}
     	    .card-colored.card-bg-red {
     			background-color: var(--color-extended-red-600);
