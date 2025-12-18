@@ -29,6 +29,9 @@ export default defineConfig({
     starlight({
       title: "Luau",
       favicon: "/favicon.svg",
+      head: [
+        { tag: "link", attrs: { rel: "alternate", type: "application/rss+xml", title: "Luau News", href: "https://luau.org/feed.xml" }}
+      ],
       logo: {
         src: "./src/assets/images/luau-logo.svg",
         alt: "The official logo of the Luau programming language, a white square embedded in a blue square on a 15 degree tilt with the word Luau printed on it."

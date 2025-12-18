@@ -1,7 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
-import { blogSchema } from 'starlight-blog/schema'
 
 import { glob, type Loader, type LoaderContext } from 'astro/loaders';
 
@@ -94,7 +93,5 @@ function createGlobLoadFn(
 
 export const collections = {
 	docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
-	news: defineCollection({ loader: newsLoader(), schema: docsSchema({
-      extend: (context) => blogSchema(context)
-    }) }),
+	news: defineCollection({ loader: newsLoader(), schema: docsSchema() }),
 };
