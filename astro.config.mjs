@@ -43,6 +43,7 @@ export default defineConfig({
       ],
       components: {
         Header: "./src/components/Header.astro",
+        PageFrame: "./src/components/PageFrame.astro",
         ContentPanel: "./src/components/ContentPanel.astro",
       },
       social: [
