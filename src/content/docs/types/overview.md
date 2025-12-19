@@ -25,6 +25,7 @@ Try pressing the `Check` and `Run` buttons to try out this snippet:
 
 ```luau
 --!nocheck
+
 local foo = 1
 local x = "hello " + foo -- No error, type checking is disabled
 print(foo)
@@ -64,7 +65,9 @@ We see an error! The type checker sees `foo = 1` on line 4 and infers that `foo`
 
 ## Structural type system
 
-Luau's type system is structural by default, which is to say that we inspect the shape of two tables to see if they are similar enough. This was the obvious choice because Lua 5.1 is inherently structural.
+Luau's type system is structural by default, which is to say that we inspect the shape of two tables to see if they are similar enough. This was chosen because Lua 5.1 is inherently structural.
+
+Take, for example, these two tables `A` and `B`:
 
 ```lua
 type A = {x: number, y: number, z: number?}
@@ -77,31 +80,73 @@ local a2: A = b1 -- ok
 local b2: B = a1 -- not ok
 ```
 
-## Type casts
+## Type annotations
 
-Expressions may be typecast using `::`.  Typecasting is useful for specifying the type of an expression when the automatically inferred type is too generic.
+While Luau's type system can infer many types, you can also annotate types using a colon (`:`) followed by the type:
 
-For example, consider the following table constructor where the intent is to store a table of names:
-```lua
-local myTable = {names = {}}
-table.insert(myTable.names, 42)         -- Inserting a number ought to cause a type error, but doesn't
+```luau
+-- Variable annotations
+local age: number = 25
+local names: {string} = {"Alice", "Bob"}
+
+-- Function annotations
+function greet(name: string): string
+    return "Hello, " .. name
+end
+
+-- Table type annotations
+type Person = {
+    name: string,
+    age: number,
+    email: string?
+}
+
+local user: Person = {
+    name = "Alice",
+    age = 30
+}
+
+print(greet(user.name))
 ```
 
-In order to specify the type of the `names` table a typecast may be used: 
+## Type casts
+
+Sometimes, you might want to specify the type of an expression when the automatically inferred type is too generic. In these cases, you can use a type cast with the `::` operator to tell Luau what type something should be. 
+
+For example, consider the following table constructor where the intent is to store a table of names:
+
+```lua
+local myTable = {names = {}}
+table.insert(myTable.names, 42)
+```
+
+Inserting a number into `names` ought to cause a type error, but doesn't.
+
+In order to specify the type of the `names` table, we can use a typecast: 
 
 ```lua
 local myTable = {names = {} :: {string}}
-table.insert(myTable.names, 42)         -- not ok, invalid 'number' to 'string' conversion
+table.insert(myTable.names, 42)
 ```
 
-A typecast itself is also type checked to ensure that one of the conversion operands is the subtype of the other or `any`:
+Now, inserting a number raises a type error, informing the user that there is an `invalid 'number' to 'string' conversion`.
+
+### Type cast rules
+
+Type casts themselves are also type checked to ensure that one of the conversion operands is the subtype of the other or `any`:
+
 ```lua
 local numericValue = 1
 local value = numericValue :: any             -- ok, all expressions may be cast to 'any'
 local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'boolean' conversion
 ```
 
-When typecasting a variadic or the result of a function with multiple returns, only the first value will be preserved. The rest will be discarded.
+This prevents unsafe casts between incompatible types.
+
+#### Type casts with multiple return values
+
+When typecasting a variadic or the result of a function with multiple returns, only the first value will be preserved, and the rest discarded:
+
 ```luau
 function returnsMultiple(...): (number, number, number)
     print(... :: string) -- "x"
