@@ -70,6 +70,8 @@ Luau's type system is structural by default, which is to say that we inspect the
 Take, for example, these two tables `A` and `B`:
 
 ```lua
+--!hidden FIXME(LUAU): there's a bug in the new type solver unfortunately
+--!hidden solver=old
 type A = {x: number, y: number, z: number?}
 type B = {x: number, y: number, z: number}
 
