@@ -1,5 +1,6 @@
 ---
 import MobileMenuToggle from '@astrojs/starlight/components/MobileMenuToggle.astro'
+import { Image } from 'astro:assets';
 
 const { hasSidebar } = Astro.locals.starlightRoute;
 
@@ -25,8 +26,11 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 	<div class="main-frame"><slot /></div>
 	{
      	hasFooter && <footer class="footer">
-          <div class="footer-content">
+          <div class="copyright">
               &COPY; {new Date().getFullYear()} Roblox
+          </div>
+          <div class="tagline">
+              <Image src="/images/meowluau.png" alt="A blob cat emoji holding the Luau logo" width="32" height="32" />
           </div>
         </footer>
 	}
@@ -53,6 +57,9 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 		}
 
 		.footer {
+    		display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
 			width: 100%;
 			height: var(--sl-nav-height);
 			margin-top: calc(-1 var(--sl-nav-height));
@@ -62,8 +69,9 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 			background-color: var(--sl-color-bg-nav);
 		}
 
-		.footer-content {
-    		text-align: center;
+		.tagline {
+    		text-align: right;
+            padding-top: 8px;
 		}
 
 		:global([data-has-sidebar]) .header {
