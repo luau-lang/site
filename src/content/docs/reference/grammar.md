@@ -6,7 +6,7 @@ sidebar:
 ---
 
 This is the complete syntax grammar for Luau in EBNF. More information about the terminal nodes STRING and NUMBER
-is available in the [syntax section](syntax).
+is available in the [syntax section](../syntax).
 
 ```ebnf
 chunk ::= block

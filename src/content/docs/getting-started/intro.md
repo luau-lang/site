@@ -144,4 +144,4 @@ result = ispositive(1)
 
 ## Conclusions
 
-This has been a brief tour of the basic functionality of Luau, but there's lots more to explore. If you're interested in reading more, check out our main reference pages for [syntax](syntax) and [typechecking](typecheck).
+This has been a brief tour of the basic functionality of Luau, but there's lots more to explore. If you're interested in reading more, check out our main reference pages for [syntax](syntax) and [typechecking](types).

@@ -23,7 +23,7 @@ local function tree_insert(tree, x)
 end
 ```
 
-Note that future versions of Lua extend the Lua 5.1 syntax with more  features; Luau does  support string literal extensions but does not support other 5.x additions; for details please refer to [compatibility section](compatibility).
+Note that future versions of Lua extend the Lua 5.1 syntax with more  features; Luau does  support string literal extensions but does not support other 5.x additions; for details please refer to [compatibility section](../compatibility).
 
 The rest of this document documents additional syntax used in Luau.
 
@@ -179,7 +179,7 @@ local M = require(Other.Module)
 local a: M.Point = {x=5, y=6}
 ```
 
-For more information please refer to [typechecking documentation](typecheck).
+For more information please refer to [typechecking documentation](../types).
 
 ## If-then-else expressions
 

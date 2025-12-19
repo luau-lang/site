@@ -41,7 +41,7 @@ Since several features were removed from Lua 5.1 for sandboxing reasons, this ta
 | `loadstring` bytecode and `string.dump` | exposing bytecode is dangerous for sandboxing reasons |
 | `newproxy` can only be called with nil or boolean | extra flexibility removed for sandboxing |
 
-Sandboxing challenges are [covered in the dedicated section](sandbox).
+Sandboxing challenges are [covered in the dedicated section](../sandbox).
 
 ## Lua 5.2
 
