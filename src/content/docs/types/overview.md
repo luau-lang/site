@@ -50,7 +50,7 @@ The type checker can't tell what type `foo` should be when it's first declared, 
 
 ##### `--!strict`
 
-In `strict` mode, Luau is is smarter about tracking types across statements. Given the previous example now in `strict` mode:
+In `strict` mode, Luau is smarter about tracking types across statements. Given the previous example now in `strict` mode:
 
 ```luau
 --!strict
@@ -60,9 +60,7 @@ foo = 1
 foo = "hello " + foo
 ```
 
-We finally see an error! The type checker sees `foo = 1` on line 4 and infers that `foo` must be a `number`. Then, when you try to add `"hello "` and `foo`, `strict` mode catches our error of trying to add a `string` and a `number`, which isn't allowed. (tip: hover over the erroneous lines to see the error message!)
-
-In `strict` mode, variables won't be inferred as `any` unless you explicitly annotate them that way. This means the type checker works harder to figure out what types your variables should be, catching more potential bugs before your code runs.
+We see an error! The type checker sees `foo = 1` on line 4 and infers that `foo` must be a `number`. Then, when you try to add `"hello "` and `foo`, `strict` mode catches our error of trying to add a `string` and a `number`, which isn't allowed. (tip: hover over the erroneous lines to see the error message!)
 
 ## Structural type system
 
