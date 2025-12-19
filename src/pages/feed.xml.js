@@ -12,7 +12,7 @@ export async function GET(context) {
     // `<title>` field in output xml
     title: 'Luau News',
     // `<description>` field in output xml
-    description: 'A fast, small, safe, gradually typed embeddable scripting language derived from Lua',
+    description: 'A small, fast, and embeddable programming language based on Lua with a gradual type system.',
     site: "https://luau.org",
     // (optional) inject custom xml
     customData: `<language>en-us</language>`,
@@ -25,3 +25,5 @@ export async function GET(context) {
     })),
   });
 }
+
+// LU-wow
