@@ -16,7 +16,7 @@ We have added the [vector library](https://rfcs.luau.org/vector-library.html) to
 Before this, the type was available, but the embedder had to provide construction and methods to work with it.
 It also meant that it lacked built-in call optimizations for common methods.
 
-With the built-in library, we get fast-call optimization, support for vector contants and constant-folding in the compiler and native code generation comes out of the box!
+With the built-in library, we get fast-call optimization, support for vector constants and constant-folding in the compiler and native code generation comes out of the box!
 
 In the `math` library, we have added [`math.map`](https://rfcs.luau.org/function-math-map.html), [`math.lerp`](https://rfcs.luau.org/function-math-lerp.html) and [`math.isnan`/`math.isinf`/`math.isfinite`](https://rfcs.luau.org/math-isnan-isfinite-isinf.html) functions.
 
@@ -106,15 +106,15 @@ Unused stores of vectors into VM registers can also now be removed.
 Multiple optimizations have been done to ensure our basic blocks are as long as possible without being broken up by control flow.
 The longer the basic block, the easier it is to optimize and reuse values.
 
-We have updated lowering of `bit32.btest` to use a new `CMP_INT` instruction which no longer causes that call to generate a branch.
+We have updated the lowering of `bit32.btest` to use a new `CMP_INT` instruction which no longer causes that call to generate a branch.
 
 Equality comparisons `==`/`~=` are also performed without branching now.
 With some extra handling, checks like `type(x) == "number"` of `typeof(x) == "string"` are now transformed into a tag check or a direct string pointer comparison, all without introducing branches.
 
-Operators `and`/`or` for a simple value will use new `SELECT_IF_TRUTHY` instruction which will also keep the basic block linear.
+Operators `and`/`or` for a simple value will use the new `SELECT_IF_TRUTHY` instruction which will also keep the basic block linear.
 
 An additional optimization to keep blocks linear is a specialized instruction `GET_CACHED_IMPORT` for resolving imports.
-Multiple calls to global functions can be in a block without creating unneccessary diamond shapes in the control-flow graph.
+Multiple calls to global functions can be in a block without creating unnecessary diamond shapes in the control-flow graph.
 
 Finally, we are now lifting the checks for safe execution environment to the start of the block and also skipping tag checks on type-annotated function arguments that are not being modified inside the function.
 
