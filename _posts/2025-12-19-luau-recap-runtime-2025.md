@@ -75,14 +75,46 @@ String concatenation and string interpolation will also constant-fold for consta
 Inlining has received multiple improvements.
 
 Inlining cost model is now aware of the work constant-folding has done and will not consider constant expressions to have a cost of evaluation.
-This means that functions computing a constant based on other global constants is a very likely inlining candidate.
-Further improvements made it so that code which can be considered dead based on the state of global constant locals does not increase the cost.
+
+This means that functions computing a constant based on other global constants is a very likely inlining candidate:
+```luau
+local c = 17.0
+
+-- inlining cost of 0 (constant)
+local function value()
+    return c * 2.0 - 1.0
+end
+```
+
+Further improvements made it so that code which can be considered dead based on the state of global constant locals does not increase the cost:
+```luau
+local debug = false
+
+local function compute()
+    if debug then
+        -- expensive logging code
+    end
+
+    -- inlining only considers cost of the non-debug code here
+end
+```
 
 Inlining can now propagate constant variables that are not representable as literal values.
 For example, passing a function into a function as an argument can cause the argument function to be inlined!
 
 And the biggest change is that inlining cost model is now updated per call to take constant arguments into the account.
-This means that a large function can sometimes collapse into a small one, which is much more suitable for inlining.
+This means that a large function can sometimes collapse into a small one, which is much more suitable for inlining:
+```luau
+local function getValue(name: string): number?
+    if name == 'a' then return -1.0
+    elseif name == 'b' then return 2.0 * math.pi
+    elseif name == 'c' then return custom
+    else return nil end
+end
+
+-- For any name, function collapses into a single simple return statement with a low inline cost
+local v = getValue("b")
+```
 
 Some smaller features are rewriting `const * var` and `const + var` operations into `var * const` and `var + const` when `var` is known to be a number from type annotations.
 This allows the expression to use one bytecode instruction instead of two for a small performance improvement.
