@@ -11,7 +11,7 @@ Because of the amount of time that passed, in this part of the recap, we are goi
 
 ## New libraries and functions
 
-We have added the [vector library](https://rfcs.luau.org/vector-library.html) to construct and work with out native `vector` type.
+We have added the [vector library](https://rfcs.luau.org/vector-library.html) to construct and work without native `vector` type.
 
 Before this, the type was available, but the embedder had to provide construction and methods to work with it.
 It also meant that it lacked built-in call optimizations for common methods.
@@ -24,13 +24,13 @@ Finally, for the `buffer` library, [`buffer.readbits`/`buffer.writebits`](https:
 
 ## Require by string
 
-After the earlier approval of the require-by-string RFC, we have build a separate Luau.Require library that any project can include.
+After the earlier approval of the require-by-string RFC, we have built a separate Luau.Require library that any project can include.
 
 It will bring the common semantics of the string require while supporting the full set of features such as alias and configuration resolution while remaining customizable in different environments with both real and virtual file systems representing the Luau file hiearchy.
 
 ## Runtime changes and improvements
 
-A new `lua_newuserdatataggedwithmetatable` API let's you associate a tagged userdata object with a shared metatable and then create those object with metatable assignment in a single call.
+A new `lua_newuserdatataggedwithmetatable` API lets you associate a tagged userdata object with a shared metatable and then create those object with metatable assignment in a single call.
 In our applications, we have measured a 3x speedup of creating new userdata objects, which is especially important when they represent small and frequently allocated structures like colors or matrices.
 
 And speaking of userdata, Luau now guarantees that it will be suitable for objects that require 16 byte alignment. As long as you provide Luau with a global allocator which also respects that.
@@ -42,7 +42,7 @@ Previously, C functions could yield only once and couldn't yield from nested cal
 
 One limitation we still have is making nested yieldable protected calls. We will be looking into supporting that in the future.
 
-Protected calls using `pcall` or `xpcall` are now stackless when perfromed in a yieldable context.
+Protected calls using `pcall` or `xpcall` are now stackless when performed in a yieldable context.
 This means that calling those functions will not apply the C call depth limit to your Luau code.
 
 We will be looking into making those stackless even in non-yieldable contexts as well as improving overall performance of `pcall`/`xpcall` next year.
@@ -58,7 +58,7 @@ There were also some small bug fixes:
 - `xpcall` is consistent before and after target function yields
 
 Finally, a few new C API functions that weren't mentioned:
-- `lua_clonetable` let's you clone a table
+- `lua_clonetable` lets you clone a table
 - `lua_tolstringatom` is an alternative to `lua_tostringatom` but also provides you with the length of the string
 - `lua_unref` no longer accepts references that are not in the table
 
@@ -67,7 +67,7 @@ Finally, a few new C API functions that weren't mentioned:
 On the compiler side, we have made improvements to constant propagation, inlining and a few other things.
 
 With the introduction of the `vector` library mentioned earlier, we have provided constant propagation and type inference for vector library globals.
-Vector arithmetic and library functions are also constant-folded when possible and vector contants are embedded into the bytecode.
+Vector arithmetic and library functions are also constant-folded when possible and vector constants are embedded into the bytecode.
 
 Constant-folding has also been added to `string.char` and `string.sub` methods.
 String concatenation and string interpolation will also constant-fold for constant string or even when only some of the strings are constant.
