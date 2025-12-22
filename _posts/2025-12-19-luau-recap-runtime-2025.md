@@ -84,8 +84,8 @@ For example, passing a function into a function as an argument can cause the arg
 And the biggest change is that inlining cost model is now updated per call to take constant arguments into the account.
 This means that a large function can sometimes collapse into a small one, which is much more suitable for inlining.
 
-Some smaller features are rewriting `const*var` and `const+var` operations into `var*const` and `var+const` when `var` is known to be a number from type annotations.
-This allows the expression to use one bytecode instruction instead of two for a small perf improvement.
+Some smaller features are rewriting `const * var` and `const + var` operations into `var * const` and `var + const` when `var` is known to be a number from type annotations.
+This allows the expression to use one bytecode instruction instead of two for a small performance improvement.
 
 Finally, with all these optimizations, we have added a way for the embedder to disable them for a specific built-in function call in case it has a different overwritten meaning.
 
@@ -130,14 +130,57 @@ Userdata is actually very similar to buffers, using the same IR instructions for
 But with load-store propagation, we are able to remove temporary userdata allocation.
 Custom userdata types with proper IR hooks can now generate code that is very efficient without having to be built-in.
 
-In the future, we are looking to apply load-store propagation to table accesses.
+In the following example, we are reading a userdata field 'uv' from another userdata twice to access its components:
+```luau
+local function test(v: vertex)
+    return v.uv.x * v.uv.y
+end
+```
+
+Previously, this would have created the temporary 'v.uv' object twice:
+```
+  %6 = LOAD_POINTER R0
+  CHECK_USERDATA_TAG %6, 13i, exit(0)
+  %8 = BUFFER_READF32 %6, 24i, tuserdata
+  %9 = BUFFER_READF32 %6, 28i, tuserdata
+  CHECK_GC
+  %11 = NEW_USERDATA 8i, 12i
+  BUFFER_WRITEF32 %11, 0i, %8, tuserdata
+  BUFFER_WRITEF32 %11, 4i, %9, tuserdata
+  %20 = BUFFER_READF32 %11, 0i, tuserdata
+  %21 = FLOAT_TO_NUM %20
+  %28 = BUFFER_READF32 %6, 24i, tuserdata
+  %29 = BUFFER_READF32 %6, 28i, tuserdata
+  %31 = NEW_USERDATA 8i, 12i
+  BUFFER_WRITEF32 %31, 0i, %28, tuserdata
+  BUFFER_WRITEF32 %31, 4i, %29, tuserdata
+  STORE_POINTER R4, %31
+  STORE_TAG R4, tuserdata
+  %40 = BUFFER_READF32 %31, 4i, tuserdata
+  %41 = FLOAT_TO_NUM %40
+  %50 = MUL_NUM %21, %41
+```
+
+After new optimizations, we propagate the fields, remove unused temporary allocations and perform the target multiplication:
+```
+  %6 = LOAD_POINTER R0
+  CHECK_USERDATA_TAG %6, 13i, exit(0)
+  %8 = BUFFER_READF32 %6, 24i, tuserdata
+  %9 = BUFFER_READF32 %6, 28i, tuserdata
+  CHECK_GC
+  %21 = FLOAT_TO_NUM %8
+  %41 = FLOAT_TO_NUM %9
+  %50 = MUL_NUM %21, %41
+```
+
+In the future, we are looking to apply load-store propagation to table accessesas well.
 
 Another area of optimization that we are looking into are optimizations around implicit integer values.
 Operations like adding or subtracting integer numbers coming from buffers or `bit32` library results can now use integer CPU instructions automatically.
 Additional optimizations around int/uint/double conversions lets us stay longer with those integer values as long as results perfectly match the ones that double numbers would give.
 
 Other work we have done this year includes:
-- Arithmetic optimization for basic identities like `1 * a`, `a * 2 => a + a` and others
+- Arithmetic optimization for basic identities like `1 * a => a`, `a * 2 => a + a` and others
 - Optimization data now flows between separate basic blocks as long as they end up glued together in 1:1 relationship
 - Unused GC object stores to VM registers can now be removed as long as no one will observe their death by garbage collection
 - Float load/store has been separated from float/double conversion for better value reuse
