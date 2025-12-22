@@ -26,18 +26,18 @@ Finally, for the `buffer` library, [`buffer.readbits`/`buffer.writebits`](https:
 
 After the earlier approval of the require-by-string RFC, we have built a separate Luau.Require library that any project can include.
 
-It will bring the common semantics of the string require while supporting the full set of features such as alias and configuration resolution while remaining customizable in different environments with both real and virtual file systems representing the Luau file hiearchy.
+It will bring the common semantics of the string require while supporting the full set of features such as alias and configuration resolution while remaining customizable in different environments with both real and virtual file systems representing the Luau file hierarchy.
 
 ## Runtime changes and improvements
 
-A new `lua_newuserdatataggedwithmetatable` API lets you associate a tagged userdata object with a shared metatable and then create those object with metatable assignment in a single call.
+A new `lua_newuserdatataggedwithmetatable` API lets you create tagged userdata objects with an associated shared metatable (using `lua_setuserdatametatable`) in a single call.
 In our applications, we have measured a 3x speedup of creating new userdata objects, which is especially important when they represent small and frequently allocated structures like colors or matrices.
 
 And speaking of userdata, Luau now guarantees that it will be suitable for objects that require 16 byte alignment. As long as you provide Luau with a global allocator which also respects that.
 
 For lightuserdata, new `lua_rawgetp`/`lua_rawsetp`/`lua_rawgetptagged`/`lua_rawsetptagged` have been added to match Lua 5.2+ and allow you to index tables with lightuserdata keys directly and more performantly.
 
-Yieldable C functions can now call other yieldable functions using `luaL_callyieldable` method.
+Yieldable C functions can now call other yieldable functions using the `luaL_callyieldable` method.
 Previously, C functions could yield only once and couldn't yield from nested calls, but now that is possible.
 
 One limitation we still have is making nested yieldable protected calls. We will be looking into supporting that in the future.
@@ -70,11 +70,11 @@ With the introduction of the `vector` library mentioned earlier, we have provide
 Vector arithmetic and library functions are also constant-folded when possible and vector constants are embedded into the bytecode.
 
 Constant-folding has also been added to `string.char` and `string.sub` methods.
-String concatenation and string interpolation will also constant-fold for constant string or even when only some of the strings are constant.
+String concatenation and string interpolation will also be constant-folded for constant strings or even when only some of the strings in the expression are constant.
 
 Inlining has received multiple improvements.
 
-Inlining cost model is now aware of the work constant-folding has done and will not consider constant expressions to have a cost of evaluation.
+The inlining cost model is now aware of the work constant-folding has done and will not consider constant expressions to have a cost of evaluation.
 
 This means that functions computing a constant based on other global constants is a very likely inlining candidate:
 ```luau
@@ -102,7 +102,7 @@ end
 Inlining can now propagate constant variables that are not representable as literal values.
 For example, passing a function into a function as an argument can cause the argument function to be inlined!
 
-And the biggest change is that inlining cost model is now updated per call to take constant arguments into the account.
+And the biggest change is that the inlining cost model is now updated per call to take constant arguments into account.
 This means that a large function can sometimes collapse into a small one, which is much more suitable for inlining:
 ```luau
 local function getValue(name: string): number?
@@ -205,7 +205,7 @@ After new optimizations, we propagate the fields, remove unused temporary alloca
   %50 = MUL_NUM %21, %41
 ```
 
-In the future, we are looking to apply load-store propagation to table accessesas well.
+In the future, we are looking to apply load-store propagation to table accesses as well.
 
 Another area of optimization that we are looking into are optimizations around implicit integer values.
 Operations like adding or subtracting integer numbers coming from buffers or `bit32` library results can now use integer CPU instructions automatically.
@@ -224,5 +224,5 @@ We have a lot of work planned for improving native code generation next year!
 
 ## Community
 
-A big thank you goes to our [open source community](https://github.com/luau-lang/luau) for their contributions over the year.
-Some of the improvements that we have mention come directly from your PRs or your feedback! 
+A big thank you goes to our [open source community](https://github.com/luau-lang/luau) for their contributions over the last year.
+Some of the improvements that we have mentioned come directly from your PRs or your feedback! 
