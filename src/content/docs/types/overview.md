@@ -69,7 +69,7 @@ Luau's type system is structural by default, which is to say that we inspect the
 
 Take, for example, these two tables `A` and `B`:
 
-```lua
+```luau
 --!hidden FIXME(LUAU): there's a bug in the new type solver unfortunately
 --!hidden solver=old
 type A = {x: number, y: number, z: number?}
@@ -117,7 +117,7 @@ Sometimes, you might want to specify the type of an expression when the automati
 
 For example, consider the following table constructor where the intent is to store a table of names:
 
-```lua
+```luau
 local myTable = {names = {}}
 table.insert(myTable.names, 42)
 ```
@@ -126,7 +126,7 @@ Inserting a number into `names` ought to cause a type error, but doesn't.
 
 In order to specify the type of the `names` table, we can use a typecast: 
 
-```lua
+```luau
 local myTable = {names = {} :: {string}}
 table.insert(myTable.names, 42)
 ```
@@ -137,7 +137,7 @@ Now, inserting a number raises a type error, informing the user that there is an
 
 Type casts themselves are also type checked to ensure that one of the conversion operands is the subtype of the other or `any`:
 
-```lua
+```luau
 local numericValue = 1
 local value = numericValue :: any             -- ok, all expressions may be cast to 'any'
 local flag = numericValue :: boolean          -- not ok, invalid 'number' to 'boolean' conversion

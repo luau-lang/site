@@ -36,7 +36,7 @@ Some types have special syntax:
 
 The type checker also provides the builtin types [`unknown`](#unknown-type), [`never`](#never-type), and [`any`](#any-type).
 
-```lua
+```luau
 local s = "foo"
 local n = 1
 local b = true
@@ -50,7 +50,7 @@ print(a.x) -- Type checker believes this to be ok, but crashes at runtime.
 
 There's a special case where we intentionally avoid inferring `nil` for local variables. This allows you to declare variables first and assign values to them later — if we inferred `nil`, you wouldn't be able to assign other types to these variables.
 
-```lua
+```luau
 local a
 local b = nil
 ```
@@ -59,7 +59,7 @@ local b = nil
 
 `unknown` is also said to be the _top_ type, that is it's a union of all types.
 
-```lua
+```luau
 local a: unknown = "hello world!"
 local b: unknown = 5
 local c: unknown = function() return 5 end
@@ -67,7 +67,7 @@ local c: unknown = function() return 5 end
 
 Unlike `any`, `unknown` will not allow itself to be used as a different type!
 
-```lua
+```luau
 local function unknown(): unknown
     return if math.random() > 0.5 then "hello world!" else 5
 end
@@ -79,7 +79,7 @@ local c: string | number = unknown() -- not ok
 
 In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](../types/refinements.md) on that variable.
 
-```lua
+```luau
 local x = unknown()
 if typeof(x) == "number" then
     -- x : number
@@ -90,7 +90,7 @@ end
 
 `never` is also said to be the _bottom_ type, meaning there doesn't exist a value that inhabits the type `never`. In fact, it is the _dual_ of `unknown`. `never` is useful in many scenarios, and one such use case is when type refinements proves it impossible:
 
-```lua
+```luau
 local x = unknown()
 if typeof(x) == "number" and typeof(x) == "string" then
     -- x : never
@@ -101,7 +101,7 @@ end
 
 `any` is just like `unknown`, except that it allows itself to be used as an arbitrary type without further checks or annotations. Essentially, it's an opt-out from the type system entirely.
 
-```lua
+```luau
 local x: any = 5
 local y: string = x -- no type errors here!
 ```
@@ -110,7 +110,7 @@ local y: string = x -- no type errors here!
 
 Let's start with something simple.
 
-```lua
+```luau
 local function f(x) return x end
 
 local a: number = f(1)     -- ok
@@ -122,7 +122,7 @@ In strict mode, the inferred type of this function `f` is `<A>(A) -> A` (take a 
 
 Similarly, we can infer the types of the parameters with ease. By passing a parameter into *anything* that also has a type, we are saying "this and that has the same type."
 
-```lua
+```luau
 local function greetingsHelper(name: string)
     return "Hello, " .. name
 end
@@ -139,7 +139,7 @@ print(greetings({name = "Alexander"})) -- not ok
 
 Luau permits assigning a type to the `...` variadic symbol like any other parameter:
 
-```lua
+```luau
 local function f(...: number)
 end
 
@@ -151,7 +151,7 @@ f(1, "string") -- not ok
 
 In type annotations, this is written as `...T`:
 
-```lua
+```luau
 type F = (...number) -> ...string
 ```
 
@@ -161,7 +161,7 @@ Multiple function return values as well as the function variadic parameter use a
 
 When a type alias is defined, generic type pack parameters can be used after the type parameters:
 
-```lua
+```luau
 type Signal<T, U...> = { f: (T, U...) -> (), data: T }
 ```
 
@@ -169,7 +169,7 @@ type Signal<T, U...> = { f: (T, U...) -> (), data: T }
 
 It is also possible for a generic function to reference a generic type pack from the generics list:
 
-```lua
+```luau
 local function call<T, U...>(s: Signal<T, U...>, ...: U...)
     s.f(s.data, ...)
 end
@@ -177,7 +177,7 @@ end
 
 Generic types with type packs can be instantiated by providing a type pack:
 
-```lua
+```luau
 local signal: Signal<string, (number, number, boolean)> = --
 
 call(signal, 1, 2, false)
@@ -185,7 +185,7 @@ call(signal, 1, 2, false)
 
 There are also other ways to instantiate types with generic type pack parameters:
 
-```lua
+```luau
 type A<T, U...> = (T) -> U...
 
 type B = A<number, ...string> -- with a variadic type pack
@@ -195,7 +195,7 @@ type D = A<number, ()> -- with an empty type pack
 
 Trailing type pack argument can also be provided without parentheses by specifying variadic type arguments:
 
-```lua
+```luau
 type List<Head, Rest...> = (Head, Rest...) -> ()
 
 type B = List<number> -- Rest... is ()
@@ -209,7 +209,7 @@ type D = Returns<> -- T... is ()
 
 Type pack parameters are not limited to a single one, as many as required can be specified:
 
-```lua
+```luau
 type Callback<Args..., Rets...> = { f: (Args...) -> Rets... }
 
 type A = Callback<(number, string), ...number>
@@ -221,7 +221,7 @@ Luau's type system also supports singleton types, which means it's a type that r
 
 > We do not currently support numbers as types. For now, this is intentional.
 
-```lua
+```luau
 local foo: "Foo" = "Foo" -- ok
 local bar: "Bar" = foo   -- not ok
 local baz: string = foo  -- ok

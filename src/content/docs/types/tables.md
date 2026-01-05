@@ -11,7 +11,7 @@ From the type checker perspective, each table can be in one of three states. The
 
 An unsealed table is a table which supports adding new properties, which updates the tables type. Unsealed tables are created using table literals. This is one way to accumulate knowledge of the shape of this table.
 
-```lua
+```luau
 local t = {x = 1} -- {x: number}
 t.y = 2           -- {x: number, y: number}
 t.z = 3           -- {x: number, y: number, z: number}
@@ -21,7 +21,7 @@ However, if this local were written as `local t: { x: number } = { x = 1 }`, it 
 
 Furthermore, once we exit the scope where this unsealed table was created in, we seal it.
 
-```lua
+```luau
 local function vec2(x, y)
     local t = {}
     t.x = x
@@ -35,7 +35,7 @@ v2.z = 3 -- not ok
 
 Unsealed tables are *exact* in that any property of the table must be named by the type. Since Luau treats missing properties as having value `nil`, this means that we can treat an unsealed table which does not mention a property as if it mentioned the property, as long as that property is optional.
 
-```lua
+```luau
 local t = {x = 1}
 local u : { x : number, y : number? } = t -- ok because y is optional
 local v : { x : number, z : number } = t  -- not ok because z is not optional
@@ -45,7 +45,7 @@ local v : { x : number, z : number } = t  -- not ok because z is not optional
 
 A sealed table is a table that is now locked down. This occurs when the table type is spelled out explicitly via a type annotation, or if it is returned from a function.
 
-```lua
+```luau
 local t : { x: number } = {x = 1}
 t.y = 2 -- not ok
 ```
@@ -53,7 +53,7 @@ t.y = 2 -- not ok
 Sealed tables are *inexact* in that the table may have properties which are not mentioned in the type.
 As a result, sealed tables support *width subtyping*, which allows a table with more properties to be used as a table with fewer properties.
 
-```lua
+```luau
 type Point1D = { x : number }
 type Point2D = { x : number, y : number }
 local p : Point2D = { x = 5, y = 37 }
@@ -64,7 +64,7 @@ local q : Point1D = p -- ok because Point2D has more properties than Point1D
 
 This typically occurs when the symbol does not have any annotated types or were not inferred anything concrete. In this case, when you index on a parameter, you're requesting that there is a table with a matching interface.
 
-```lua
+```luau
 local function f(t)
     return t.x + t.y
            --^   --^ {x: _, y: _}
@@ -79,7 +79,7 @@ f({x = 1})               -- not ok
 
 These are particularly useful for when your table is used similarly to an array.
 
-```lua
+```luau
 local t = {"Hello", "world!"} -- {[number]: string}
 print(table.concat(t, ", "))
 ```

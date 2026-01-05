@@ -17,7 +17,7 @@ And they can be composed with many of `and`/`or`/`not`. `not`, just like `~=`, w
 The `assert(..)` function may also be used to refine types instead of `if/then`.
 
 Using truthy test:
-```lua
+```luau
 local maybeString: string? = nil
 
 if maybeString then
@@ -32,7 +32,7 @@ end
 ```
 
 Using `type` test:
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 if type(stringOrNumber) == "string" then
@@ -47,7 +47,7 @@ end
 ```
 
 Using equality test:
-```lua
+```luau
 local myString: string = f()
 
 if myString == "hello" then
@@ -57,7 +57,7 @@ end
 ```
 
 And as said earlier, we can compose as many of `and`/`or`/`not` as we wish with these refinements:
-```lua
+```luau
 local function f(x: any, y: any)
     if (x == "hello" or x == "bye") and type(y) == "string" then
         -- x is of type "hello" | "bye"
@@ -71,7 +71,7 @@ end
 ```
 
 `assert` can also be used to refine in all the same ways:
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 assert(type(stringOrNumber) == "string")

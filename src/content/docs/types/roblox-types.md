@@ -13,14 +13,14 @@ All enums are also available to use by their name as part of the `Enum` type lib
 
 We can automatically deduce what calls like `Instance.new` and `game:GetService` are supposed to return:
 
-```lua
+```luau
 local part = Instance.new("Part")
 local basePart: BasePart = part
 ```
 
 Finally, Roblox types can be refined using `IsA`:
 
-```lua
+```luau
 local function getText(x : Instance) : string
     if x:IsA("TextLabel") or x:IsA("TextButton") or x:IsA("TextBox") then
         return child.Text

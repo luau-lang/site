@@ -11,7 +11,7 @@ A union type represents *one of* the types in this set. If you try to pass a uni
 
 For example, what if this `string | number` was passed into something that expects `number`, but the passed in value was actually a `string`?
 
-```lua
+```luau
 local stringOrNumber: string | number = "foo"
 
 local onlyString: string = stringOrNumber -- not ok
@@ -24,7 +24,7 @@ Note: it's impossible to be able to call a function if there are two or more fun
 
 Tagged unions are just union types! In particular, they're union types of tables where they have at least _some_ common properties but the structure of the tables are different enough. Here's one example:
 
-```lua
+```luau
 type Ok<T> = { type: "ok", value: T }
 type Err<E> = { type: "err", error: E }
 type Result<T, E> = Ok<T> | Err<E>
@@ -32,7 +32,7 @@ type Result<T, E> = Ok<T> | Err<E>
 
 This `Result<T, E>` type can be discriminated by using type refinements on the property `type`, like so:
 
-```lua
+```luau
 if result.type == "ok" then
     -- result is known to be Ok<T>
     -- and attempting to index for error here will fail
@@ -51,7 +51,7 @@ Which works out because `value: T` exists only when `type` is in actual fact `"o
 
 An intersection type represents *all of* the types in this set. It's useful for two main things: to join multiple tables together, or to specify overloadable functions.
 
-```lua
+```luau
 type XCoord = {x: number}
 type YCoord = {y: number}
 type ZCoord = {z: number}
@@ -63,7 +63,7 @@ local vec2: Vector2 = {x = 1, y = 2}        -- ok
 local vec3: Vector3 = {x = 1, y = 2, z = 3} -- ok
 ```
 
-```lua
+```luau
 type SimpleOverloadedFunction = ((string) -> number) & ((number) -> string)
 
 local f: SimpleOverloadedFunction

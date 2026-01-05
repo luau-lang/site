@@ -8,7 +8,7 @@ sidebar:
 
 Luau uses the baseline [syntax of Lua 5.1](https://www.lua.org/manual/5.1/manual.html#2). For detailed documentation, please refer to the Lua manual, this is an example:
 
-```lua
+```luau
 local function tree_insert(tree, x)
     local lower, equal, greater = split(tree.root, x)
     if not equal then
@@ -51,7 +51,7 @@ In addition to `break` in all loops, Luau supports `continue` statement. Similar
 
 Note that unlike `break`, `continue` is not a keyword. This is required to preserve backwards compatibility with existing code; so this is a `continue` statement:
 
-```lua
+```luau
 if x < 0 then
     continue
 end
@@ -59,7 +59,7 @@ end
 
 Whereas this is a function call:
 
-```lua
+```luau
 if x < 0 then
     continue()
 end
@@ -67,7 +67,7 @@ end
 
 When used in `repeat..until` loops, `continue` can not skip the declaration of a local variable if that local variable is used in the loop condition; code like this is invalid and won't compile:
 
-```lua
+```luau
 repeat
     do continue end
     local a = 5
@@ -78,7 +78,7 @@ until a > 0
 
 Luau supports compound assignments with the following operators: `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `^=`, `..=`. Just like regular assignments, compound assignments are statements, not expressions:
 
-```lua
+```luau
 -- this works
 a += 1
 
@@ -88,7 +88,7 @@ print(a += 1)
 
 Compound assignments only support a single value on the left and right hand side; additionally, the function calls on the left hand side are only evaluated once:
 
-```lua
+```luau
 -- calls foo() twice
 a[foo()] = a[foo()] + 1
 
@@ -104,7 +104,7 @@ To support gradual typing, Luau supports optional type annotations for variables
 
 Types can be declared for local variables, function arguments and function return types using `:` as a separator:
 
-```lua
+```luau
 function foo(x: number, y: string): boolean
     local k: string = y:rep(x)
     return k == "a"
@@ -113,7 +113,7 @@ end
 
 In addition, the type of any expression can be overridden using a type cast `::`:
 
-```lua
+```luau
 local k = (y :: string):rep(x)
 ```
 
@@ -121,13 +121,13 @@ There are several simple builtin types: `any` (represents inability of the type 
 
 Function types are specified using the arguments and return types, separated with `->`:
 
-```lua
+```luau
 local foo: (number, string) -> boolean
 ```
 
 To return no values or more than one, you need to wrap the return type position with parentheses, and then list your types there.
 
-```lua
+```luau
 local no_returns: (number, string) -> ()
 local returns_boolean_and_string: (number, string) -> (boolean, string)
 
@@ -138,13 +138,13 @@ end
 
 Note that function types are specified without the argument names in the examples above, but it's also possible to specify the names (that are not semantically significant but can show up in documentation and autocomplete):
 
-```lua
+```luau
 local callback: (errorCode: number, errorText: string) -> ()
 ```
 
 Table types are specified using the table literal syntax, using `:` to separate keys from values:
 
-```lua
+```luau
 local array: { [number] : string }
 local object: { x: number, y: string }
 ```
@@ -157,7 +157,7 @@ It's common in Lua for function arguments or other values to store either a valu
 
 In addition to declaring types for a given value, Luau supports declaring type aliases via `type` syntax:
 
-```lua
+```luau
 type Point = { x: number, y: number }
 type Array<T> = { [number]: T }
 type Something = typeof(string.gmatch("", "%d"))
@@ -167,13 +167,13 @@ The right hand side of the type alias can be a type definition or a `typeof` exp
 
 By default type aliases are local to the file they are declared in. To be able to use type aliases in other modules using `require`, they need to be exported:
 
-```lua
+```luau
 export type Point = { x: number, y: number }
 ```
 
 An exported type can be used in another module by prefixing its name with the require alias that you used to import the module.
 
-```lua
+```luau
 local M = require(Other.Module)
 
 local a: M.Point = {x=5, y=6}
@@ -186,14 +186,14 @@ For more information please refer to [typechecking documentation](../types).
 In addition to supporting standard if *statements*, Luau adds support for if *expressions*.  Syntactically, `if-then-else` expressions look very similar to if statements.  However instead of conditionally executing blocks of code, if expressions conditionally evaluate expressions and return the value produced as a result. Also, unlike if statements, if expressions do not terminate with the `end` keyword.
 
 Here is a simple example of an `if-then-else` expression:
-```lua
+```luau
 local maxValue = if a > b then a else b
 ```
 
 `if-then-else` expressions may occur in any place a regular expression is used.  The `if-then-else` expression must match `if <expr> then <expr> else <expr>`; it can also contain an arbitrary number of `elseif` clauses, like `if <expr> then <expr> elseif <expr> then <expr> else <expr>`. Note that in either case, `else` is mandatory.  
 
 Here's is an example demonstrating `elseif`:
-```lua
+```luau
 local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
 ```
 
@@ -203,7 +203,7 @@ local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
 
 Luau uses the standard Lua syntax for iterating through containers, `for vars in values`, but extends the semantics with support for generalized iteration. In Lua, to iterate over a table you need to use an iterator like `next` or a function that returns one like `pairs` or `ipairs`. In Luau, you can simply iterate over a table:
 
-```lua
+```luau
 for k, v in {1, 4, 9} do
     assert(k * k == v)
 end
@@ -211,7 +211,7 @@ end
 
 Further, iteration can be extended for tables or userdata by implementing the `__iter` metamethod which is called before the iteration begins, and should return an iterator function like `next` (or a custom one):
 
-```lua
+```luau
 local obj = { items = {1, 4, 9} }
 setmetatable(obj, { __iter = function(o) return next, o.items end })
 
@@ -230,7 +230,7 @@ This is a more ergonomic alternative over using `string.format` or `("literal"):
 
 To use string interpolation, use a backtick string literal:
 
-```lua
+```luau
 local count = 3
 print(`Bob has {count} apple(s)!`)
 --> Bob has 3 apple(s)!
@@ -238,7 +238,7 @@ print(`Bob has {count} apple(s)!`)
 
 Any expression can be used inside `{}`:
 
-```lua
+```luau
 local combos = {2, 7, 1, 8, 5}
 print(`The lock combination is {table.concat(combos)}.`)
 --> The lock combination is 27185.
@@ -246,7 +246,7 @@ print(`The lock combination is {table.concat(combos)}.`)
 
 Inside backtick string literal, `\` is used to escape `` ` ``, `{`, `\` itself and a newline:
 
-```lua
+```luau
 print(`Some example escaping the braces \{like so}`)
 --> Some example escaping the braces {like so}
 
@@ -275,7 +275,7 @@ This restriction is made to prevent developers using other programming languages
 Luau currently does not support backtick string literals in type annotations, therefore `` type Foo = `Foo` `` is invalid syntax.
 
 Unlike single and double-quoted string literals, backtick string literals must always be wrapped in parentheses for function calls:
-```lua
+```luau
 print "hello" -- valid 
 print`hello` -- invalid syntax
 print(`hello`) -- valid
@@ -286,7 +286,7 @@ print(`hello`) -- valid
 Luau supports floor division, including its operator (`//`), its compound assignment operator (`//=`), and overloading metamethod (`__idiv`), as an ergonomic alternative to `math.floor`.
 
 For numbers, `a // b` is equal to `math.floor(a / b)`:
-```lua
+```luau
 local n = 6.72
 print(n // 2) --> 3
 n //= 3

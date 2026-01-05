@@ -102,4 +102,3 @@ The RFC for width subtyping is https://github.com/Roblox/luau/blob/master/rfcs/s
  * Improve performance of freeing tables (~5% lift on some GC benchmarks)
  * Improve gathering performance metrics for GC.
  * Reduce stack memory reallocation.
-

@@ -125,7 +125,7 @@ Luau implements several optimizations for table creation. When creating object-l
 
 When the exact table shape isn't known, Luau compiler can still predict the table capacity required in case the table is initialized with an empty literal (`{}`) and filled with fields subsequently. For example, the following code creates a correctly sized table implicitly:
 
-```lua
+```luau
 local v = {}
 v.x = 1
 v.y = 2
@@ -135,7 +135,7 @@ return v
 
 When appending elements to tables, it's recommended to use `table.insert` (which is the fastest method to append an element to a table if the table size is not known). In cases when a table is filled sequentially, however, it can be more efficient to use a known index for insertion - together with preallocating tables using `table.create` this can result in much faster code, for example this is the fastest way to build a table of squares:
 
-```lua
+```luau
 local t = table.create(N)
 
 for i=1,N do

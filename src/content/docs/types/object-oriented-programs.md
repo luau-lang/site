@@ -9,7 +9,7 @@ sidebar:
 
 One common pattern we see with existing Lua/Luau code is the following object-oriented code. While Luau is capable of inferring a decent chunk of this code, it cannot pin down on the types of `self` when it spans multiple methods.
 
-```lua
+```luau
 local Account = {}
 Account.__index = Account
 
@@ -41,7 +41,7 @@ There's the next problem: the type of `self` is not shared across methods of `Ac
 We can see there's a lot of problems happening here. This is a case where you'll have to provide some guidance to Luau in the form of annotations today, but the process is straightforward and without repetition. You first specify the type of _data_ you want your class to have, and then you define the class type separately with `setmetatable` (either via `typeof`, or in the New Type Solver, the `setmetatable` type function).
 From then on, you can explicitly annotate the `self` type of each method with your class type! Note that while the definition is written e.g. `Account.deposit`, you can still call it as `account:deposit(...)`.
 
-```lua
+```luau
 local Account = {}
 Account.__index = Account
 
