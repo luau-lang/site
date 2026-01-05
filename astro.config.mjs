@@ -10,6 +10,8 @@ import remarkLuauPlayground from "./src/plugins/remark-luau-playground";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://luau.org',
+
   redirects: {},
 
   markdown: {
