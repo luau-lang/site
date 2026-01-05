@@ -1,6 +1,6 @@
 ---
-layout: single
 title:  "Luau Recap for 2025: Runtime"
+date: 2025-12-19
 ---
 
 Hello everyone!
@@ -225,4 +225,4 @@ We have a lot of work planned for improving native code generation next year!
 ## Community
 
 A big thank you goes to our [open source community](https://github.com/luau-lang/luau) for their contributions over the last year.
-Some of the improvements that we have mentioned come directly from your PRs or your feedback! 
+Some of the improvements that we have mentioned come directly from your PRs or your feedback!
