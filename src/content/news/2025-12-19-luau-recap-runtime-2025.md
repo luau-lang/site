@@ -77,7 +77,7 @@ Inlining has received multiple improvements.
 The inlining cost model is now aware of the work constant-folding has done and will not consider constant expressions to have a cost of evaluation.
 
 This means that functions computing a constant based on other global constants is a very likely inlining candidate:
-```lua
+```luau
 local c = 17.0
 
 -- inlining cost of 0 (constant)
@@ -87,7 +87,7 @@ end
 ```
 
 Further improvements made it so that code which can be considered dead based on the state of global constant locals does not increase the cost:
-```lua
+```luau
 local debug = false
 
 local function compute()
@@ -104,7 +104,8 @@ For example, passing a function into a function as an argument can cause the arg
 
 And the biggest change is that the inlining cost model is now updated per call to take constant arguments into account.
 This means that a large function can sometimes collapse into a small one, which is much more suitable for inlining:
-```lua
+```luau
+--!hidden mode=nocheck
 local function getValue(name: string): number?
     if name == 'a' then return -1.0
     elseif name == 'b' then return 2.0 * math.pi
@@ -163,7 +164,8 @@ But with load-store propagation, we are able to remove temporary userdata alloca
 Custom userdata types with proper IR hooks can now generate code that is very efficient without having to be built-in.
 
 In the following example, we are reading a userdata field 'uv' from another userdata twice to access its components:
-```lua
+```luau
+--!hidden mode=nocheck
 local function test(v: vertex)
     return v.uv.x * v.uv.y
 end
