@@ -10,14 +10,16 @@ Luau is the first programming language to put the power of semantic subtyping in
 
 One of the issues with type error reporting in tools like the Script Analysis widget in Roblox Studio is *false positives*. These are warnings that are artifacts of the analysis, and don’t correspond to errors which can occur at runtime. For example, the program
 ```luau
-  local x = CFrame.new()
-  local y
-  if (math.random()) then
+--!hidden FIXME: definitions for CFrame and Vector3
+--!hidden mode=nocheck
+local x = CFrame.new()
+local y
+if (math.random()) then
     y = CFrame.new()
-  else
+else
     y = Vector3.new()
-  end
-  local z = x * y
+end
+local z = x * y
 ```
 reports a type error which cannot happen at runtime, since `CFrame` supports multiplication by both `Vector3` and `CFrame`. (Its type is `((CFrame, CFrame) -> CFrame) & ((CFrame, Vector3) -> Vector3)`.)
 
@@ -31,6 +33,7 @@ While inaccuracies are inevitable, we try to remove them whenever possible, sinc
 
 One of the sources of false positives in Luau (and many other similar languages like TypeScript or Flow) is *subtyping*. Subtyping is used whenever a variable is initialized or assigned to, and whenever a function is called: the type system checks that the type of the expression is a subtype of the type of the variable. For example, if we add types to the above program
 ```luau
+--!hidden mode=nocheck
   local x : CFrame = CFrame.new()
   local y : Vector3 | CFrame
   if (math.random()) then
@@ -146,6 +149,12 @@ overload encodes one constraint. For example a line has constraints
 saying that adjacent nodes cannot have the same color:
 
 ```luau
+type Red = "red"
+type Blue = "blue"
+type Color = Red | Blue
+type Coloring = (Color) -> (Color) -> (Color) -> boolean
+type Uncolorable = (Color) -> (Color) -> (Color) -> false
+
 type Line = Coloring
   & ((Red) -> (Red) -> (Color) -> false)
   & ((Blue) -> (Blue) -> (Color) -> false)
@@ -156,6 +165,18 @@ type Line = Coloring
 A triangle is similar, but the end points also cannot have the same color:
 
 ```luau
+type Red = "red"
+type Blue = "blue"
+type Color = Red | Blue
+type Coloring = (Color) -> (Color) -> (Color) -> boolean
+type Uncolorable = (Color) -> (Color) -> (Color) -> false
+
+type Line = Coloring
+  & ((Red) -> (Red) -> (Color) -> false)
+  & ((Blue) -> (Blue) -> (Color) -> false)
+  & ((Color) -> (Red) -> (Red) -> false)
+  & ((Color) -> (Blue) -> (Blue) -> false)
+
 type Triangle = Line
   & ((Red) -> (Color) -> (Red) -> false)
   & ((Blue) -> (Color) -> (Blue) -> false)
@@ -202,17 +223,17 @@ Because of these performance issues, we still use syntactic subtyping as our fir
 Off-the-shelf semantic subtyping is slightly different from what is implemented in Luau, because it requires models to be *set-theoretic*, which requires that inhabitants of function types “act like functions.” There are two reasons why we drop this requirement.
 
 **Firstly**, we normalize function types to an intersection of functions, for example a horrible mess of unions and intersections of functions:
-```luau
+```
 ((number?) -> number?) | (((number) -> number) & ((string?) -> string?))
 ```
 normalizes to an overloaded function:
-```luau
+```
 ((number) -> number?) & ((nil) -> (number | string)?)
 ```
 Set-theoretic semantic subtyping does not support this normalization, and instead normalizes functions to *disjunctive normal form* (unions of intersections of functions). We do not do this for ergonomic reasons: overloaded functions are idiomatic in Luau, but DNF is not, and we do not want to present users with such non-idiomatic types.
 
 Our normalization relies on rewriting away unions of function types:
-```luau
+```
 ((A) -> B) | ((C) -> D)   →   (A & C) -> (B | D) 
 ```
 This normalization is sound in our model, but not in set-theoretic models.
@@ -229,11 +250,13 @@ The other difference between Luau’s type system and off-the-shelf semantic sub
 
 The common case for wanting negated types is in typechecking conditionals:
 ```luau
--- initially x has type T
-if (type(x) == "string") then
-  --  in this branch x has type T & string
-else
-  -- in this branch x has type T & ~string
+type T = string | number
+function foo(x: T)
+    if (type(x) == "string") then
+        print(x) -- in this branch, x has type T & string, or string
+    else
+        print(x) -- in this branch, x has type T & ~string, or number
+    end
 end
 ```
 This uses a negated type `~string` inhabited by values that are not strings.

@@ -75,17 +75,16 @@ We used to have a bug that would arise in the following situation:
 type Direction = "Left" | "Right"
 local dir: Direction = "Left"
 
-if dir == ""| then
+if dir == "" then
 end
 ```
 
-(imagine the cursor is at the position of the `|` character in the `if` statement)
-
-We used to suggest `Left` and `Right` even though they are not valid completions at that position.  This is now fixed.
+If you placed the cursor after the `""` and before `then` in the conditional, we used to suggest `Left` and `Right` even though they are not valid completions at that position.  This is now fixed.
 
 We've also added a complete suggestion for anonymous functions if one would be valid at the requested position.  For example:
 
 ```luau
+--!hidden mode=nocheck
 local p = Instance.new('Part')
 p.Touched:Connect(
 ```
@@ -93,13 +92,15 @@ p.Touched:Connect(
 You will see a completion suggestion `function (anonymous autofilled)`.  Selecting that will cause the following to be inserted into your code:
 
 ```luau
+--!hidden mode=nocheck
 local p = Instance.new('Part')
-p.Touched:Connect(function(otherPart: BasePart)  end
+p.Touched:Connect(function(otherPart: BasePart) end
 ```
 
 We also fixed some confusing editor feedback in the following case:
 
 ```luau
+--!hidden mode=nocheck
 game:FindFirstChild(
 ```
 

@@ -14,8 +14,9 @@ With generalized iteration released in May, custom containers are easier than ev
 Simply, tables now honor the `__len` metamethod, and `rawlen` is also added with similar semantics as `rawget` and `rawset`:
 
 ```luau
+--!hidden FIXME: self should not need an annotation here when bidirectional typing works
 local my_cool_container = setmetatable({ items = { 1, 2 } }, {
-    __len = function(self) return #self.items end
+    __len = function(self: { items: {number}}) return #self.items end
 })
 
 print(#my_cool_container) --> 2
@@ -33,7 +34,7 @@ Type inference may infer a variable to have the type `never` if and only if the 
 ```luau
 function f(x: string | number)
     if typeof(x) == "string" and typeof(x) == "number" then
-        -- x: never
+        print(x) -- x: never
     end
 end
 ```
@@ -56,6 +57,7 @@ local y: string = unknown()
 To be able to do this soundly, you must apply type refinements on a variable of type `unknown`.
 
 ```luau
+function unknown(): unknown return 5 end
 local u = unknown()
 
 if typeof(u) == "string" then
@@ -67,10 +69,11 @@ A use case of `unknown` is to enforce type safety at implementation sites for da
 
 ## Argument names in type packs when instantiating a type
 
-We had a bug in the parser which erroneously allowed argument names in type packs that didn't fold into a function type. That is, the below syntax did not generate a parse error when it should have.
+We had a bug in the parser which erroneously allowed argument names in type packs that didn't fold into a function type. That is, the use of `Foo` below did not generate a parse error when it should have.
 
 ```luau
-Foo<(a: number, b: string)>
+type Foo<T> = T
+type Bar = Foo<(a: number, b: string)>
 ```
 
 ## New IntegerParsing lint
@@ -97,6 +100,8 @@ We've also introduced a new lint called `ComparisonPrecedence`. It fires in two 
 In languages that uses `!` to negate the boolean i.e. `!x == y` looks fine because `!x` _visually_ binds more tightly than Lua's equivalent, `not x`. Unfortunately, the precedences here are identical, that is `!x == y` is `(!x) == y` in the same way that `not x == y` is `(not x) == y`. We also apply this on other operators e.g. `x <= y == y`.
 
 ```luau
+local x, y = 6, 7
+
 -- not X == Y is equivalent to (not X) == Y; consider using X ~= Y, or wrap one of the expressions in parentheses to silence
 if not x == y then end
 
@@ -138,6 +143,7 @@ end
 Even though `t1` is a table type, we know `string` is a subtype of `t1` because `string` also has `lower` which is a subtype of `t1`'s `lower`, so this call site now type checks.
 
 ```luau
+--!hidden mode=nocheck
 local s: string = my_cool_lower("HI")
 ```
 

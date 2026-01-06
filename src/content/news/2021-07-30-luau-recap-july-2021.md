@@ -32,7 +32,7 @@ Current fix only handles table element type in assignments, but we plan to exten
 
 Like we've mentioned last time, we will continue working on our new type constraint resolver and this month it learned to handle more complex expressions (including type guards) inside `assert` conditions:
 ```luau
---!strict
+--!hidden mode=nocheck
 local part = script.Parent:WaitForChild("Part")
 assert(part:IsA("BasePart"))
 local basepart: BasePart = part -- no longer an error
@@ -53,8 +53,9 @@ We no longer report a type error when this method is invoked and we'll also make
 --!strict
 local t = { x = 2 }
 
+--!hidden FIXME(Luau): self should not require a type annotation here
 local x = setmetatable(t, {
-    __call = function(self, a: number)
+    __call = function(self: {x: number}, a: number)
         return a * self.x
     end
 })
@@ -66,6 +67,8 @@ Please note that while call operator on a table is now handled, function types i
 
 A new 'TableOperations' lint check was added that will detect common correctness or performance issues with `table.insert` and `table.remove`:
 ```luau
+local t = { 1, 2, 3 }
+
 -- table.insert will insert the value before the last element, which is likely a bug; consider removing the second argument or wrap it in parentheses to silence
 table.insert(t, #t, 42)
 
@@ -87,17 +90,18 @@ table.insert(t, string.find("hello", "h"))
 
 Another new check is 'DuplicateConditions'. The name speaks for itself, `if` statement chains with duplicate conditions and expressions containing `and`/`or` operations with redundant parts will now be detected:
 ```luau
+--!hidden mode=nocheck
 if x then
     -- ...
 elseif not x then
     -- ...
-elseif x̳ then -- Condition has already been checked on line 1
+elseif x then -- Condition has already been checked on line 1
     -- ...
 end
 
-local success = a and a̳ -- Condition has already been checked on column 17
+local success = a and a -- Condition has already been checked on column 17
 
-local good = (a or b) or a̳ -- Condition has already been checked on column 15
+local good = (a or b) or a -- Condition has already been checked on column 15
 ``` 
 
 We've also fixed an incorrect lint warning when `typeof` is used to check for `EnumItem`.

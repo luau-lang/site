@@ -56,6 +56,7 @@ This change also [inadvertently] makes `string.gsub` validation rules for replac
 
 On a happier note, string.pack may seem daunting but is pretty easy to use to pack binary data to reduce your network traffic (note that binary strings aren’t safe to use in DataStores currently); I’ve posted an example in the release notes thread [Release Notes for 441](https://devforum.roblox.com/t/release-notes-for-441/686773) that allows you to pack a simple character state in 16 bytes like this:
 ```luau
+--!hidden mode=nocheck
 local characterStateFormat = "fffbbbB"
 
 local characterState = string.pack(characterStateFormat,
@@ -63,6 +64,7 @@ local characterState = string.pack(characterStateFormat,
 ```
 And unpack it like this after network transmission:
 ```luau
+--!hidden mode=nocheck
 local posx, posy, posz, dirx, diry, dirz, health =
     string.unpack(characterStateFormat, characterState)
 dirx /= 127

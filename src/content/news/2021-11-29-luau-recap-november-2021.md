@@ -33,8 +33,9 @@ You might think that C++ is a scary language and you can't contribute to Luau. I
 ## Library improvements
 
 ```luau
-function bit32.countlz(n: number): number
-function bit32.countrz(n: number): number
+--!hidden mode=nocheck
+function bit32.countlz(n: number): number end
+function bit32.countrz(n: number): number end
 ```
 Given a number, returns the number of preceding left or trailing right-hand bits that are `0`.
 

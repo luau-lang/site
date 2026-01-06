@@ -59,17 +59,19 @@ if-then-else expression can now have different types in each branch:
 
 ```luau
 --!strict
-local a = if x then 5 else nil -- 'a' will have type 'number?'
-local b = if x then 1 else '2' -- 'b' will have type 'number | string'
+function cond(): boolean return false  end
+local a = if cond() then 5 else nil -- 'a' will have type 'number?'
+local b = if cond() then 1 else '2' -- 'b' will have type 'number | string'
 ```
 
 And if the expected result type is known, you will not get an error in cases like these:
 
 ```luau
 --!strict
+function cond(): boolean return false  end
 type T = {number | string}
 -- different array element types don't give an error if that is expected
-local c: T = if x then {1, "x", 2, "y"} else {0}
+local c: T = if cond() then {1, "x", 2, "y"} else {0}
 ```
 
 ---

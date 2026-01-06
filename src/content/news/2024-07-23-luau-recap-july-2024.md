@@ -40,6 +40,7 @@ There are many other small improvements in generated code performance and size a
 For a better control of what code runs natively, we have introduced new syntax for function attributes:
 
 ```luau
+--!hidden mode=nocheck
 @native -- function compiles natively
 local function foo()
     ...
@@ -56,6 +57,7 @@ In certain situations, this means that the native compiler cannot be sure about 
 Consider a simple function, working on a few values:
 
 ```luau
+--!hidden mode=nocheck
 local function MulAddScaled(a, b, c)
     return a * b * 0.75 + c * 0.25
 end
@@ -66,6 +68,7 @@ Native compiler assumes that operations are most likely being performed on numbe
 But what if the function is actually called with a vector type?
 
 ```luau
+--!hidden mode=nocheck
 local intlPos = MulAddScaled(Part.Position, v, vector(12, 0, 0))
 ```
 
@@ -96,7 +99,7 @@ function calculate_normals(mesh: Mesh)
         local vba = a.p - b.p -- Inferred as a vector operation
         local vca = a.p - c.p
 
-        local n = vba:Cross(vca) -- Knows that Cross returns vector
+        local n = vector.cross(vba, vca) -- Knows that cross returns vector
 
         a.n += n -- Inferred as a vector operation
         b.n += n

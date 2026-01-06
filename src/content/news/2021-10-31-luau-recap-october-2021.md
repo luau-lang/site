@@ -12,6 +12,7 @@ Also, unlike if statements, if expressions do not terminate with the `end` keywo
 
 Here is a simple example of an `if-then-else` expression:
 ```luau
+local a, b = 6, 7
 local maxValue = if a > b then a else b
 ```
 
@@ -22,6 +23,7 @@ Note that in either case, `else` is mandatory.
 
 Here's is an example demonstrating `elseif`:
 ```luau
+local x = -21
 local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
 ```
 
@@ -33,7 +35,7 @@ The `if-then-else` expression will behave as expected in all situations.
 New additions to the `table` library have arrived:
 
 ```luau
-function table.freeze(t)
+function table.freeze(t) end
 ```
 
 Given a non-frozen table, freezes it such that all subsequent attempts to modify the table or assign its metatable raise an error.
@@ -42,7 +44,8 @@ Note that the table is frozen in-place and is not being copied.
 Additionally, only `t` is frozen, and keys/values/metatable of `t` don't change their state and need to be frozen separately if desired.
 
 ```luau
-function table.isfrozen(t): boolean
+--!hidden mode=nocheck
+function table.isfrozen(t): boolean end
 ```
 
 Returns `true` if and only if the input table is frozen.
@@ -67,6 +70,7 @@ Support for `or` constraints allowed us to handle additional scenarios with `and
 
 And speaking of type guards, we now correctly handle sub-class relationships in those checks:
 ```luau
+--!hidden FIXME: definitions for Part and Folder
 --!strict
 local function f(x: Part | Folder | string)
     if typeof(x) == "Instance" then
@@ -96,6 +100,7 @@ end
 ---
 We have extended bidirectional typechecking that was announced last month to propagate types in additional statements and expressions.
 ```luau
+--!hidden solver=old
 --!strict
 function getSortFunction(): (number, number) -> boolean
     return function(a, b) return a > b end -- a and b are now known to be 'number' here

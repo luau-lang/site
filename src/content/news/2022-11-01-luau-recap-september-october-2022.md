@@ -16,6 +16,8 @@ positives has landed, *semantic subtyping*, which removes a class of false posit
 by failures of subtyping.  For example, in the program
 
 ```luau
+--!hidden FIXME: definitions for vector and cframe
+--!hidden mode=nocheck
   local x : CFrame = CFrame.new()
   local y : Vector3 | CFrame
   if (math.random()) then
@@ -30,6 +32,8 @@ an error is reported, even though there is no problem at runtime. This
 is because `CFrame`'s multiplication has two overloads:
 
 ```luau
+--!hidden mode=nocheck
+type Example1 =
     ((CFrame, CFrame) -> CFrame)
   & ((CFrame, Vector3) -> Vector3)
 ```
@@ -38,6 +42,8 @@ The current syntax-driven algorithm for subtyping is not sophisticated
 enough to realize that this is a subtype of the desired type:
 
 ```luau
+--!hidden mode=nocheck
+type Example2 =
   (CFrame, Vector3 | CFrame) -> (Vector3 | CFrame)
 ```
 

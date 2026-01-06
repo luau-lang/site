@@ -56,7 +56,7 @@ So, instead of:
 ```luau
 function myfunction(a: number, b:number) end
 myfunction(123)
-           ~~~
+--         ~~~
 ```
 
 We now highlight this:
@@ -64,7 +64,7 @@ We now highlight this:
 ```luau
 function myfunction(a: number, b:number) end
 myfunction(123)
-~~~~~~~~~~
+--~~~~~~~~
 ```
 
 If you iterate over a table value that could also be `nil`, you get a better explanation in the error message:

@@ -18,12 +18,14 @@ local q : Point<boolean, string> = swap({ x = "hi", y = true })
 ```
 but up until now, there's been no way to write the type of `swap`, since Luau didn't have type parameters to functions (just regular old data parameters). Well, now you can:
 ```luau
+type Point<X,Y> = { x: X, y: Y }
 function swap<X, Y>(p : Point<X, Y>): Point<Y, X>
   return { x = p.y, y = p.x }
 end
 ```
 Generic functions can be used in function declarations, and function types too, for example
 ```luau
+type Point<X,Y> = { x: X, y: Y }
 type Swapper = { swap : <X, Y>(Point<X, Y>) -> Point<Y, X> }
 ```
 
@@ -46,6 +48,7 @@ end
 ```
 and have Luau infer a type where a generic function returns a generic function
 ```luau
+type Point<X,Y> = { x: X, y: Y }
 function mkPoint<X>(x : X) : <Y>(Y) -> Point<X,Y>
   return function<Y>(y : Y) : Point<X,Y>
     return { x = x, y = y }
@@ -65,7 +68,10 @@ a subtype of `T`, so the type of `f(x)` is `U`.
 This works in many cases, but has problems with examples like registering
 callback event handlers. In code like
 ```luau
-part.Touched:Connect(function (other) ... end)
+--!hidden mode=nocheck
+part.Touched:Connect(function(other) 
+  -- ...
+end)
 ```
 if we try to typecheck this bottom-up, we have a problem because
 we don't know the type of `other` when we typecheck the body of the function.
@@ -102,6 +108,7 @@ In other typechecking news:
    function declarations.
  * We improved parser recovery from code which looks like a function call (but isn't) such as
 ```luau
+--!hidden mode=nocheck
 local x = y
 (expr)[smth] = z
 ```

@@ -13,6 +13,7 @@ When Luau code runs, every value has a certain type at runtime - a kind of value
 
 Consider this:
 ```luau
+--!hidden mode=nocheck
 local p = Instance.new("Part")
 p.Positio = Vector3.new(1,2,3)
 ```

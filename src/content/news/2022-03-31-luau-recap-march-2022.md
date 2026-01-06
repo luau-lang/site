@@ -61,6 +61,15 @@ type Concrete = {
 Within a module, a developer might use the concrete type, but export functions using the interface type:
 
 ```luau
+type Interface = {
+    name: string,
+}
+
+type Concrete = {
+    name: string,
+    id: number,
+}
+
 local x: Concrete = {
     name = "foo",
     id = 123,

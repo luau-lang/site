@@ -79,11 +79,14 @@ We have added a new linter check for duplicate local variable definitions.
 
 It is created to find duplicate names in cases like these:
 ```luau
+--!hidden mode=nocheck
 local function foo(a1, a2, a2) -- Function argument 'a2' already defined on column 24
-local a1, a2, a2 = f() -- Variable 'a2' already defined on column 11
+end
+local a1, a2, a2 = foo() -- Variable 'a2' already defined on column 11
 
 local bar = {}
 function bar:test(self) -- Function argument 'self' already defined implicitly
+end
 ```
 
 Our UnknownType linter warning was extended to check for correct class names passed into `FindFirstChildOfClass`, `FindFirstChildWhichIsA`, `FindFirstAncestorOfClass` and `FindFirstAncestorWhichIsA` functions.

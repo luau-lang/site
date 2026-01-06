@@ -16,7 +16,7 @@ local function f(a: number?)
     if a ~= nil then
         a *= 2 -- no type errors
     end
-    ...
+    -- the rest of the owl
 end
 ```
 
@@ -69,6 +69,7 @@ You may have noticed linter warnings about places where these functions are used
 When table key type is defined to be a union of string singletons, those keys can now autocomplete in locations marked as '^':
 
 ```luau
+--!hidden mode=nocheck
 type Direction = "north" | "south" | "east" | "west"
 
 local a: {[Direction]: boolean} = {[^] = true}
@@ -95,6 +96,7 @@ Finally, a fix was made to table array part resizing that brings large improveme
 Aside from performance, a correctness issue was fixed in multi-assignment expressions.
 
 ```luau
+--!hidden mode=nocheck
 arr[1], n = n, n - 1
 ```
 
@@ -114,6 +116,8 @@ You may have seen error messages like `Type 'string' cannot be converted to 'str
 This is true in what is called Covariant use contexts, but doesn't hold in Invariant use contexts, like in the example below:
 
 ```luau
+--!hidden FIXME: we could add definitions for `Model` and `Instance` here
+--!hidden mode=nocheck
 local a: { x: Model }
 local b: { x: Instance } = a -- Type 'Model' could not be converted into 'Instance' in an invariant context
 ```

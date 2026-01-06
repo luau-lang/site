@@ -40,6 +40,8 @@ local a = t :: {x: number}
 An issue surrounding table literals and indexers has been fixed:
 
 ```luau
+local Color3 = { fromRGB = function(r, g, b) return { r = r, g = g, b = b } end }
+type Color3 = { r: number, g: number, b: number }
 type RecolorMap = {[string]: RecolorMap | Color3}
 
 local hatRecolorMap: RecolorMap = {
@@ -71,7 +73,7 @@ local x: T? = {w=4}
 
 We now report the following:
 
-```luau
+```
 Type 'x' could not be converted into 'T?'
 caused by:
   None of the union options are compatible. For example: Table type 'x' not compatible with type 'T' because the former is missing field 'x'
