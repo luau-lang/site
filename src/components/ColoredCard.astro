@@ -1,0 +1,137 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+import type { StarlightIcon } from '@astrojs/starlight/types';
+
+interface Props {
+  icon?: StarlightIcon;
+  title: string;
+  color?: string;
+}
+
+const { icon, title, color } = Astro.props;
+---
+
+<article class:list={["card sl-flex card-colored", "card-bg-" + color]}>
+	<p class="title sl-flex">
+		{icon && <Icon name={icon} class:list={["icon", "icon-" + color]} size="1.333em" />}
+		<span set:html={title} />
+	</p>
+	<div class="body"><slot /></div>
+</article>
+
+<style>
+	@layer starlight.components {
+	    .card-colored {
+			--sl-color-text: var(--color-white);
+			--sl-color-white: var(--color-white);
+			color: var(--sl-color-text);
+			font-weight: 500;
+		}
+
+		.card {
+            border-radius: 0.5em;
+			--sl-card-border: var(--sl-color-purple);
+			--sl-card-bg: var(--sl-color-purple-low);
+			border: 1px solid var(--sl-color-gray-5);
+			background-color: var(--sl-color-black);
+			padding: clamp(1rem, calc(0.125rem + 3vw), 2.5rem);
+			flex-direction: column;
+			gap: clamp(0.5rem, calc(0.125rem + 1vw), 1rem);
+		}
+		.title {
+			font-weight: 800;
+			font-size: var(--sl-text-h4);
+			color: var(--sl-color-text);
+			line-height: var(--sl-line-height-headings);
+			gap: 1rem;
+			align-items: center;
+		}
+		.card .icon {
+			border: 1px solid var(--sl-card-border);
+			background-color: var(--sl-card-bg);
+			padding: 0.2em;
+			border-radius: 0.25rem;
+			flex-shrink: 0;
+		}
+		.card .body {
+			margin: 0;
+			font-size: clamp(var(--sl-text-sm), calc(0.5rem + 1vw), var(--sl-text-body));
+		}
+
+		/* dark theme for colored cards */
+		:root
+		{
+		    .card-colored {
+				--sl-color-text-accent: var(--color-extended-blue-400);
+			}
+    	    .card-colored.card-bg-red {
+    			background-color: var(--color-extended-red-700);
+    			--sl-card-border: var(--color-extended-red-600);
+    			--sl-card-bg: var(--color-extended-red-1100);
+    		}
+    		.card-colored.card-bg-blue {
+    		    background-color: var(--color-extended-blue-700);
+    			--sl-card-border: var(--color-extended-blue-600);
+    			--sl-card-bg: var(--color-extended-blue-1100);
+    		}
+    		.card-colored.card-bg-yellow {
+          		background-color: var(--color-extended-orange-700);
+                --sl-card-border: var(--color-extended-orange-600);
+    			--sl-card-bg: var(--color-extended-orange-1100);
+    		}
+    		.card-colored.card-bg-green {
+                background-color: var(--color-extended-green-700);
+                --sl-card-border: var(--color-extended-green-600);
+    			--sl-card-bg: var(--color-extended-green-1100);
+    		}
+    		.card-colored.card-bg-purple {
+    		    background-color: var(--color-extended-purple-700);
+    			--sl-card-border: var(--color-extended-purple-600);
+    			--sl-card-bg: var(--color-extended-purple-1100);
+    		}
+    		.card-colored.card-bg-pink {
+    		    background-color: var(--color-extended-pink-700);
+    			--sl-card-border: var(--color-extended-pink-600);
+    			--sl-card-bg: var(--color-extended-pink-1100);
+    		}
+		}
+
+		/* light theme for colored cards */
+		:root[data-theme='light']
+		{
+    		.card-colored {
+    		  --sl-color-text-accent: var(--color-extended-blue-900);
+    		}
+    	    .card-colored.card-bg-red {
+    			background-color: var(--color-extended-red-600);
+    			--sl-card-border: var(--color-extended-red-1000);
+    			--sl-card-bg: var(--color-extended-red-700);
+    		}
+    		.card-colored.card-bg-blue {
+    		    background-color: var(--color-extended-blue-600);
+    			--sl-card-border: var(--color-extended-blue-1000);
+    			--sl-card-bg: var(--color-extended-blue-700);
+    		}
+    		.card-colored.card-bg-yellow {
+          		background-color: var(--color-extended-orange-500);
+                --sl-card-border: var(--color-extended-orange-1000);
+    			--sl-card-bg: var(--color-extended-orange-700);
+    		}
+    		.card-colored.card-bg-green {
+                background-color: var(--color-extended-green-500);
+                --sl-card-border: var(--color-extended-green-1000);
+    			--sl-card-bg: var(--color-extended-green-700);
+    		}
+    		.card-colored.card-bg-purple {
+    		    background-color: var(--color-extended-purple-600);
+    			--sl-card-border: var(--color-extended-purple-1000);
+    			--sl-card-bg: var(--color-extended-purple-800);
+    		}
+    		.card-colored.card-bg-pink {
+    		    background-color: var(--color-extended-pink-600);
+    			--sl-card-border: var(--color-extended-pink-1000);
+    			--sl-card-bg: var(--color-extended-pink-700);
+    		}
+		}
+	}
+</style>

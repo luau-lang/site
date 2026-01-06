@@ -1,0 +1,68 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection, render } from 'astro:content';
+import BetterLinkCard from '../../components/BetterLinkCard.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('news');
+  const sorted = posts.sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+
+  return sorted.map((post, index) => ({
+    params: { id: post.id },
+    props: {
+      post,
+      prev: sorted[index + 1] || null,
+      next: sorted[index - 1] || null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+---
+
+<StarlightPage
+  frontmatter={{
+    title: post.data.title,
+    description: post.data.description,
+    template: 'splash',
+    prev: false,
+    next: false,
+  }}
+>
+  <p class="post-date">{new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</p>
+  <Content />
+
+  <nav class="post-nav">
+    {prev && (
+      <BetterLinkCard title={prev.data.title} href={`/news/${prev.id}`} class:list={["nav-link"]} direction="left" />
+    )}
+    <BetterLinkCard title="Back to News" href="/news" class:list={["nav-link"]} direction="up" />
+    {next && (
+      <BetterLinkCard title={next.data.title} href={`/news/${next.id}`} class:list={["nav-link"]} direction="right" />
+    )}
+  </nav>
+</StarlightPage>
+
+<style>
+.post-date {
+    color: var(--sl-color-gray-3);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+.post-nav {
+    display: grid;
+    grid-template-columns: 100%;
+    gap: 1rem;
+
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+}
+
+@media (min-width: 50rem) {
+   	.post-nav {
+    	   grid-template-columns: 1fr 1fr 1fr;
+   	}
+}
+</style>

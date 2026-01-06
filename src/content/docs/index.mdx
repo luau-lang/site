@@ -1,0 +1,62 @@
+---
+title: Luau
+description: Luau is a small, fast, and embeddable programming language based on Lua with a gradual type system.
+template: splash
+hero:
+  tagline: >
+    Luau (lowercase <em>u</em>, /ˈlu.aʊ/) is a small, fast, and embeddable programming language based on Lua with a gradual type system.
+  image:
+    file: ../../../public/images/mascot.png
+    alt: Hina, a Hawaiian monk seal and the official mascot of the Luau language
+  actions:
+    - text: Get Started 
+      link: /getting-started/
+    - text: News
+      link: /news/
+      variant: secondary
+    - text: Try Luau online
+      link: https://play.luau.org
+      icon: right-caret
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import ColoredCard from '../../components/ColoredCard.astro';
+import LuauPlayground from '../../components/LuauPlayground.astro';
+
+# Try Luau!
+
+<LuauPlayground code={`
+-- we can define our own structural data types
+type Point = { x: number, y: number }
+-- and we can annotate variables (and function arguments) with them)
+local p: Point = { x = 1, y = 2 }
+
+print(p.x, p.y)
+
+-- and we can see that accessing an invalid field from a table raises a type error!
+print(p.z)
+`} height="min(80vh, 400px)" />
+
+# Why Luau?
+
+<CardGrid>
+	<ColoredCard title="Performance" icon="rocket" color="red">
+	Luau is a high-performance managed language with a fast bytecode compiler and interpreter, and an optimized, incremental garbage collector. Its optional JIT compiler runs on x64 and arm64, and supports plugins that extend native code generation to any embedder-defined types.
+	</ColoredCard>
+	<ColoredCard title="Safety" icon="approve-check-circle" color="blue">
+	Luau has a state-of-the-art gradual type system with features like [type refinements](./types/type-refinements) and [type functions](./types/type-functions). This system is powered by an ambitious and powerful type inference engine that aims to both rule out program errors, _and_ provide autocomplete with minimal annotations.
+	</ColoredCard>
+	<ColoredCard title="Accessibility" icon="pen" color="purple">
+	Luau is designed to be easy-to-learn, and easy-to-use over time. The syntax of the language is small and easy to pick up, and the semantics of the language should be broadly unsurprising to most programmers, with recursive functions, conventional loops and branching, and so forth.
+	</ColoredCard>
+	<ColoredCard title="Delightfulness" icon="sun" color="yellow">
+	Luau aims to be pleasant and productive to use, and to make programming as fun as it can be! Besides the language itself, we're building a full suite of developer tools: package management, linting, code transformation, documentation generation, and servers for editing and debugging code.
+	</ColoredCard>
+	<ColoredCard title="Embeddability" icon="puzzle" color="green">
+	Luau, like Lua before it, is designed with embedding in mind. The language features an extended version of Lua's C API with better support for coroutines and yielding, code coverage, and more performant, tagged userdata. We've also carefully sandboxed Luau, limiting the exposed API surface by default and enabling embedders to safely support executing untrusted code from their users.
+	</ColoredCard>
+	<ColoredCard title="Compatibility" icon="setting" color="pink">
+	Whenever possible, Luau aims to be backwards-compatible with Lua 5.1 and at the same time to incorporate features from later revisions of Lua. However, Luau is not a full superset of later versions of Lua - we do not always agree with Lua design decisions, and have different use cases and constraints. All post-5.1 Lua features, along with their support status in Luau, [are documented here](compatibility).
+	</ColoredCard>
+</CardGrid>

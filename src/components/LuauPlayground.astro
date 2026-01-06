@@ -1,0 +1,63 @@
+---
+/**
+ * LuauPlayground - Embeds an interactive Luau playground via iframe
+ * 
+ * Use this component when you need manual control over the playground embed,
+ * such as in MDX files where you want to pass props directly.
+ */
+import { PLAYGROUND_URL, buildPlaygroundUrl, calculateHeight } from '../lib/luau-playground';
+
+interface Props {
+  /** Record of filename to code content */
+  files?: Record<string, string>;
+  /** Single file code (alternative to files prop) */
+  code?: string;
+  /** Override the calculated height (e.g., "400px") */
+  height?: string;
+  /** Theme: "light" | "dark" | "auto" (default: "auto") */
+  theme?: 'light' | 'dark' | 'auto';
+  /** Override the playground URL (for local testing) */
+  baseUrl?: string;
+}
+
+const { 
+  files: filesProp, 
+  code, 
+  height: heightProp,
+  theme = 'auto',
+  baseUrl = PLAYGROUND_URL 
+} = Astro.props;
+
+// Build files object, trimming whitespace from each file
+let files: Record<string, string>;
+if (filesProp) {
+  // Trim each file's content
+  files = Object.fromEntries(
+    Object.entries(filesProp).map(([name, content]) => [name, content.trim()])
+  );
+} else if (code) {
+  files = { 'main.luau': code.trim() };
+} else {
+  files = { 'main.luau': '-- Write your Luau code here' };
+}
+
+const iframeSrc = buildPlaygroundUrl(files, { theme, baseUrl });
+const height = heightProp ?? calculateHeight(files);
+---
+
+<iframe
+  src={iframeSrc}
+  class="luau-playground"
+  style={`height: ${height};`}
+  loading="lazy"
+  allowfullscreen
+  allow="clipboard-write"
+  title="Luau Playground"
+></iframe>
+
+<style>
+  .luau-playground {
+    width: 100%;
+    border: 1px solid var(--sl-color-gray-5);
+  }
+</style>
