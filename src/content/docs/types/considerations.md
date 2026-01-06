@@ -7,11 +7,11 @@ sidebar:
 
 ## Module interactions
 
-Let's say that we have two modules, `Foo` and `Bar`. Luau will try to resolve the paths if it can find any `require` in any scripts. In this case, when you say `script.Parent.Bar`, Luau will resolve it as: relative to this script, go to my parent and get that script named Bar.
+Let's say that we have two modules, `Foo` and `Bar`. Luau will try to resolve the paths if it can find any `require` in any scripts. In this case, when you say `./bar`, Luau will resolve it as: relative to this script, go to my sibling script named Bar.
 
 ```luau
--- Module Foo
-local Bar = require(script.Parent.Bar)
+--!file foo.luau
+local Bar = require("./bar")
 
 local baz1: Bar.Baz = 1     -- not ok
 local baz2: Bar.Baz = "foo" -- ok
@@ -20,10 +20,8 @@ print(Bar.Quux)         -- ok
 print(Bar.FakeProperty) -- not ok
 
 Bar.NewProperty = true -- not ok
-```
 
-```luau
--- Module Bar
+--!file bar.luau
 export type Baz = string
 
 local module = {}
@@ -39,5 +37,6 @@ There are some caveats here though. For instance, the require path must be resol
 
 Cyclic module dependencies can cause problems for the type checker.  In order to break a module dependency cycle a typecast of the module to `any` may be used:
 ```luau
+--!hidden mode=nocheck
 local myModule = require(MyModule) :: any
 ```

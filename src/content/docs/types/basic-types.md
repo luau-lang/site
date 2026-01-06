@@ -80,9 +80,10 @@ local c: string | number = unknown() -- not ok
 In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](../types/refinements.md) on that variable.
 
 ```luau
+local function unknown(): unknown return 5 end
 local x = unknown()
 if typeof(x) == "number" then
-    -- x : number
+    print(x) -- x : number
 end
 ```
 
@@ -91,9 +92,10 @@ end
 `never` is also said to be the _bottom_ type, meaning there doesn't exist a value that inhabits the type `never`. In fact, it is the _dual_ of `unknown`. `never` is useful in many scenarios, and one such use case is when type refinements proves it impossible:
 
 ```luau
+local function unknown(): unknown return 5 end
 local x = unknown()
 if typeof(x) == "number" and typeof(x) == "string" then
-    -- x : never
+    print(x) -- x : never
 end
 ```
 
@@ -170,6 +172,8 @@ type Signal<T, U...> = { f: (T, U...) -> (), data: T }
 It is also possible for a generic function to reference a generic type pack from the generics list:
 
 ```luau
+type Signal<T, U...> = { f: (T, U...) -> (), data: T }
+
 local function call<T, U...>(s: Signal<T, U...>, ...: U...)
     s.f(s.data, ...)
 end
@@ -178,7 +182,10 @@ end
 Generic types with type packs can be instantiated by providing a type pack:
 
 ```luau
-local signal: Signal<string, (number, number, boolean)> = --
+type Signal<T, U...> = { f: (T, U...) -> (), data: T }
+local function call<T, U...>(s: Signal<T, U...>, ...: U...) end
+
+local signal: Signal<string, (number, number, boolean)> = {} :: any
 
 call(signal, 1, 2, false)
 ```

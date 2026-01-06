@@ -33,6 +33,10 @@ type Result<T, E> = Ok<T> | Err<E>
 This `Result<T, E>` type can be discriminated by using type refinements on the property `type`, like so:
 
 ```luau
+--!file main.luau
+local res = require("./result")
+local result: res.Result<number, string> = res.something()
+
 if result.type == "ok" then
     -- result is known to be Ok<T>
     -- and attempting to index for error here will fail
@@ -42,6 +46,15 @@ elseif result.type == "err" then
     -- and attempting to index for value here will fail
     print(result.error)
 end
+
+--!file result.luau
+export type Ok<T> = { type: "ok", value: T }
+export type Err<E> = { type: "err", error: E }
+export type Result<T, E> = Ok<T> | Err<E>
+
+return {
+    something = function(): any return {} end
+}
 ```
 
 Which works out because `value: T` exists only when `type` is in actual fact `"ok"`, and `error: E` exists only when `type` is in actual fact `"err"`.

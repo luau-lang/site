@@ -65,14 +65,14 @@ function Account.new(name, balance): Account
     return setmetatable(self, Account)
 end
 
--- this annotation on `self` is the only _required_ annotation.
-function Account.deposit(self: Account, credit)
+-- this annotation on `self` is currently a _required_ annotation.
+function Account.deposit(self: Account, credit: number)
     -- autocomplete on `self` works here!
     self.balance += credit
 end
 
--- this annotation on `self` is the only _required_ annotation.
-function Account.withdraw(self: Account, debit)
+-- this annotation on `self` is currently a _required_ annotation.
+function Account.withdraw(self: Account, debit: number)
     -- autocomplete on `self` works here!
     self.balance -= debit
 end

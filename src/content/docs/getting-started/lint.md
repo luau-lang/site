@@ -9,13 +9,14 @@ Luau comes with a set of linting passes, that help make sure that the code is co
 
 Linter produces many different types of warnings; many of these are enabled by default, and can be suppressed by declaring `--!nolint NAME` at the top of the file. In dire situations `--!nolint` at the top of the file can be used to completely disable all warnings (note that the type checker is still active, and requires a separate `--!nocheck` declaration).
 
-The rest of this page documents all warnings produced by the linter; each warning has a name and a numeric code, the latter is used when displaying warnings.
+The rest of this page documents all warnings produced by the linter; each warning has a name and a numeric code, the latter is used when displaying warnings. Note that the in-browser version of Luau on this website does not currently use the linter.
 
 ## UnknownGlobal (1)
 
 By default, variables in Luau are global (this is inherited from Lua 5.x and can't be changed because of backwards compatibility). This means that typos in identifiers are invisible to the parser, and often break at runtime. For this reason, the linter considers all globals that aren't part of the builtin global table and aren't explicitly defined in the script "unknown":
 
 ```luau
+--!hidden mode=nocheck
 local displayName = "Roblox"
 
 -- Unknown global 'displaName'
@@ -29,6 +30,7 @@ Note that injecting globals via `setfenv` can produce this warning in correct co
 Some global names exist for compatibility but their use is discouraged. This mostly affects globals introduced by Roblox, and since they can have problematic behavior or can break in the future, this warning highlights their uses:
 
 ```luau
+--!hidden mode=nocheck
 -- Global 'ypcall' is deprecated, use 'pcall' instead
 ypcall(function()
     print("hello")
@@ -40,6 +42,7 @@ end)
 The UnknownGlobal lint can catch typos in globals that are read, but can't catch them in globals that are assigned to. Because of this, and to discourage the use of globals in general, linter detects cases when a global is only used in one function and can be safely converted to a local variable. Note that in some cases this requires declaring the local variable in the beginning of the function instead of where it's being assigned to.
 
 ```luau
+--!hidden mode=nocheck
 local function testFunc(a)
     if a < 5 then
         -- Global 'b' is only used in the enclosing function; consider changing it to local
@@ -56,6 +59,7 @@ end
 In Luau, it is valid to shadow locals and globals with a local variable, including doing it in the same function. This can result in subtle bugs, since the shadowing may not be obvious to the reader. This warning detects cases where local variables shadow other local variables in the same function, or global variables used in the script.
 
 ```luau
+--!hidden mode=nocheck
 local function foo()
     for i=1,10 do
         -- Variable 'i' shadows previous declaration at line 2
@@ -71,6 +75,7 @@ end
 Luau doesn't require the use of semicolons and doesn't automatically insert them at line breaks. When used wisely this results in code that is easy to read and understand, however it can cause subtle issues and hard to understand code when abused by using many different statements on the same line. This warning highlights cases where code should either be broken into multiple lines, or use `;` as a visual guide.
 
 ```luau
+--!hidden mode=nocheck
 -- A new statement is on the same line; add semi-colon on previous statement to silence
 if b < 0 then local a = b + 1 print(a, b) end
 ```
@@ -80,6 +85,7 @@ if b < 0 then local a = b + 1 print(a, b) end
 An opposite problem is having statements that span multiple lines. This is good for readability when the code is indented properly, but when it's not it results in code that's hard to understand, as its easy to confuse the next line for a separate statement.
 
 ```luau
+--!hidden mode=nocheck
 -- Statement spans multiple lines; use indentation to silence
 print(math.max(1,
 math.min(2, 3)))
@@ -90,6 +96,7 @@ math.min(2, 3)))
 This warning is one of the few warnings that highlight unused variables. Local variable declarations that aren't used may indicate a bug in the code (for example, there could be a typo in the code that uses the wrong variable) or redundant code that is no longer necessary (for example, calling a function to get its result and never using this result). This warning warns about locals that aren't used; if the locals are not used intentionally they can be prefixed with `_` to silence the warning:
 
 ```luau
+--!hidden mode=nocheck
 local x = 1
 -- Variable 'y' is never used; prefix with '_' to silence
 local y = 2
@@ -101,6 +108,7 @@ print(x, x)
 While unused local variables could be useful for debugging, unused functions usually contain dead code that was meant to be removed. Unused functions clutter code, can be a result of typos similar to local variables, and can mislead the reader into thinking that some functionality is supported.
 
 ```luau
+--!hidden mode=nocheck
 -- Function 'bar' is never used; prefix with '_' to silence
 local function bar()
 end
@@ -116,8 +124,9 @@ return foo()
 In Luau, there's no first-class module system that's part of the syntax, but `require` function acts as an import statement. When a local is initialized with a `require` result, and the local is unused, this is classified as "unused import". Removing unused imports improves code quality because it makes it obvious what the dependencies of the code are:
 
 ```luau
+--!hidden mode=nocheck
 -- Import 'Roact' is never used; prefix with '_' to silence
-local Roact = require(game.Packages.Roact)
+local Roact = require("@game/Packages/Roact")
 ```
 
 ## BuiltinGlobalWrite (10)
@@ -160,6 +169,7 @@ end
 Luau provides several functions to get the value type as a string (`type`, `typeof`), and some Roblox APIs expose class names through string arguments (`Instance.new`). This warning detects incorrect use of the type names by checking the string literals used in type comparisons and function calls.
 
 ```luau
+--!hidden mode=nocheck
 -- Unknown type 'String' (expected primitive type)
 if type(v) == "String" then
     print("v is a string")
@@ -171,6 +181,7 @@ end
 When using a numeric for, it's possible to make various mistakes when specifying the for bounds. For example, to iterate through the table backwards, it's important to specify the negative step size. This warning detects several cases where the numeric for only runs for 0 or 1 iterations, or when the step doesn't divide the size of the range evenly.
 
 ```luau
+--!hidden mode=nocheck
 -- For loop should iterate backwards; did you forget to specify -1 as step?
 for i=#t,1 do
 end
@@ -192,6 +203,7 @@ In Luau, there's a subtle difference between returning no values from a function
 To help write code that has consistent behavior, linter warns about cases when a function implicitly returns no values, if there are cases when it explicitly returns a result. For code like this it's recommended to use explicit `return` or `return nil` at the end of the function (these have different semantics, so the correct version to use depends on the function):
 
 ```luau
+--!hidden mode=nocheck
 local function find(t, expected)
     for k,v in pairs(t) do
         if k == expected then
@@ -207,6 +219,7 @@ end
 Luau syntax allows to use the same name for different parameters of a function as well as different local variables declared in the same statement. This is error prone, even if it's occasionally useful, so a warning is emitted in cases like this, unless the duplicate name is the placeholder `_`:
 
 ```luau
+--!hidden mode=nocheck
 function foo(a, b, a) -- Function parameter 'a' already defined on column 14
 end
 
@@ -223,6 +236,7 @@ Luau has several library functions that expect a format string that specifies th
 To help make sure that the strings used for these functions are correct, linter checks calls to `string.format`, `string.pack`, `string.packsize`, `string.unpack`, `string.match`, `string.gmatch`, `string.find`, `string.gsub` and `os.date` and issues warnings when the call uses a literal string with an incorrect format:
 
 ```luau
+--!hidden mode=nocheck
 -- Invalid match pattern: invalid capture reference, must refer to a closed capture
 local cap = string.match(s, "(%d)%2")
 
@@ -263,6 +277,7 @@ This warning is emitted when a script defines two functions with the same name i
 The warning is not produced when the functions are defined in different scopes because this is much more likely to be intentional.
 
 ```luau
+--!hidden mode=nocheck
 function foo() end
 function foo() end -- Duplicate function definition: 'foo' also defined on line 1
 
@@ -279,6 +294,7 @@ end
 This warning is emitted when a script accesses a method or field that is marked as deprecated. Use of deprecated APIs is discouraged since they may have performance or correctness issues, may result in unexpected behavior, and could be removed in the future.
 
 ```luau
+--!hidden mode=nocheck
 function getSize(i: Instance)
     return i.DataCost -- Member 'Instance.DataCost' is deprecated
 end
@@ -309,6 +325,7 @@ end
 When checking multiple conditions via `and/or` or `if/elseif`, a copy & paste error may result in checking the same condition redundantly. This almost always indicates a bug, so a warning is emitted when use of a duplicate condition is detected.
 
 ```luau
+--!hidden mode=nocheck
 assert(self._adorns[normID1] and self._adorns[normID1]) -- Condition has already been checked on column 8
 ```
 
@@ -317,6 +334,7 @@ assert(self._adorns[normID1] and self._adorns[normID1]) -- Condition has already
 In Lua, there is no first-class ternary operator but it can be emulated via `a and b or c` pattern. However, due to how boolean evaluation works, if `b` is `false` or `nil`, the resulting expression evaluates to `c` regardless of the value of `a`. Luau solves this problem with the `if a then b else c` expression; a warning is emitted for and-or expressions where the first alternative is `false` or `nil` because it's almost always a bug.
 
 ```luau
+--!hidden mode=nocheck
 -- The and-or expression always evaluates to the second alternative because the first alternative is false; consider using if-then-else expression instead
 local x = flag and false or true
 ```
@@ -324,6 +342,7 @@ local x = flag and false or true
 The code above can be rewritten as follows to avoid the warning and the associated bug:
 
 ```luau
+--!hidden mode=nocheck
 local x = if flag then false else true
 ```
 
@@ -357,6 +376,7 @@ local x = 9007199254740993
 Because of operator precedence rules, not X == Y parses as (not X) == Y; however, often the intent was to invert the result of the comparison. This warning flags erroneous conditions like that, as well as flagging cases where two comparisons happen in a row without any parentheses:
 
 ```luau
+--!hidden mode=nocheck
 -- not X == Y is equivalent to (not X) == Y; consider using X ~= Y, or wrap one of the expressions in parentheses to silence
 if not x == 5 then
 end

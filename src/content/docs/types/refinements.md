@@ -48,6 +48,7 @@ end
 
 Using equality test:
 ```luau
+function f() return "meow" end
 local myString: string = f()
 
 if myString == "hello" then

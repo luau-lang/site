@@ -42,12 +42,25 @@ end
 ```
 When a generic function is called, Luau infers type arguments, for example
 ```luau
+--!file main.luau
+local reverse = require("./reverse")
 local x: {number} = reverse({1, 2, 3})
 local y: {string} = reverse({"a", "b", "c"})
+
+--!file reverse.luau
+function reverse<T>(a: {T}): {T}
+  local result: {T} = {}
+  for i = #a, 1, -1 do
+    table.insert(result, a[i])
+  end
+  return result
+end
+
+return reverse
 ```
 Generic types are used for built-in functions as well as user functions,
 for example the type of two-argument `table.insert` is:
-```luau
+```
 <T>({T}, T) -> ()
 ```
 Note: Functions don't support having defaults assigned to generics, meaning the following is invalid

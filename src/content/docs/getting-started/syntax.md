@@ -52,6 +52,7 @@ In addition to `break` in all loops, Luau supports `continue` statement. Similar
 Note that unlike `break`, `continue` is not a keyword. This is required to preserve backwards compatibility with existing code; so this is a `continue` statement:
 
 ```luau
+--!hidden mode=nocheck
 if x < 0 then
     continue
 end
@@ -60,6 +61,7 @@ end
 Whereas this is a function call:
 
 ```luau
+--!hidden mode=nocheck
 if x < 0 then
     continue()
 end
@@ -79,6 +81,8 @@ until a > 0
 Luau supports compound assignments with the following operators: `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `^=`, `..=`. Just like regular assignments, compound assignments are statements, not expressions:
 
 ```luau
+local a = 5
+
 -- this works
 a += 1
 
@@ -89,6 +93,9 @@ print(a += 1)
 Compound assignments only support a single value on the left and right hand side; additionally, the function calls on the left hand side are only evaluated once:
 
 ```luau
+function foo() return 2 end
+local a = { 1, 2, 3 }
+
 -- calls foo() twice
 a[foo()] = a[foo()] + 1
 
@@ -114,7 +121,10 @@ end
 In addition, the type of any expression can be overridden using a type cast `::`:
 
 ```luau
-local k = (y :: string):rep(x)
+function foo(x: number, y: unknown): boolean
+    local k = (y :: string):rep(x)
+    return k == "a"
+end
 ```
 
 There are several simple builtin types: `any` (represents inability of the type checker to reason about the type), `nil`, `boolean`, `number`, `string` and `thread`.
@@ -174,9 +184,15 @@ export type Point = { x: number, y: number }
 An exported type can be used in another module by prefixing its name with the require alias that you used to import the module.
 
 ```luau
-local M = require(Other.Module)
+--!file main.luau
+local M = require("./other")
 
 local a: M.Point = {x=5, y=6}
+
+--!file other.luau
+export type Point = { x: number, y: number }
+
+return {}
 ```
 
 For more information please refer to [typechecking documentation](../types).
@@ -187,6 +203,7 @@ In addition to supporting standard if *statements*, Luau adds support for if *ex
 
 Here is a simple example of an `if-then-else` expression:
 ```luau
+local a, b = 6, 7
 local maxValue = if a > b then a else b
 ```
 
@@ -194,6 +211,7 @@ local maxValue = if a > b then a else b
 
 Here's is an example demonstrating `elseif`:
 ```luau
+local x = -21
 local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
 ```
 
