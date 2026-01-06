@@ -12,7 +12,19 @@ import remarkLuauPlayground from "./src/plugins/remark-luau-playground";
 export default defineConfig({
   site: 'https://luau.org',
 
-  redirects: {},
+  redirects: {
+    "/demo": "https://play.luau.org",
+    "/typecheck": "/types",
+    "/typecheck/basic-types": "/types/basic-types",
+    "/typecheck/considerations": "/types/considerations",
+    "/typecheck/generics": "/types/generics",
+    "/typecheck/object-oriented-programs": "/types/object-oriented-programs",
+    "/typecheck/overview": "/types/",
+    "/typecheck/refinements": "/types/refinements",
+    "/typecheck/tables": "/types/tables",
+    "/typecheck/type-functions": "/types/type-functions",
+    "/typecheck/unions-and-intersections": "/types/unions-and-intersections",
+  },
 
   markdown: {
     remarkPlugins: [remarkLuauPlayground],
