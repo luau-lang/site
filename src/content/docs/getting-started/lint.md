@@ -1,6 +1,6 @@
 ---
 slug: lint
-title: Luau's linter
+title: Linter
 sidebar:
   order: 4
 ---
@@ -317,7 +317,7 @@ In addition, when type information is present, this warning will be emitted when
 local message = { data = { 1, 2, 3 } }
 
 if #message == 0 then -- Using '#' on a table without an array part is likely a bug
-end 
+end
 ```
 
 ## DuplicateCondition (24)
