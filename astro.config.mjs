@@ -69,7 +69,7 @@ export default defineConfig({
         {
           icon: "rss",
           label: "RSS Feed",
-          href: "./feed.xml",
+          href: "/feed.xml",
         },
       ],
       sidebar: [
