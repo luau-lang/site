@@ -217,6 +217,9 @@
   --sl-color-bg-sidebar: var(--color-black);
   --sl-color-hairline-shade: var(--color-extended-gray-1000);
   --sl-color-text-invert: var(--color-white);
+  --sl-color-text-accent: var(--color-accent-50);
+
+  --sl-text-xs: 0.85rem;
 }
 
 :root[data-theme='light'] {
@@ -225,10 +228,16 @@
     --sl-color-bg-sidebar: var(--color-extended-gray-200);
     --sl-color-hairline-shade: var(--color-extended-gray-400);
     --sl-color-text-invert: var(--color-white);
+
+    --sl-color-text-accent: var(--color-accent-500);
 }
 
 code {
     font-variant-ligatures: none;
+}
+
+starlight-toc a[aria-current=true] {
+    font-weight: bold;
 }
 
 .sl-markdown-content img {
