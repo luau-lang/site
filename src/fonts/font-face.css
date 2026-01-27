@@ -131,6 +131,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: fallback;
+  font-variant-ligatures: none;
   src: url('./BuilderMono-Regular.woff2') format('woff2');
 }
 
@@ -139,6 +140,7 @@
   font-style: normal;
   font-weight: 300;
   font-display: fallback;
+  font-variant-ligatures: none;
   src: url('./BuilderMono-Light.woff2') format('woff2');
 }
 
@@ -147,6 +149,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: fallback;
+  font-variant-ligatures: none;
   src: url('./BuilderMono-Bold.woff2') format('woff2');
 }
 
@@ -161,6 +164,7 @@
 
 @font-face {
     font-family: 'Courier Builder Fallback';
+    font-variant-ligatures: none;
     src: local(Courier New);
     size-adjust: 100%;
     ascent-override: 96%;

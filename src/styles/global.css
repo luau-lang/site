@@ -211,7 +211,6 @@
 :root {
   --sl-font: var(--font-sans), var(--font-sans-fallback), serif;
   --sl-font-mono: var(--font-mono), var(--font-mono-fallback), monospace;
-  font-variant-ligatures: none;
 
   --sl-color-bg: var(--color-black);
   --sl-color-bg-nav: var(--color-black);
@@ -226,6 +225,10 @@
     --sl-color-bg-sidebar: var(--color-extended-gray-200);
     --sl-color-hairline-shade: var(--color-extended-gray-400);
     --sl-color-text-invert: var(--color-white);
+}
+
+code {
+    font-variant-ligatures: none;
 }
 
 .sl-markdown-content img {
