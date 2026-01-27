@@ -31,7 +31,7 @@ $ python tools/perfgraph.py profile.out >profile.svg
 
 This produces an SVG file that can be opened in a browser (the image below is clickable):
 
-[![profile.svg](../../../assets/images/chess-profile.svg)](https://luau.org/assets/images/chess-profile.svg)
+[![profile.svg](/images/chess-profile.svg)](/images/chess-profile.svg)
 
 In a flame graph visualization, the individual bars represent function calls, the width represents how much of the total program runtime they execute, and the nesting matches the call stack encountered during program execution. This is a fantastic visualization technique that allows you to hone in on the specific bottlenecks affecting
 your program performance, optimize those exact bottlenecks, and then re-generate the profile data and visualizer, and look for the next set of true bottlenecks (if any).
