@@ -248,6 +248,10 @@ starlight-toc a[aria-current=true] {
     color: var(--color-white);
 }
 
+.sl-link-button {
+    border-width: 2px;
+}
+
 .sl-markdown-content :is(h1, h2, h3, h4, h5, h6):not(:where(.not-content *)), .site-title, #_top {
     font-weight: 800;
 }
