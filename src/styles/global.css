@@ -211,6 +211,7 @@
 :root {
   --sl-font: var(--font-sans), var(--font-sans-fallback), serif;
   --sl-font-mono: var(--font-mono), var(--font-mono-fallback), monospace;
+  font-variant-ligatures: none;
 
   --sl-color-bg: var(--color-black);
   --sl-color-bg-nav: var(--color-black);
