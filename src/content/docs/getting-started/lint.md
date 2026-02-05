@@ -385,3 +385,20 @@ end
 if 1 <= x <= 3 then
 end
 ```
+
+## MisleadingCondition (30)
+
+Luau is very strict about what evaluates to `false`: only `nil` and `false`. Some programmers are not used to this and try to also test numbers, strings, and tables. This warning flags conditions that are likely erroneous:
+
+```luau
+--!hidden mode=nocheck
+x = 0
+-- (num) is always true; did you mean (num ~= 0)?
+if x then
+end
+
+s = ""
+-- (str) is always true; did you mean (str ~= "")?
+if s then
+end
+```
