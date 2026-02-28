@@ -13,12 +13,27 @@ import ThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
 const shouldRenderSearch =
     config.pagefind ||
     config.components.Search !== "@astrojs/starlight/components/Search.astro";
+const currentPath = Astro.url.pathname;
+const isHomePath = currentPath === "/";
+const isNewsPath = currentPath.startsWith("/news");
+const isDocsPath = !isHomePath && !isNewsPath;
 ---
 
 <div class="header">
     <div class="title-wrapper sl-flex">
         <SiteTitle />
     </div>
+    <nav class="sl-hidden md:sl-flex print:hidden nav-links" aria-label="Primary">
+        <a href="/getting-started/" aria-current={isDocsPath ? "page" : undefined}>
+            Learn
+        </a>
+        <a
+            href="/news"
+            aria-current={isNewsPath ? "page" : undefined}
+        >
+            News
+        </a>
+    </nav>
     <div class="sl-flex print:hidden">
         {shouldRenderSearch && <Search />}
     </div>
@@ -55,6 +70,26 @@ const shouldRenderSearch =
             gap: 1rem;
             align-items: center;
         }
+
+        .nav-links {
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--sl-color-text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--sl-color-text-accent);
+        }
+
+        .nav-links a[aria-current="page"] {
+            color: var(--sl-color-text-accent);
+        }
+
         .social-icons::after {
             content: "";
             height: 2rem;
@@ -96,9 +131,11 @@ const shouldRenderSearch =
                         ),
                         auto
                     )
-                    /* 2 (search box): all free space that is available. */
+                    /* 2 (nav links): use the space they need. */
+                    auto
+                    /* 3 (search box): all free space that is available. */
                     1fr
-                    /* 3 (right items): use the space that these need. */
+                    /* 4 (right items): use the space that these need. */
                     auto;
                 align-content: center;
             }
