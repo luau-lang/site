@@ -104,7 +104,7 @@ If integers are taken out of the equation, bitwise operators make less sense, as
 
 | feature | status | notes |
 |--|--|--|
-| new generational mode for garbage collection | 🤷‍♀️ | we implement other optimizations to garbage collection
+| new generational mode for garbage collection | 🤷‍♀️ | we've implemented other optimizations to garbage collection
 | to-be-closed variables | ❌ | the syntax is inconsistent with how we'd like to do attributes long-term; no strong use cases in our domain |
 | const variables | ❌ | available through `const var = value` syntax |
 | new implementation for `math.random` | ✔️ | our RNG is based on PCG, unlike Lua 5.4 which uses Xoroshiro |
