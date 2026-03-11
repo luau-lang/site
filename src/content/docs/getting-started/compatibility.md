@@ -104,10 +104,10 @@ If integers are taken out of the equation, bitwise operators make less sense, as
 
 | feature | status | notes |
 |--|--|--|
-| new generational mode for garbage collection | 🔜 | we're working on gc optimizations and generational mode is on our radar
+| new generational mode for garbage collection | 🤷‍♀️ | we've implemented other optimizations to garbage collection
 | to-be-closed variables | ❌ | the syntax is inconsistent with how we'd like to do attributes long-term; no strong use cases in our domain |
-| const variables | ❌ | while there's some demand for const variables, we'd never adopt this syntax |
-| new implementation for math.random | ✔️ | our RNG is based on PCG, unlike Lua 5.4 which uses Xoroshiro |
+| const variables | ❌ | available through `const var = value` syntax |
+| new implementation for `math.random` | ✔️ | our RNG is based on PCG, unlike Lua 5.4 which uses Xoroshiro |
 | optional `init` argument to `string.gmatch` | 🤷‍♀️ | no strong use cases |
 | new functions `lua_resetthread` and `coroutine.close` | ✔️ ||
 | coercions string-to-number moved to the string library | 😞 | we love this, but it breaks compatibility |
@@ -120,7 +120,20 @@ If integers are taken out of the equation, bitwise operators make less sense, as
 
 Taking syntax aside (which doesn't feel idiomatic or beautiful), `<close>` isn't very useful in Luau - its dominant use case is for code that works with external resources like files or sockets, but we don't provide such APIs - and has a very large complexity cost, evidences by a lot of bug fixes since the initial implementation in 5.4 work versions. `<const>` in Luau doesn't matter for performance - our multi-pass compiler is already able to analyze the usage of the variable to know if it's modified or not and extract all performance gains from it - so the only use here is for code readability, where the `<const>` syntax is... suboptimal.
 
-If we do end up introducing const variables, it would be through a `const var = value` syntax, which is backwards compatible through a context-sensitive keyword similar to `type`. That said, there's ambiguity wrt whether `const` should simply behave like a read-only variable, ala JavaScript, or if it should represent a stronger contract, for example by limiting the expressions on the right hand side to ones compiler can evaluate ahead of time, or by freezing table values and thus guaranteeing immutability.
+Const variables are available in Luau through a `const var = value` syntax, which is backwards compatible through a context-sensitive keyword (similar to `type`).
+
+## Lua 5.5
+
+| feature | status | notes |
+|--|--|--|
+| declarations for global variables | ❌ | no strong use cases, mistakes are caught by typechecker |
+| named vararg tables | 🤷‍♀️ | |
+| for-loop variables are read only | ❌ | breaks compatibility |
+| floats are printed in decimal with enough digits to be read back correctly | ✔️ | |
+| `table.create(arraysize, recordsize)` | ❌ | breaks compatibility |
+| `utf8.offset` returns also final position of character | 🤷‍♀️ | |
+| external strings | ❌ | not compatible with internal object structure;  |
+| new functions `luaL_openselectedlibs` and `luaL_makeseed` | 🤷‍♀️ | |
 
 ## Differences from Lua
 
