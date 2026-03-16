@@ -25,6 +25,8 @@ print(displaName)
 
 Note that injecting globals via `setfenv` can produce this warning in correct code; global injection is incompatible with type checking and has performance implications so we recommend against it and in favor of using `require` with correctly scoped identifiers.
 
+Note that this lint only has an effect when type inference is set to `nocheck`. In `nonstrict` and `strict` modes, unknown globals are caught separately by the type checker and this lint will be ignored.
+
 ## DeprecatedGlobal (2)
 
 Some global names exist for compatibility but their use is discouraged. This mostly affects globals introduced by Roblox, and since they can have problematic behavior or can break in the future, this warning highlights their uses:
