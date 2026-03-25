@@ -25,7 +25,7 @@ print(displaName)
 
 Note that injecting globals via `setfenv` can produce this warning in correct code; global injection is incompatible with type checking and has performance implications so we recommend against it and in favor of using `require` with correctly scoped identifiers.
 
-Note that this lint only has an effect when type inference is set to `nocheck`. In `nonstrict` and `strict` modes, unknown globals are caught separately by the type checker and this lint will be ignored.
+Users should also note that this lint is separate from Luau's type system and is only enabled in `nocheck`. In `nonstrict` and `strict` modes, unknown globals are caught by the type checker instead, and this lint will always be silenced automatically.
 
 ## DeprecatedGlobal (2)
 
