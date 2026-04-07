@@ -121,7 +121,7 @@ Creates a [generic](../types/generics#generic-functions) named `name`. If `ispac
 `type` instances can have extra properties and methods described in subsections depending on its tag.
 
 ```
-type.tag: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class" | "thread" | "buffer"
+type.tag: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "extern" | "thread" | "buffer"
 ```
 
 An immutable property holding the type's tag.
@@ -133,7 +133,7 @@ __eq(arg: type): boolean
 Overrides the `==` operator to return `true` if `self` is syntactically equal to `arg`. This excludes semantically equivalent types, `true | false` is unequal to `boolean`.
 
 ```
-type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "class" | "thread" | "buffer")
+type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "string" | "singleton" | "negation" | "union" | "intersection" | "table" | "function" | "extern" | "thread" | "buffer")
 ```
 
 Returns `true` if `self` has the argument as its tag.
@@ -323,46 +323,46 @@ intersectiontype:components()
 
 Returns an array of the [intersected](../types/unions-and-intersections#intersection-types) types.
 
-### Class `type` instance
+### Extern `type` instance
 
 ```
-classtype:properties(): { [type]: { read: type?, write: type? } }
+externtype:properties(): { [type]: { read: type?, write: type? } }
 ```
 
-Returns the properties of the class with their respective `read` and `write` types.
+Returns the properties of the extern type with their respective `read` and `write` types.
 
 ```
-classtype:readparent(): type?
+externtype:readparent(): type?
 ```
 
-Returns the type of reading this class' parent, or returns `nil` if the parent class doesn't exist.
+Returns the type of reading this extern type's parent, or returns `nil` if the parent doesn't exist.
 
 ```
-classtype:writeparent(): type?
+externtype:writeparent(): type?
 ```
 
-Returns the type for writing to this class' parent, or returns `nil` if the parent class doesn't exist.
+Returns the type for writing to this extern type's parent, or returns `nil` if the parent doesn't exist.
 
 ```
-classtype:metatable(): type?
+externtype:metatable(): type?
 ```
 
-Returns the class' metatable, or `nil` if it doesn't exist.
+Returns the extern type's metatable, or `nil` if it doesn't exist.
 
 ```
-classtype:indexer(): { index: type, readresult: type, writeresult: type }?
+externtype:indexer(): { index: type, readresult: type, writeresult: type }?
 ```
 
-Returns the class' indexer, or `nil` if it doesn't exist.
+Returns the extern type's indexer, or `nil` if it doesn't exist.
 
 ```
-classtype:readindexer(): { index: type, result: type }?
+externtype:readindexer(): { index: type, result: type }?
 ```
 
-Returns result type of reading from the class via indexing, or `nil` if it doesn't exist.
+Returns result type of reading from the extern type via indexing, or `nil` if it doesn't exist.
 
 ```
-classtype:writeindexer(): { index: type, result: type }?
+externtype:writeindexer(): { index: type, result: type }?
 ```
 
-Returns the type for writing to the class via indexing, or `nil` if it doesn't exist.
+Returns the type for writing to the extern type via indexing, or `nil` if it doesn't exist.
