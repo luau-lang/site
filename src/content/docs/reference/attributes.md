@@ -21,14 +21,14 @@ local function fib(n: number): number
 end
 ```
 
-`@native` does not apply recursively to functions defined inside the attributed function; inner functions must be attributed separately:
+`@native` does not apply recursively to functions defined inside the annotated function; inner functions must be marked separately:
 
 ```luau
 @native
 local function outer()
     @native
     local function inner()
-        -- inner IS natively compiled because it is explicitly attributed
+        -- inner IS natively compiled because it has a `@native` attribute attached to it
     end
 
     local function uninstrumented()
