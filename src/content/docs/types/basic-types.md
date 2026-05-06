@@ -77,7 +77,7 @@ local b: number = unknown() -- not ok
 local c: string | number = unknown() -- not ok
 ```
 
-In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](../types/refinements.md) on that variable.
+In order to turn a variable of type `unknown` into a different type, you must apply [type refinements](../types/type-refinements.md) on that variable.
 
 ```luau
 local function unknown(): unknown return 5 end
