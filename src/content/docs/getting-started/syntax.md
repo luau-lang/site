@@ -384,3 +384,38 @@ Note that it's possible to get `inf`, `-inf`, or `NaN` with floor division; when
 For native vectors, `c // d` applies `math.floor` to each component of the vector `c`. Therefore `c // d` is equivalent to `vector.create(math.floor(c.x / d), math.floor(c.y / b), math.floor(c.z / b))`.
 
 Floor division syntax and semantics follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1) where applicable.
+
+## Attributes
+
+Luau supports attributes on function declarations. An attribute is a `@name` annotation placed before a function that adjusts the behavior of the compiler, analyzer, or runtime.
+Attributes are built into the language and cannot be defined by users.
+
+```luau
+@native
+local function fib(n: number): number
+    if n <= 1 then return n end
+    return fib(n - 1) + fib(n - 2)
+end
+```
+
+Attributes work on all function declaration forms:
+
+```luau
+@native
+function module.process(data)
+    -- ...
+end
+
+local transform = @native function(x) return x * 2 end
+```
+
+Multiple attributes can be placed on the same line:
+
+```luau
+@native @deprecated
+local function legacyCalc(x: number)
+    -- ...
+end
+```
+
+For the full list of available attributes and their parameters, see the [Attributes reference](../attributes).
