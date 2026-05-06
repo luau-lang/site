@@ -20,7 +20,7 @@ export default defineConfig({
     "/typecheck/generics": "/types/generics",
     "/typecheck/object-oriented-programs": "/types/object-oriented-programs",
     "/typecheck/overview": "/types/",
-    "/typecheck/refinements": "/types/refinements",
+    "/typecheck/refinements": "/types/type-refinements",
     "/typecheck/tables": "/types/tables",
     "/typecheck/type-functions": "/types/type-functions",
     "/typecheck/unions-and-intersections": "/types/unions-and-intersections",
