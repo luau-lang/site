@@ -69,3 +69,41 @@ function meow<T = string>(mrrp: T)
      print(mrrp .. " :3")
 end
 ```
+
+## Generic type instantiation
+
+By default, Luau will infer the type arguments when calling a generic function. You can also provide them explicitly using the syntax `func<<Type>>(...)`.
+This is called _generic type instantiation_ or just _type instantiation_. For example,
+
+```luau
+local function identity<T>(x: T): T
+  return x
+end
+
+local a = identity<<number>>(42)   -- T is explicitly number
+local b = identity<<string>>("hi") -- T is explicitly string
+local c = identity<<"hi">>("hi")   -- T is explicitly the singleton type "hi"
+```
+
+Explicit instantiation is useful when inference would be ambiguous or when you want to constrain the inferred type to a supertype:
+
+```luau
+local function makeList<T>(): {T}
+  return {}
+end
+
+-- Without explicit instantiation, Luau would not be able to infer `T` from the arguments alone
+local nums = makeList<<number>>()   -- {number}
+local strs = makeList<<string>>()   -- {string}
+```
+
+You can also instantiate multiple type parameters at once by separating them with commas:
+
+```luau
+local function swap<A, B>(a: A, b: B): (B, A)
+  return b, a
+end
+
+local x, y = swap<<number, string>>(1, "hello")
+-- x: string, y: number
+```
