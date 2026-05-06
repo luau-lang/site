@@ -197,6 +197,73 @@ return {}
 
 For more information please refer to [typechecking documentation](../types).
 
+## Const bindings
+
+Luau supports `const` declarations for local variable bindings. A `const` binding works like `local`, but prevents reassignment after initialization, making the binding itself immutable.
+
+```luau
+const x = 5
+x = 10 -- error: cannot assign to a const variable
+```
+
+This restriction applies to all assignment forms, including compound assignment, and when nested inside other scopes:
+
+```luau
+const counter = 0
+counter += 1 -- error: cannot assign to a const variable
+
+local function f()
+    counter += 1 -- error: cannot assign to a const variable
+end
+
+if condition then
+    counter += 1 -- error: cannot assign to a const variable
+end
+```
+
+Type annotations are supported, just like with `local`:
+
+```luau
+const x: number = 5
+const t: { a: number } = { a = 1 }
+```
+
+Multi-assignment and function declarations work too:
+
+```luau
+const a, b = 1, 2
+
+const function greet(name: string)
+    print(`Hello, {name}!`)
+end
+```
+
+### Binding immutability vs. value immutability
+
+`const` makes the *binding* immutable, but it does not make the *value* immutable. For instance, a `const` variable referring to a table will still allow the table's contents to be mutated:
+
+```luau
+const t = { count = 0 }
+t.count += 1 -- ok: mutating the table's field
+t = {}       -- error: reassigning the binding
+```
+
+To prevent mutation of the table's contents as well, use `table.freeze`:
+
+```luau
+const t = table.freeze({ count = 0 })
+t.count += 1 -- error: mutating a frozen table
+t = {}       -- error: reassigning the binding
+```
+
+### Backwards compatibility
+
+`const` is a contextual keyword, and so is only treated as a keyword in positions where `local` is valid. Existing code that uses `const` as a variable name works:
+
+```luau
+local const = 42 -- still valid
+```
+
 ## If-then-else expressions
 
 In addition to supporting standard if *statements*, Luau adds support for if *expressions*.  Syntactically, `if-then-else` expressions look very similar to if statements.  However instead of conditionally executing blocks of code, if expressions conditionally evaluate expressions and return the value produced as a result. Also, unlike if statements, if expressions do not terminate with the `end` keyword.
