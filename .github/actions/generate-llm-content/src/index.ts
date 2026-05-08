@@ -174,33 +174,16 @@ function writeCleanMdFiles(docs: DocFile[], config: Config): void {
 }
 
 function generateRobotsTxt(config: Config): string {
-  return [
-    "User-agent: *",
-    "Allow: /",
-    "",
-    `Sitemap: ${config.baseUrl}/sitemap.xml`,
-    "",
-    `# LLM content`,
-    `# Index: ${config.baseUrl}/llms.txt`,
-    `# Full: ${config.baseUrl}/llms-full.txt`,
-    "",
-  ].join("\n");
+  return renderTemplate("robots.txt.hbs", { baseUrl: config.baseUrl });
 }
 
 function generateSitemapXml(docs: DocFile[], config: Config): string {
   const today = new Date().toISOString().split("T")[0];
-  const urls = docs.map(
-    (doc) =>
-      `  <url>\n    <loc>${config.baseUrl}/${doc.slug}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`,
-  );
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...urls,
-    "</urlset>",
-    "",
-  ].join("\n");
+  const urls = docs.map((doc) => ({
+    loc: `${config.baseUrl}/${doc.slug}`,
+    lastmod: today,
+  }));
+  return renderTemplate("sitemap.xml.hbs", { urls });
 }
 
 function main() {
