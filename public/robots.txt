@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://luau.org/sitemap.xml
+Sitemap: https://luau.org/sitemap-index.xml
 
 # LLM content
 # Index: https://luau.org/llms.txt
