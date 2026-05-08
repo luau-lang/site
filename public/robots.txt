@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://luau.org/sitemap.xml
+
+# LLM content
+# Index: https://luau.org/llms.txt
+# Full: https://luau.org/llms-full.txt

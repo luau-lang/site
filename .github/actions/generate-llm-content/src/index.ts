@@ -173,18 +173,6 @@ function writeCleanMdFiles(docs: DocFile[], config: Config): void {
   }
 }
 
-function generateRobotsTxt(config: Config): string {
-  return renderTemplate("robots.txt.hbs", { baseUrl: config.baseUrl });
-}
-
-function generateSitemapXml(docs: DocFile[], config: Config): string {
-  const today = new Date().toISOString().split("T")[0];
-  const urls = docs.map((doc) => ({
-    loc: `${config.baseUrl}/${doc.slug}`,
-    lastmod: today,
-  }));
-  return renderTemplate("sitemap.xml.hbs", { urls });
-}
 
 function main() {
   const config = loadConfig();
@@ -235,15 +223,6 @@ function main() {
   writeRawMdFiles(docs, config);
   console.log(`Written: ${docs.length} raw markdown files at {slug}/index.md`);
 
-  // 8. Write robots.txt
-  const robotsTxt = generateRobotsTxt(config);
-  fs.writeFileSync(path.join(config.outputDir, "robots.txt"), robotsTxt, "utf-8");
-  console.log("Written: robots.txt");
-
-  // 9. Write sitemap.xml
-  const sitemapXml = generateSitemapXml(docs, config);
-  fs.writeFileSync(path.join(config.outputDir, "sitemap.xml"), sitemapXml, "utf-8");
-  console.log(`Written: sitemap.xml (${docs.length} URLs)`);
 
   // Output for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
