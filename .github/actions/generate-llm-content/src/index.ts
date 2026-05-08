@@ -173,6 +173,36 @@ function writeCleanMdFiles(docs: DocFile[], config: Config): void {
   }
 }
 
+function generateRobotsTxt(config: Config): string {
+  return [
+    "User-agent: *",
+    "Allow: /",
+    "",
+    `Sitemap: ${config.baseUrl}/sitemap.xml`,
+    "",
+    `# LLM content`,
+    `# Index: ${config.baseUrl}/llms.txt`,
+    `# Full: ${config.baseUrl}/llms-full.txt`,
+    "",
+  ].join("\n");
+}
+
+function generateSitemapXml(docs: DocFile[], config: Config): string {
+  const today = new Date().toISOString().split("T")[0];
+  const urls = docs.map(
+    (doc) =>
+      `  <url>\n    <loc>${config.baseUrl}/${doc.slug}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`,
+  );
+
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    "</urlset>",
+    "",
+  ].join("\n");
+}
+
 function main() {
   const config = loadConfig();
 
@@ -221,6 +251,16 @@ function main() {
   // 7. Write raw markdown files at /{slug}/index.md
   writeRawMdFiles(docs, config);
   console.log(`Written: ${docs.length} raw markdown files at {slug}/index.md`);
+
+  // 8. Write robots.txt
+  const robotsTxt = generateRobotsTxt(config);
+  fs.writeFileSync(path.join(config.outputDir, "robots.txt"), robotsTxt, "utf-8");
+  console.log("Written: robots.txt");
+
+  // 9. Write sitemap.xml
+  const sitemapXml = generateSitemapXml(docs, config);
+  fs.writeFileSync(path.join(config.outputDir, "sitemap.xml"), sitemapXml, "utf-8");
+  console.log(`Written: sitemap.xml (${docs.length} URLs)`);
 
   // Output for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
