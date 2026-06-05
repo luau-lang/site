@@ -392,7 +392,7 @@ const char* lua_pushvfstring(lua_State* L, const char* fmt, va_list argp);
 ```
 
 ```c
-LUA_PRINTF_ATTR(2, 3) const char* lua_pushfstringL(lua_State* L, const char* fmt, ...);
+const char* lua_pushfstringL(lua_State* L, const char* fmt, ...);
 ```
 
 ```c
@@ -848,7 +848,7 @@ size_t lua_totalbytes(lua_State* L, int category);
 ## Error Handling
 
 ```c
-l_noret lua_error(lua_State* L);
+void lua_error(lua_State* L);
 ```
 
 ## Sandboxing
