@@ -274,28 +274,47 @@ int lua_objlen(lua_State* L, int idx);
 ## Primitive types
 
 ```c
+int lua_isnil(lua_State* L, int idx);
+#define lua_isnil(L, n) // Implemented as a macro
+```
+
+Returns 1 if the value at the stack index is `nil` and 0 otherwise.
+
+```c
 int lua_isnumber(lua_State* L, int idx);
 ```
+
+Returns 1 if the value at the stack index is a number and 0 otherwise.
+Note that value coercions are allowed, if the value is a string convertible to a number, result is also 1.
 
 ```c
 int lua_isinteger64(lua_State* L, int idx);
 ```
 
-```c
-#define lua_isnil(L, n) // Implemented as a macro
-```
+Returns 1 if the value at the stack index is a 64-bit integer and 0 otherwise.
 
 ```c
+int lua_isboolean(lua_State* L, int idx);
 #define lua_isboolean(L, n) // Implemented as a macro
 ```
 
+Returns 1 if the value at the stack index is a boolean and 0 otherwise.
+
 ```c
+int lua_isnone(lua_State* L, int idx);
 #define lua_isnone(L, n) // Implemented as a macro
 ```
 
+Returns 1 if there is no value at the stack index (out of range of the current stack) and 0 otherwise.
+This is useful to detect missing optional arguments of a function.
+
 ```c
+int lua_isnoneornil(lua_State* L, int idx);
 #define lua_isnoneornil(L, n) // Implemented as a macro
 ```
+
+Returns 1 if there is no value at the stack index (out of range of the current stack) or it is `nil` and 0 otherwise.
+This is useful to detect missing optional arguments of a function, when `nil` is also considered a missing value.
 
 ```c
 double lua_tonumberx(lua_State* L, int idx, int* isnum);
@@ -359,20 +378,23 @@ void lua_pushboolean(lua_State* L, int b);
 int lua_isstring(lua_State* L, int idx);
 ```
 
-```c
-#define lua_tostring(L, i) // Implemented as a macro
-```
+Returns 1 if the value at the stack index is a string and 0 otherwise.
+Note that value coercions are allowed, if the value is a number, result is also 1.
 
 ```c
 const char* lua_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
 ```c
-const char* lua_tostringatom(lua_State* L, int idx, int* atom);
+#define lua_tostring(L, i) // Implemented as a macro
 ```
 
 ```c
 const char* lua_tolstringatom(lua_State* L, int idx, size_t* len, int* atom);
+```
+
+```c
+const char* lua_tostringatom(lua_State* L, int idx, int* atom);
 ```
 
 ```c
@@ -417,6 +439,8 @@ void lua_concat(lua_State* L, int n);
 #define lua_isvector(L, n) // Implemented as a macro
 ```
 
+Returns 1 if the value at the stack index is a vector and 0 otherwise.
+
 ```c
 const float* lua_tovector(lua_State* L, int idx);
 ```
@@ -432,6 +456,8 @@ void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE
 #define lua_isbuffer(L, n) // Implemented as a macro
 ```
 
+Returns 1 if the value at the stack index is a buffer and 0 otherwise.
+
 ```c
 void* lua_tobuffer(lua_State* L, int idx, size_t* len);
 ```
@@ -446,13 +472,19 @@ void* lua_newbuffer(lua_State* L, size_t sz);
 int lua_iscfunction(lua_State* L, int idx);
 ```
 
+Returns 1 if the value at the stack index is a C function and 0 otherwise.
+
 ```c
 int lua_isLfunction(lua_State* L, int idx);
 ```
 
+Returns 1 if the value at the stack index is a Luau closure and 0 otherwise.
+
 ```c
 #define lua_isfunction(L, n) // Implemented as a macro
 ```
+
+Returns 1 if the value at the stack index is a C function or a Luau closure and 0 otherwise.
 
 ```c
 lua_CFunction lua_tocfunction(lua_State* L, int idx);
@@ -480,7 +512,14 @@ void lua_clonefunction(lua_State* L, int idx);
 #define lua_istable(L, n) // Implemented as a macro
 ```
 
+Returns 1 if the value at the stack index is a table and 0 otherwise.
+
 ```c
+void lua_createtable(lua_State* L, int narr, int nrec);
+```
+
+```c
+void lua_newtable(lua_State* L);
 #define lua_newtable(L) // Implemented as a macro
 ```
 
@@ -506,10 +545,6 @@ int lua_rawgeti(lua_State* L, int idx, int n);
 
 ```c
 int lua_rawgetptagged(lua_State* L, int idx, void* p, int tag);
-```
-
-```c
-void lua_createtable(lua_State* L, int narr, int nrec);
 ```
 
 ```c
@@ -581,6 +616,8 @@ int lua_rawiter(lua_State* L, int idx, int iter);
 ```c
 #define lua_islightuserdata(L, n) // Implemented as a macro
 ```
+
+Returns 1 if the value at the stack index is a light userdata and 0 otherwise.
 
 ```c
 int lua_isuserdata(lua_State* L, int idx);
@@ -721,9 +758,13 @@ void lua_userdatadirectfield_setnil(void* result);
 #define lua_isclass(L, n) // Implemented as a macro
 ```
 
+Returns 1 if the value at the stack index is a class and 0 otherwise.
+
 ```c
 #define lua_isobject(L, n) // Implemented as a macro
 ```
+
+Returns 1 if the value at the stack index is an object and 0 otherwise.
 
 ## Making calls
 
