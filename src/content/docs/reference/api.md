@@ -540,7 +540,7 @@ Place a `string` value on the top of the stack using `printf`-like formatted str
 Returns the string pointer of the result.
 
 ```c
-#define lua_pushliteral(L, s) // Implemented as a macro
+#define lua_pushliteral(L, s)
 ```
 
 Place a `string` value of string literal `s`.
@@ -555,6 +555,7 @@ Same as `lua_objlen`, for code compatibility with an older Lua API.
 Note that it works on all value types and not only strings.
 
 ```c
+const char* lua_pushfstring(lua_State* L, const char* fmt, ...);
 #define lua_pushfstring(L, fmt, ...) // Implemented as a macro
 ```
 
