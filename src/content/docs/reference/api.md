@@ -473,7 +473,7 @@ Returns 1 if the value at the index is a string or a number.
 const char* lua_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
-Converts the string or number at the index to a string pointer.
+Converts the `string` or `number` at the index to a string pointer.
 
 Note: if the value on the stack is a `number`, it is coerced to a `string` value, changing the value at the index.
 
@@ -582,10 +582,15 @@ Returns 1 if the value at the index is a vector.
 const float* lua_tovector(lua_State* L, int idx);
 ```
 
+Converts the `vector` at the index to a pointer to the components of the vector.
+Returns a `nullptr` if the value is not a `vector`.
+
 ```c
 void lua_pushvector(lua_State* L, float x, float y, float z, float w); // LUA_VECTOR_SIZE is 4
 void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE is 3
 ```
+
+Place a `vector` value on the top of the stack.
 
 ## Buffers
 
@@ -600,9 +605,17 @@ Returns 1 if the value at the index is a buffer.
 void* lua_tobuffer(lua_State* L, int idx, size_t* len);
 ```
 
+Converts the `buffer` at the index to a pointer to its data.
+Returns a `nullptr` if the value is not a `buffer`.
+
+* `len` - when not a `nullptr`, set to the size of the buffer
+
 ```c
 void* lua_newbuffer(lua_State* L, size_t sz);
 ```
+
+Creates a new `buffer` value of size `sz` and places it on the top of the stack.
+Returns the pointer to the buffer's data.
 
 ## Functions and Closures
 
@@ -634,11 +647,13 @@ void lua_pushcclosurek(lua_State* L, lua_CFunction fn, const char* debugname, in
 ```
 
 ```c
-#define lua_pushcfunction(L, fn, debugname) // Implemented as a macro
+void lua_pushcclosure(lua_State* L, lua_CFunction fn, const char* debugname, int nup);
+#define lua_pushcclosure(L, fn, debugname, nup) // Implemented as a macro
 ```
 
 ```c
-#define lua_pushcclosure(L, fn, debugname, nup) // Implemented as a macro
+void lua_pushcfunction(lua_State* L, lua_CFunction fn, const char* debugname);
+#define lua_pushcfunction(L, fn, debugname) // Implemented as a macro
 ```
 
 ```c
