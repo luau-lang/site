@@ -590,7 +590,7 @@ void lua_pushvector(lua_State* L, float x, float y, float z, float w); // LUA_VE
 void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE is 3
 ```
 
-Place a `vector` value on the top of the stack.
+Place a `vector` value with the components `x`, `y`, `z` and `w` (when `LUA_VECTOR_SIZE` is 4) on the top of the stack.
 
 ## Buffers
 
@@ -615,9 +615,10 @@ void* lua_newbuffer(lua_State* L, size_t sz);
 ```
 
 Creates a new `buffer` value of size `sz` and places it on the top of the stack.
+Buffer data is zero-initialized.
 Returns the pointer to the buffer's data.
 
-## Functions and Closures
+## Functions
 
 ```c
 int lua_iscfunction(lua_State* L, int idx);
@@ -629,36 +630,58 @@ Returns 1 if the value at the index is a C function.
 int lua_isLfunction(lua_State* L, int idx);
 ```
 
-Returns 1 if the value at the index is a Luau closure.
+Returns 1 if the value at the index is a Luau function.
 
 ```c
 int lua_isfunction(lua_State* L, int n);
 #define lua_isfunction(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the index is a C function or a Luau closure.
+Returns 1 if the value at the index is a C or Luau function.
 
 ```c
 lua_CFunction lua_tocfunction(lua_State* L, int idx);
 ```
 
+Converts the C function at the index to a C function pointer.
+Returns a `nullptr` if the value is not a C function.
+
 ```c
 void lua_pushcclosurek(lua_State* L, lua_CFunction fn, const char* debugname, int nup, lua_Continuation cont);
 ```
+
+Creates a `function` from a C function pointer and places it on top of the stack.
+
+* `fn` - pointer to the C function, cannot be a `nullptr`
+* `debugname` - optional name to be associated with the function
+* `nup` - number of upvalues that the function has
+* `cont` - C continuation function; optional unless the C function wants to support yielding
+
+When `nup` is not zero, the specified number of upvalues are popped from the stack to be stored in the function object.
+
+Important: Luau does not preserve the `debugname`, the pointer lifetime has to encompass the lifetime of the VM.
 
 ```c
 void lua_pushcclosure(lua_State* L, lua_CFunction fn, const char* debugname, int nup);
 #define lua_pushcclosure(L, fn, debugname, nup) // Implemented as a macro
 ```
 
+Same as `lua_pushcclosurek`, but does not support the C continuation function.
+
 ```c
 void lua_pushcfunction(lua_State* L, lua_CFunction fn, const char* debugname);
 #define lua_pushcfunction(L, fn, debugname) // Implemented as a macro
 ```
 
+Same as `lua_pushcclosure`, but does not use upvalues.
+
 ```c
 void lua_clonefunction(lua_State* L, int idx);
 ```
+
+Clones the function at the specified index and places it on the stack.
+The function can only be used on Luau functions.
+The cloned function environment is set to the current thread's globals table, while upvalues are copied over.
 
 ## Tables
 
