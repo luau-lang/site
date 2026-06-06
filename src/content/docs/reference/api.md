@@ -147,9 +147,11 @@ See the `lua_call`/`lua_pcall` on how to run the resulting closure.
 Stack manipulation is done within the stack area of the active call frame.
 There is always an implicit top call frame present to use for arguments of the initial call of the thread.
 
-Stack items can be selected using a stack index:
+Stack items can be selected using an index:
+
 * Negative indices refer to items counting from the top (-1 is the top element, -2 is one below it)
 * Positive indices refer to items counting from the base of the stack (useful for function arguments, where 1 is the first argument)
+* 0 is not a valid stack index unless explicitly stated to carry a special meaning in the function description
 * `LUA_REGISTRYINDEX` pseudo index of the global registry table
 * `LUA_ENVIRONINDEX` pseudo index of the environment table
 * `LUA_GLOBALSINDEX` pseudo index of the global table
@@ -251,25 +253,60 @@ Try to reserve space on the stack for `sz` items or throw a `"stack overflow ({m
 
 ## Type Inspection
 
+Luau has the following value types, represented as `lua_Type` enumeration constants:
+
+* `LUA_TNIL` - the `nil` value
+* `LUA_TBOOLEAN` - a `boolean` value
+* `LUA_TLIGHTUSERDATA` - a light userdata value
+* `LUA_TNUMBER` - a `number` value, representing a double type
+* `LUA_TINTEGER` - an `integer` value, representing a 64-bit integer type
+* `LUA_TVECTOR` - a `vector` value, representing a 3 or 4 component (LUA_VECTOR_SIZE) type
+* `LUA_TSTRING` - a `string` value
+* `LUA_TTABLE` - a `table` value
+* `LUA_TFUNCTION` - a function value
+* `LUA_TUSERDATA` - a userdata value
+* `LUA_TTHREAD` - a thread value
+* `LUA_TBUFFER` - a buffer value
+* `LUA_TCLASS` - a class value
+* `LUA_TOBJECT` - an object value
+
+There are additional enumeration values which are for internal use and are subject to change.
+
 ```c
 int lua_type(lua_State* L, int idx);
 ```
+
+Returns the type of the value at the index.
 
 ```c
 const char* lua_typename(lua_State* L, int tp);
 ```
 
+Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, or `"buffer"`.
+
 ```c
 const char* luaL_typename(lua_State* L, int idx);
 ```
+
+Returns the type of the object; for userdata objects that have a metatable with the `__type` field and are defined by the host (not `newproxy`), returns the value for that key.
+For custom userdata objects, such as ones returned by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
 
 ```c
 const void* lua_topointer(lua_State* L, int idx);
 ```
 
+Converts the value at the index into an opaque C pointer.
+Value can be a `string`, `userdata` (including light userdata), `table`, `function`, `thread`, `buffer`, `class` or `object`.
+For other types returns `nullptr`.
+
+The pointer can be used for debugging and cannot be converted back to a Luau object.
+
 ```c
 int lua_objlen(lua_State* L, int idx);
 ```
+
+Returns the length of the object at the index like the `#` operator.
+Value can be a `string`, `table` or a type that has an `__len` metamethod available.
 
 ## Primitive types
 
@@ -278,34 +315,33 @@ int lua_isnil(lua_State* L, int idx);
 #define lua_isnil(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is `nil` and 0 otherwise.
-
-```c
-int lua_isnumber(lua_State* L, int idx);
-```
-
-Returns 1 if the value at the stack index is a number and 0 otherwise.
-Note that value coercions are allowed, if the value is a string convertible to a number, result is also 1.
-
-```c
-int lua_isinteger64(lua_State* L, int idx);
-```
-
-Returns 1 if the value at the stack index is a 64-bit integer and 0 otherwise.
+Returns 1 if the value at the index is `nil`.
 
 ```c
 int lua_isboolean(lua_State* L, int idx);
 #define lua_isboolean(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a boolean and 0 otherwise.
+Returns 1 if the value at the index is a boolean.
+
+```c
+int lua_isnumber(lua_State* L, int idx);
+```
+
+Returns 1 if the value at the index is a number or a string convertible to a number.
+
+```c
+int lua_isinteger64(lua_State* L, int idx);
+```
+
+Returns 1 if the value at the index is a 64-bit integer.
 
 ```c
 int lua_isnone(lua_State* L, int idx);
 #define lua_isnone(L, n) // Implemented as a macro
 ```
 
-Returns 1 if there is no value at the stack index (out of range of the current stack) and 0 otherwise.
+Returns 1 if there is no value at the index (out of range of the current stack).
 This is useful to detect missing optional arguments of a function.
 
 ```c
@@ -313,64 +349,108 @@ int lua_isnoneornil(lua_State* L, int idx);
 #define lua_isnoneornil(L, n) // Implemented as a macro
 ```
 
-Returns 1 if there is no value at the stack index (out of range of the current stack) or it is `nil` and 0 otherwise.
+Returns 1 if there is no value at the index (out of range of the current stack) or it is `nil`.
 This is useful to detect missing optional arguments of a function, when `nil` is also considered a missing value.
-
-```c
-double lua_tonumberx(lua_State* L, int idx, int* isnum);
-```
-
-```c
-int lua_tointegerx(lua_State* L, int idx, int* isnum);
-```
-
-```c
-unsigned lua_tounsignedx(lua_State* L, int idx, int* isnum);
-```
 
 ```c
 int lua_toboolean(lua_State* L, int idx);
 ```
 
+Returns 1 is the value at the index is truthy, meaning that it is either `true` or not `nil`.
+
+```c
+double lua_tonumberx(lua_State* L, int idx, int* isnum);
+```
+
+Converts value at the index to a double number.
+Is the value at the index is not a number and not a string convertible to a number, returns `0.0`.
+
+* `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
+
+```c
+int lua_tointegerx(lua_State* L, int idx, int* isnum);
+```
+
+Converts value at the index to an integer number.
+Is the value at the index is not a number and not a string convertible to a number, returns `0`.
+
+* `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
+
+```c
+unsigned lua_tounsignedx(lua_State* L, int idx, int* isnum);
+```
+
+Converts value at the index to an unsigned integer number.
+Is the value at the index is not a number and not a string convertible to a number, returns `0`.
+
+* `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
+
+```c
+double lua_tonumber(lua_State* L, int idx);
+#define lua_tonumber(L, i) // Implemented as a macro
+```
+
+Same as `lua_tonumberx` but does not provide information if the conversion was successful.
+
+```c
+int lua_tointeger(lua_State* L, int idx);
+#define lua_tointeger(L, i) // Implemented as a macro
+```
+
+Same as `lua_tointegerx` but does not provide information if the conversion was successful.
+
+```c
+unsigned lua_tounsigned(lua_State* L, int idx);
+#define lua_tounsigned(L, i) // Implemented as a macro
+```
+
+Same as `lua_tounsignedx` but does not provide information if the conversion was successful.
+
 ```c
 int64_t lua_tointeger64(lua_State* L, int idx, int* isinteger);
 ```
+
+Converts value at the index to a 64-bit integer number.
+Is the value at the index is not an `integer`, returns `0`.
+
+* `isinteger` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
 ```c
 void lua_pushnil(lua_State* L);
 ```
 
-```c
-void lua_pushnumber(lua_State* L, double n);
-```
-
-```c
-void lua_pushinteger(lua_State* L, int n);
-```
-
-```c
-void lua_pushinteger64(lua_State* L, int64_t n);
-```
-
-```c
-void lua_pushunsigned(lua_State* L, unsigned n);
-```
+Places `nil` on top of the stack.
 
 ```c
 void lua_pushboolean(lua_State* L, int b);
 ```
 
-```c
-#define lua_tonumber(L, i) // Implemented as a macro
-```
+Places `boolean` value on top of the stack.
+`true` if `b` is not zero and `false` otherwise.
 
 ```c
-#define lua_tointeger(L, i) // Implemented as a macro
+void lua_pushnumber(lua_State* L, double n);
 ```
 
+Places a `number` value on top of the stack.
+
 ```c
-#define lua_tounsigned(L, i) // Implemented as a macro
+void lua_pushinteger(lua_State* L, int n);
 ```
+
+Places a `number` value on top of the stack, coverted from the integer `n`.
+
+```c
+void lua_pushunsigned(lua_State* L, unsigned n);
+```
+
+Places a `number` value on top of the stack, coverted from the unsigned integer `n`.
+
+```c
+void lua_pushinteger64(lua_State* L, int64_t n);
+```
+
+Places an `integer` value on top of the stack.
 
 ## Strings
 
@@ -378,8 +458,7 @@ void lua_pushboolean(lua_State* L, int b);
 int lua_isstring(lua_State* L, int idx);
 ```
 
-Returns 1 if the value at the stack index is a string and 0 otherwise.
-Note that value coercions are allowed, if the value is a number, result is also 1.
+Returns 1 if the value at the index is a string or a number.
 
 ```c
 const char* lua_tolstring(lua_State* L, int idx, size_t* len);
@@ -439,7 +518,7 @@ void lua_concat(lua_State* L, int n);
 #define lua_isvector(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a vector and 0 otherwise.
+Returns 1 if the value at the index is a vector.
 
 ```c
 const float* lua_tovector(lua_State* L, int idx);
@@ -456,7 +535,7 @@ void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE
 #define lua_isbuffer(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a buffer and 0 otherwise.
+Returns 1 if the value at the index is a buffer.
 
 ```c
 void* lua_tobuffer(lua_State* L, int idx, size_t* len);
@@ -472,19 +551,19 @@ void* lua_newbuffer(lua_State* L, size_t sz);
 int lua_iscfunction(lua_State* L, int idx);
 ```
 
-Returns 1 if the value at the stack index is a C function and 0 otherwise.
+Returns 1 if the value at the index is a C function.
 
 ```c
 int lua_isLfunction(lua_State* L, int idx);
 ```
 
-Returns 1 if the value at the stack index is a Luau closure and 0 otherwise.
+Returns 1 if the value at the index is a Luau closure.
 
 ```c
 #define lua_isfunction(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a C function or a Luau closure and 0 otherwise.
+Returns 1 if the value at the index is a C function or a Luau closure.
 
 ```c
 lua_CFunction lua_tocfunction(lua_State* L, int idx);
@@ -512,7 +591,7 @@ void lua_clonefunction(lua_State* L, int idx);
 #define lua_istable(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a table and 0 otherwise.
+Returns 1 if the value at the index is a table.
 
 ```c
 void lua_createtable(lua_State* L, int narr, int nrec);
@@ -617,7 +696,7 @@ int lua_rawiter(lua_State* L, int idx, int iter);
 #define lua_islightuserdata(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a light userdata and 0 otherwise.
+Returns 1 if the value at the index is a light userdata.
 
 ```c
 int lua_isuserdata(lua_State* L, int idx);
@@ -704,6 +783,7 @@ const char* lua_getlightuserdataname(lua_State* L, int tag);
 ```
 
 ### Direct userdata metamethod calls
+
 ```c
 typedef void (*lua_UserdataDirectAccess)(lua_State* L, void* data, int atom, uint16_t* cachedslot, int utag);
 ```
@@ -723,6 +803,7 @@ int lua_registeruserdatadirectaccess(
 ```
 
 ### Direct userdata field access
+
 ```c
 typedef void (*lua_UserdataDirectFieldGet)(void* ud, void* result);
 ```
@@ -758,13 +839,13 @@ void lua_userdatadirectfield_setnil(void* result);
 #define lua_isclass(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is a class and 0 otherwise.
+Returns 1 if the value at the index is a class.
 
 ```c
 #define lua_isobject(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the stack index is an object and 0 otherwise.
+Returns 1 if the value at the index is an object.
 
 ## Making calls
 
