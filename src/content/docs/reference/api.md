@@ -282,14 +282,18 @@ Returns the type of the value at the index.
 const char* lua_typename(lua_State* L, int tp);
 ```
 
-Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, or `"buffer"`.
+Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`,  `"buffer"`, `"class"` or `"object"`.
+`"no value"` is returned if there is no value at the index.
 
 ```c
 const char* luaL_typename(lua_State* L, int idx);
 ```
 
-Returns the type of the object; for userdata objects that have a metatable with the `__type` field and are defined by the host (not `newproxy`), returns the value for that key.
-For custom userdata objects, such as ones returned by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
+Returns the type of the object.
+For userdata objects that have a metatable with the `__type` field and are defined by the host (not `newproxy`), returns the value for that key.
+For tagged light userdata objects, returns either the value registered by `lua_setlightuserdataname` or `"userdata"`.
+For userdata objects created by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
+`"no value"` is returned if there is no value at the index.
 
 ```c
 const void* lua_topointer(lua_State* L, int idx);
@@ -305,8 +309,13 @@ The pointer can be used for debugging and cannot be converted back to a Luau obj
 int lua_objlen(lua_State* L, int idx);
 ```
 
-Returns the length of the object at the index like the `#` operator.
-Value can be a `string`, `table` or a type that has an `__len` metamethod available.
+Returns the size of the object at the index.
+
+* for `string` - byte length
+* for `table` - the raw length of the table, similar to `#` operator and ignoreing the `__len` metamethod
+* for `buffer` - the buffer size in bytes
+* for `userdata` - the size of the userdata data block in bytes
+* otherwise, the return value is 0
 
 ## Primitive types
 
@@ -356,14 +365,14 @@ This is useful to detect missing optional arguments of a function, when `nil` is
 int lua_toboolean(lua_State* L, int idx);
 ```
 
-Returns 1 is the value at the index is truthy, meaning that it is either `true` or not `nil`.
+Returns 1 if the value at the index is truthy, meaning that it is not `false` and not `nil`.
 
 ```c
 double lua_tonumberx(lua_State* L, int idx, int* isnum);
 ```
 
 Converts value at the index to a double number.
-Is the value at the index is not a number and not a string convertible to a number, returns `0.0`.
+IF the value at the index is not a number and not a string convertible to a number, returns `0.0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -372,7 +381,7 @@ int lua_tointegerx(lua_State* L, int idx, int* isnum);
 ```
 
 Converts value at the index to an integer number.
-Is the value at the index is not a number and not a string convertible to a number, returns `0`.
+If the value at the index is not a number and not a string convertible to a number, returns `0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -381,7 +390,7 @@ unsigned lua_tounsignedx(lua_State* L, int idx, int* isnum);
 ```
 
 Converts value at the index to an unsigned integer number.
-Is the value at the index is not a number and not a string convertible to a number, returns `0`.
+If the value at the index is not a number and not a string convertible to a number, returns `0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -411,7 +420,7 @@ int64_t lua_tointeger64(lua_State* L, int idx, int* isinteger);
 ```
 
 Converts value at the index to a 64-bit integer number.
-Is the value at the index is not an `integer`, returns `0`.
+If the value at the index is not an `integer`, returns `0`.
 
 * `isinteger` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -438,19 +447,19 @@ Places a `number` value on top of the stack.
 void lua_pushinteger(lua_State* L, int n);
 ```
 
-Places a `number` value on top of the stack, coverted from the integer `n`.
+Places a `number` value on top of the stack, converting the 32-bit integer `n` into a double.
 
 ```c
 void lua_pushunsigned(lua_State* L, unsigned n);
 ```
 
-Places a `number` value on top of the stack, coverted from the unsigned integer `n`.
+Places a `number` value on top of the stack, converting the 32-bit unsigned integer `n` into a double.
 
 ```c
 void lua_pushinteger64(lua_State* L, int64_t n);
 ```
 
-Places an `integer` value on top of the stack.
+Places an `integer` value on top of the stack with the exact value of the 64-bit integer `n`.
 
 ## Strings
 
