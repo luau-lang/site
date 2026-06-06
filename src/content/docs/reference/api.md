@@ -282,7 +282,7 @@ Returns the type of the value at the index.
 const char* lua_typename(lua_State* L, int tp);
 ```
 
-Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`,  `"buffer"`, `"class"` or `"object"`.
+Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, `"buffer"`, `"class"` or `"object"`.
 `"no value"` is returned if there is no value at the index.
 
 ```c
@@ -312,7 +312,7 @@ int lua_objlen(lua_State* L, int idx);
 Returns the size of the object at the index.
 
 * for `string` - byte length
-* for `table` - the raw length of the table, similar to `#` operator and ignoreing the `__len` metamethod
+* for `table` - the raw length of the table, similar to `#` operator and ignoring the `__len` metamethod
 * for `buffer` - the buffer size in bytes
 * for `userdata` - the size of the userdata data block in bytes
 * otherwise, the return value is 0
@@ -372,7 +372,7 @@ double lua_tonumberx(lua_State* L, int idx, int* isnum);
 ```
 
 Converts value at the index to a double number.
-IF the value at the index is not a number and not a string convertible to a number, returns `0.0`.
+If the value at the index is not a number and not a string convertible to a number, returns `0.0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
