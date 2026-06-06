@@ -473,57 +473,105 @@ Returns 1 if the value at the index is a string or a number.
 const char* lua_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
+Converts the string or number at the index to a string pointer.
+
+Note: if the value on the stack is a `number`, it is coerced to a `string` value, changing the value at the index.
+
+* `len` - when not a `nullptr`, set to the length of the string
+
 ```c
+const char* lua_tostring(lua_State* L, int idx);
 #define lua_tostring(L, i) // Implemented as a macro
 ```
+
+Same as `lua_tolstring`, but does not provide the length of the string.
 
 ```c
 const char* lua_tolstringatom(lua_State* L, int idx, size_t* len, int* atom);
 ```
 
+Converts the string at the index to a string pointer.
+Unlike `lua_tolstring`, number values will not be converted.
+
+* `len` - when not a `nullptr`, set to the length of the string
+* `atom` - when not a `nullptr`, set to the 'atom' identifier of the string, set by `useratom` callback
+
 ```c
 const char* lua_tostringatom(lua_State* L, int idx, int* atom);
 ```
+
+Same as `lua_tolstringatom`, but does not provide the length of the string.
 
 ```c
 const char* lua_namecallatom(lua_State* L, int* atom);
 ```
 
+When a method is invoked using Luau's `__namecall` metamethod (for `obj:method(args)` on userdata), this function returns the name of the method being called.
+Should only be used inside the C metamethod implementation, otherwise the value is unspecified.
+
+* `atom` - when not a `nullptr`, set to the 'atom' identifier of the string, set by `useratom` callback
+
 ```c
 void lua_pushlstring(lua_State* L, const char* s, size_t l);
 ```
+
+Place a `string` value of string `s` with length `l` on top of the stack.
+`s` cannot be a `nullptr`.
 
 ```c
 void lua_pushstring(lua_State* L, const char* s);
 ```
 
-```c
-const char* lua_pushvfstring(lua_State* L, const char* fmt, va_list argp);
-```
+Place a `string` value of string `s` with `strlen(s)` length on top of the stack.
+Unlike similar methods, if `s` is `nullptr`, `nil` value is placed instead.
 
 ```c
 const char* lua_pushfstringL(lua_State* L, const char* fmt, ...);
 ```
 
+Place a `string` value on the top of the stack using `printf`-like formatted string `fmt`.
+Returns the string pointer of the result.
+
 ```c
-#define lua_strlen(L, i) // Implemented as a macro
+const char* lua_pushvfstring(lua_State* L, const char* fmt, va_list argp);
 ```
+
+Place a `string` value on the top of the stack using `printf`-like formatted string `fmt` and the C variadic parameter wrapper `argp`.
+Returns the string pointer of the result.
 
 ```c
 #define lua_pushliteral(L, s) // Implemented as a macro
 ```
 
+Place a `string` value of string literal `s`.
+Length will be calculated based on the literal, skipping a call to `strlen`.
+
+```c
+int lua_strlen(lua_State* L, int idx);
+#define lua_strlen(L, i) // Implemented as a macro
+```
+
+Same as `lua_objlen`, for code compatibility with an older Lua API.
+Note that it works on all value types and not only strings.
+
 ```c
 #define lua_pushfstring(L, fmt, ...) // Implemented as a macro
 ```
+
+Same as `lua_pushfstringL`, for code compatibility with an older Lua API.
 
 ```c
 void lua_concat(lua_State* L, int n);
 ```
 
+Concatenate top `n` elements on the stack into a string, similar to applying operator `..` on all the elements.
+This pops `n` elements from the stack and pushes the result on top.
+When `n` is 0, no elements are popped and an empty string is pushed on the top.
+
 ## Vectors
 
 ```c
+int lua_isvector(lua_State* L, int n);
 #define lua_isvector(L, n) // Implemented as a macro
 ```
 
@@ -541,6 +589,7 @@ void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE
 ## Buffers
 
 ```c
+int lua_isbuffer(lua_State* L, int n);
 #define lua_isbuffer(L, n) // Implemented as a macro
 ```
 
@@ -569,6 +618,7 @@ int lua_isLfunction(lua_State* L, int idx);
 Returns 1 if the value at the index is a Luau closure.
 
 ```c
+int lua_isfunction(lua_State* L, int n);
 #define lua_isfunction(L, n) // Implemented as a macro
 ```
 
@@ -597,6 +647,7 @@ void lua_clonefunction(lua_State* L, int idx);
 ## Tables
 
 ```c
+int lua_istable(lua_State* L, int n);
 #define lua_istable(L, n) // Implemented as a macro
 ```
 
@@ -702,6 +753,7 @@ int lua_rawiter(lua_State* L, int idx, int iter);
 ## Userdata
 
 ```c
+int lua_islightuserdata(lua_State* L, int n);
 #define lua_islightuserdata(L, n) // Implemented as a macro
 ```
 
@@ -845,12 +897,14 @@ void lua_userdatadirectfield_setnil(void* result);
 ## Classes (experimental)
 
 ```c
+int lua_isclass(lua_State* L, int n);
 #define lua_isclass(L, n) // Implemented as a macro
 ```
 
 Returns 1 if the value at the index is a class.
 
 ```c
+int lua_isobject(lua_State* L, int n);
 #define lua_isobject(L, n) // Implemented as a macro
 ```
 
