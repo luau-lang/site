@@ -696,123 +696,362 @@ Returns 1 if the value at the index is a table.
 void lua_createtable(lua_State* L, int narr, int nrec);
 ```
 
+Creates a table with a reserved number of array and hash slots and places it on the stack.
+
+* `narr` - number of array elements. Cannot be negative.
+* `nrec` - number of hash elements (records). Cannot be negative.
+
+Note that the implementation might reserve a larger number of elements than requested.
+
 ```c
 void lua_newtable(lua_State* L);
 #define lua_newtable(L) // Implemented as a macro
 ```
 
+Creates an empty table and places it on the stack.
+
 ```c
 int lua_gettable(lua_State* L, int idx);
 ```
 
-```c
-int lua_getfield(lua_State* L, int idx, const char* k);
-```
+Looks up data in a value at the index using the key on top of the stack.
+Lookup key is removed from the stack and result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
 
-```c
-int lua_rawgetfield(lua_State* L, int idx, const char* k);
-```
+This method respects the `__index` metamethod and can be used on values of non-table types.
 
 ```c
 int lua_rawget(lua_State* L, int idx);
 ```
 
+Looks up data in a table at the index using the key on top of the stack.
+Lookup key is removed from the stack and result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
+
+This method ignores the metatable and can only be used on table values.
+
+```c
+int lua_getfield(lua_State* L, int idx, const char* k);
+```
+
+Looks up data in a value at the index using a string key.
+Result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
+
+This method respects the `__index` metamethod and can be used on values of non-table types.
+
+```c
+int lua_rawgetfield(lua_State* L, int idx, const char* k);
+```
+
+Looks up data in a table at the index using a string key.
+Result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
+
+This method ignores the metatable and can only be used on table values.
+
 ```c
 int lua_rawgeti(lua_State* L, int idx, int n);
 ```
+
+Looks up data in a table at the index using a numeric index.
+Result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
+
+This method ignores the metatable and can only be used on table values.
 
 ```c
 int lua_rawgetptagged(lua_State* L, int idx, void* p, int tag);
 ```
 
-```c
-void lua_setreadonly(lua_State* L, int idx, int enabled);
-```
+Looks up data in a table at the index using a lightuserdata pointer and a tag.
+Result is placed on top of the stack.
+Return value is the type tag of the value (`nil` if it was not found).
+
+This method ignores the metatable and can only be used on table values.
 
 ```c
-int lua_getreadonly(lua_State* L, int idx);
+int lua_rawgetp(lua_State* L, int idx, void* p);
+#define lua_rawgetp(L, idx, p) // Implemented as a macro
 ```
+
+Same as `lua_rawgetptagged`, but with a default `tag` value of 0.
 
 ```c
 void lua_settable(lua_State* L, int idx);
 ```
 
-```c
-void lua_setfield(lua_State* L, int idx, const char* k);
-```
+Takes two items, the key and data from the top of the stack (data at the top).
+Assigns the data to the key in the value at the index.
+Key and data are removed from the stack.
 
-```c
-void lua_rawsetfield(lua_State* L, int idx, const char* k);
-```
+This method respects the `__newindex` metamethod and can be used on values of non-table types.
+This method throws an error if used on a read-only table and the assignment is not handled by `__newindex`.
 
 ```c
 void lua_rawset(lua_State* L, int idx);
 ```
 
+Takes two items, the key and data from the top of the stack (data at the top).
+Assigns the data to the key in the value at the index.
+Key and data are removed from the stack.
+
+This method ignores the metatable and can only be used on table values.
+This method throws an error if used on a read-only table.
+
+```c
+void lua_setfield(lua_State* L, int idx, const char* k);
+```
+
+Assigns the data on top of the stack to the string key in the value at the index.
+Data is removed from the stack.
+
+This method respects the `__newindex` metamethod and can be used on values of non-table types.
+This method throws an error if used on a read-only table and the assignment is not handled by `__newindex`.
+
+```c
+void lua_rawsetfield(lua_State* L, int idx, const char* k);
+```
+
+Assigns the data on top of the stack to the string key in the value at the index.
+Data is removed from the stack.
+
+This method ignores the metatable and can only be used on table values.
+This method throws an error if used on a read-only table.
+
 ```c
 void lua_rawseti(lua_State* L, int idx, int n);
 ```
+
+Assigns the data on top of the stack to the numeric index key in the value at the index.
+Data is removed from the stack.
+
+This method ignores the metatable and can only be used on table values.
+This method throws an error if used on a read-only table.
 
 ```c
 void lua_rawsetptagged(lua_State* L, int idx, void* p, int tag);
 ```
 
-```c
-int lua_getmetatable(lua_State* L, int objindex);
-```
+Assigns the data on top of the stack to the lightuserdata and tag key in the value at the index.
+Data is removed from the stack.
+
+This method ignores the metatable and can only be used on table values.
+This method throws an error if used on a read-only table.
 
 ```c
-int lua_setmetatable(lua_State* L, int objindex);
-```
-
-```c
-#define lua_rawgetp(L, idx, p) // Implemented as a macro
-```
-
-```c
+void lua_rawsetp(lua_State* L, int idx, void* p);
 #define lua_rawsetp(L, idx, p) // Implemented as a macro
 ```
+
+Same as `lua_rawsetptagged`, but with a default `tag` value of 0.
+This method throws an error if used on a read-only table.
+
+```c
+int lua_getmetatable(lua_State* L, int idx);
+```
+
+Looks up a metatable assigned to a value and if found, places it on top of the stack.
+Returns 1 on success and 0 on failure.
+
+Tables and userdata values can have individual metatables assigned.
+For values of other types, a global metatable for the values of that type is returned.
+
+This method bypasses the locked metatables (`__metatable` set) and returns them regardless of that field.
+
+```c
+int lua_setmetatable(lua_State* L, int idx);
+```
+
+Takes a table or `nil` value on top of the stack and assigns it as the metatable of the value at the index.
+Value is removed from the stack.
+
+Tables and userdata values have individual metatables.
+For values of other types, a global metatable is set for all values of that type.
+
+This method throws an error if used on a read-only table.
+
+```c
+void lua_setreadonly(lua_State* L, int idx, int enabled);
+```
+
+Marks the table at the index as read-only.
+When set to read-only, future modifications of the table will throw an error.
+
+This method cannot be used on the registry table.
+
+```c
+int lua_getreadonly(lua_State* L, int idx);
+```
+
+Returns 1 if the table at the index is read-only and 0 otherwise.
 
 ```c
 void lua_cleartable(lua_State* L, int idx);
 ```
 
+Removes all keys and values from the table at the index.
+Metatable value is preserved.
+
+This method throws an error if used on a read-only table.
+
 ```c
 void lua_clonetable(lua_State* L, int idx);
 ```
+
+Creates a copy of the table at the index and places it at the top of the stack.
+
+Array elements and hash key/values are copied over without a deep clone.
+Metatable is copied without a deep clone.
+If the original was read-only, the copy becomes read-write again.
+If the original was used as an environment table and marked as 'sandboxed', the copy loses that property.
 
 ```c
 int lua_next(lua_State* L, int idx);
 ```
 
+Finds a key that comes after the key on top of the stack and looks up the corresponding value.
+Key is removed from the top of the stack.
+
+Function ignores the `__iter` metamethod.
+
+If the next key exists, pushes the next key, followed by the associated value to the stack and returns 1.
+If there is no next key, return value is 0.
+
+To begin an iteration of table elements, use the `nil` as the starting key.
+
 ```c
+// in this table iteration example, table is initially at stack index -1
+lua_pushnil(L);
+
+while (lua_next(L, -2) != 0)
+{
+    // value at stack index -2 is now the key
+    // value at stack index -1 is now the value
+
+    lua_pop(L, 1); // remove the value, but keep the key
+}
+
+// the table we started with is at -1 index again
+```
+
+If the key is not `nil` and does not exist in the table, an error will be thrown.
+
+Note: if the key is a numerical index, you might not get an error thrown if it is missing. This behavior should not be relied upon.
+
+```c++
 int lua_rawiter(lua_State* L, int idx, int iter);
 ```
 
-## Userdata
+Helper to perform 'raw' iteration of elements of a table at the index.
+
+Function ignores the `__iter` metamethod.
+
+To start, call the function with an `iter` value of 0. `iter` cannot be a negative number.
+
+If there is an element at the specified iteration index:
+
+* key and then the associated value will be placed on top of the stack
+* function returns the next iteration index
+
+If there are no more elements:
+
+* stack is left unmodified
+* function returns -1
+
+```c++
+// in this raw table iteration example, table is initially at stack index -1
+for (int iter = 0; (iter = lua_rawiter(L, -1, iter)) != -1;)
+{
+    // value at stack index -2 is now the key
+    // value at stack index -1 is now the value
+
+    lua_pop(L, 2); // remove both key and value
+}
+
+// the table we started with is at -1 index again
+```
+
+## Light Userdata
+
+`lightuserdata` values are used for external pointers that have no special meaning to Luau VM.
+
+These values can be associated with an optional 'tag'.
+`tag` has to be non-negative and lower than `LUA_LUTAG_LIMIT`, defined in `luaconf.h`.
+
+A `lightuserdata` tag can be assigned a name which will be returned by `typeof`.
 
 ```c
 int lua_islightuserdata(lua_State* L, int n);
 #define lua_islightuserdata(L, n) // Implemented as a macro
 ```
 
-Returns 1 if the value at the index is a light userdata.
-
-```c
-int lua_isuserdata(lua_State* L, int idx);
-```
-
-```c
-void* lua_tolightuserdata(lua_State* L, int idx);
-```
+Returns 1 if the value at the index is a `lightuserdata`.
 
 ```c
 void* lua_tolightuserdatatagged(lua_State* L, int idx, int tag);
 ```
 
+Converts the `lightuserdata` at the index to a lightuserdata pointer.
+Returns a `nullptr` if the value is not a `lightuserdata` or if the `lightuserdata` tag is not equal to `tag`.
+
+```c
+void* lua_tolightuserdata(lua_State* L, int idx);
+```
+
+Converts the `lightuserdata` at the index to a lightuserdata pointer.
+Returns a `nullptr` if the value is not a `lightuserdata`.
+Tag value of the `lightuserdata` is ignored.
+
+```c
+void lua_pushlightuserdatatagged(lua_State* L, void* p, int tag);
+```
+
+Place a `lightuserdata` value `p` with tag `tag` on top of the stack.
+
+```c
+void lua_pushlightuserdata(lua_State* L, void* p);
+#define lua_pushlightuserdata(L, p) // Implemented as a macro
+```
+
+Same as `lua_pushlightuserdatatagged` with a default `tag` of 0.
+
+```c
+int lua_lightuserdatatag(lua_State* L, int idx);
+```
+
+Returns the tag associated with a `lightuserdata` value at the index.
+If the value at the index is not a `lightuserdata`, returns -1.
+
+```c
+void lua_setlightuserdataname(lua_State* L, int tag, const char* name);
+```
+
+Associate `lightuserdata` tag with a `name`.
+Name cannot be reassigned.
+
+```c
+const char* lua_getlightuserdataname(lua_State* L, int tag);
+```
+
+Get the name associated with the `lightuserdata` tag.
+If a name was not associated, returns `nullptr`.
+
+## Userdata
+
+Note: when specified, `userdata` functions can work on `lightuserdata`.
+
+```c
+int lua_isuserdata(lua_State* L, int idx);
+```
+
+Returns 1 if the value at the index is a `userdata` or `lightuserdata`.
+
 ```c
 void* lua_touserdata(lua_State* L, int idx);
 ```
+
+
 
 ```c
 void* lua_touserdatatagged(lua_State* L, int idx, int tag);
@@ -820,14 +1059,6 @@ void* lua_touserdatatagged(lua_State* L, int idx, int tag);
 
 ```c
 int lua_userdatatag(lua_State* L, int idx);
-```
-
-```c
-int lua_lightuserdatatag(lua_State* L, int idx);
-```
-
-```c
-void lua_pushlightuserdatatagged(lua_State* L, void* p, int tag);
 ```
 
 ```c
@@ -844,10 +1075,6 @@ void* lua_newuserdatadtor(lua_State* L, size_t sz, void (*dtor)(void*));
 
 ```c
 #define lua_newuserdata(L, s) // Implemented as a macro
-```
-
-```c
-#define lua_pushlightuserdata(L, p) // Implemented as a macro
 ```
 
 ```c
@@ -872,14 +1099,6 @@ void lua_setuserdatametatable(lua_State* L, int tag);
 
 ```c
 void lua_getuserdatametatable(lua_State* L, int tag);
-```
-
-```c
-void lua_setlightuserdataname(lua_State* L, int tag, const char* name);
-```
-
-```c
-const char* lua_getlightuserdataname(lua_State* L, int tag);
 ```
 
 ### Direct userdata metamethod calls
