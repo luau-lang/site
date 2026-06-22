@@ -1402,56 +1402,153 @@ int lua_isthread(lua_State* L, int idx);
 #define lua_isthread(L, idx) // Implemented as a macro
 ```
 
+Returns 1 if the value at the index is a `thread`.
+
 ```c
 lua_State* lua_tothread(lua_State* L, int idx);
 ```
+
+Converts the `thread` value at index to a `lua_State` pointer.
+Returns a `nullptr` if the value is not a `thread`.
 
 ```c
 int lua_pushthread(lua_State* L);
 ```
 
+Pushes the current thread on top of its own stack.
+Returns 1 if the thread is the main thread of the VM and 0 otherwise.
+
+Use this function to obtain a `thread` value of the currently executing thread.
+
+```c
+int lua_resume(lua_State* L, lua_State* from, int narg);
+```
+
+Resumes the execution of a thread.
+
+If the thread has not been executing code, execution starts by calling the function followed by `narg` arguments on top of the stack.
+The function and arguments are removed from the stack.
+If the thread was yielded or stopped on a breakpoint, resumes the execution of the top function with `narg` values returned from the yielded function.
+
+Returns the status of the thread, see the description of `lua_status`.
+
+* `from` - optional value of a thread which performed the resume of the thread, used *only* to determine the depth of the C call stack in the resume chain
+
+```c
+int lua_resumeerror(lua_State* L, lua_State* from);
+```
+
+Resumes the execution of a thread with an error.
+
+Used for cases where resuming a yielded thread needs to report an error from the call that has yielded before.
+Error object is taken from the top of the stack.
+
+Returns the status of the thread, see the description of `lua_status`.
+
+* `from` - optional value of a thread which performed the resume of the thread, used *only* to determine the depth of the C call stack in the resume chain
+
+```c
+int lua_isyieldable(lua_State* L);
+```
+
+Returns 1 if the thread can yield and 0 otherwise.
+
+Yielding might not be possible if there are non-yieldable C functions or metamethods on the call stack.
+
 ```c
 int lua_yield(lua_State* L, int nresults);
+```
+
+Marks the thread as yielded with `nresults` values from the top of the stack.
+Returns an internal value representing thread yield flag.
+
+Throws an error if `lua_isyieldable` is 0.
+
+The yield itself does not happen when function is called, the value it returns has to be used as the result of a C function that was called by Luau:
+
+```c
+int foo(lua_State* L)
+{
+    ...
+
+    return lua_yield(L, nresults);
+}
 ```
 
 ```c
 int lua_break(lua_State* L);
 ```
 
-```c
-int lua_resume(lua_State* L, lua_State* from, int narg);
-```
+Marks the thread as stopped on a debug break.
+Returns an internal value representing thread yield flag.
 
-```c
-int lua_resumeerror(lua_State* L, lua_State* from);
-```
+Function is intended to be used from debug callbacks which should return the result value for the VM to interrupt the execution.
 
-```c
-int lua_isyieldable(lua_State* L);
-```
+In Luau, such debug breaks are only supported in yieldable contexts.
+The function throws an error if `lua_isyieldable` is 0.
+
+After a debug break, VM can still be used to resume other threads (and explore the state of stopped threads).
+
+Debuggers can still choose to not use `lua_break` and treat debug callbacks as hooks used to explore the state of the VM without returning.
 
 ```c
 int lua_costatus(lua_State* L, lua_State* co);
 ```
 
+Returns the 'coroutine' status `lua_CoStatus` of the thread `co`.
+The status is reported with respect to the currently executing thread.
+
+* `LUA_CORUN` - coroutine is currently running
+* `LUA_COSUS` - coroutine is currently suspended on a yield
+* `LUA_CONOR` - coroutine is running, but is not the current thread of execution
+* `LUA_COFIN` - coroutine execution has completed
+* `LUA_COERR` - coroutine execution has completed with an error
+
+Note: threads that have yielded on a debug break are considered to be `LUA_CONOR`.
+
 ## Registry References
+
+Luau VM provides a registry table where objects can be pinned and associated with an integer index for later reference.
+
+These references prevent the objects from being garbage-collected until they are released with `lua_unref`.
 
 ```c
 #define LUA_NOREF -1
+```
+
+A constant that can be used to represent an invalid reference.
+
+```c
 #define LUA_REFNIL 0
 ```
+
+A constant for a reference representing the `nil` value.
 
 ```c
 int lua_ref(lua_State* L, int idx);
 ```
 
+Creates a reference for the value at index.
+Returns the reference or `LUA_REFNIL` if the value was `nil`.
+
+Value remains on the stack.
+
+`idx` cannot be an index to the registry.
+
 ```c
 void lua_unref(lua_State* L, int ref);
 ```
 
+Removes the specified reference from the registry.
+`LUA_NOREF` and `LUA_REFNIL` are safe to use as they have no effect.
+
 ```c
+int lua_getref(lua_State* L, int ref);
 #define lua_getref(L, ref) // Implemented as a macro
 ```
+
+Places the object referred by the reference on top of the stack.
+Return value is the type tag of the value (`nil` if the reference is `LUA_REFNIL` or is invalid).
 
 ## Garbage Collection
 
