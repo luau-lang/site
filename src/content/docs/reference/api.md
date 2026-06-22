@@ -1039,7 +1039,19 @@ If a name was not associated, returns `nullptr`.
 
 ## Userdata
 
-Note: when specified, `userdata` functions can work on `lightuserdata`.
+Userdata values are used to hold host data with lifetime managed by Luau.
+Userdata can have a metatable to enable custom behaviors of the value.
+
+These values can be associated with an optional 'tag'.
+`tag` has to be non-negative and lower than `LUA_UTAG_LIMIT`, defined in `luaconf.h`.
+
+These values can also have an optional destructor that is called when the object is garbage-collected.
+Destructor can either be associated with a tag (shared between all userdata values of that tag) or a specific userdata value.
+
+Interactions with Luau VM from a destructor must be limited as callbacks are called from the garbage-collection stage.
+Our recommendation is to only look up `lua_getthreaddata` for associated host data and postpone any additional cleanup to a later Luau VM resume point.
+
+Note: when specified, `userdata` functions can work on `lightuserdata` values as well.
 
 ```c
 int lua_isuserdata(lua_State* L, int idx);
@@ -1048,68 +1060,100 @@ int lua_isuserdata(lua_State* L, int idx);
 Returns 1 if the value at the index is a `userdata` or `lightuserdata`.
 
 ```c
+void* lua_touserdatatagged(lua_State* L, int idx, int tag);
+```
+
+Converts the `userdata` at the index to a userdata data pointer.
+Returns a `nullptr` if the value is not a `userdata` or if the `userdata` tag is not equal to `tag`.
+
+```c
 void* lua_touserdata(lua_State* L, int idx);
 ```
 
-
-
-```c
-void* lua_touserdatatagged(lua_State* L, int idx, int tag);
-```
+Converts the `userdata` or `lightuserdata` at the index to a pointer.
+Returns a `nullptr` if the value is not a `userdata` or `lightuserdata`.
+Tag value of the corresponding object is ignored.
 
 ```c
 int lua_userdatatag(lua_State* L, int idx);
 ```
 
+Retrieves the tag value associated with the `userdata` at the index.
+Returns -1 if the value is not a `userdata`.
+
 ```c
 void* lua_newuserdatatagged(lua_State* L, size_t sz, int tag);
 ```
+
+Places a new `userdata` object with the data size `sz` and the specified tag on top of the stack.
+Returns the pointer to the start of the data.
+
+```c
+void* lua_newuserdata(lua_State* L, size_t sz);
+#define lua_newuserdata(L, s) // Implemented as a macro
+```
+
+Same as `lua_newuserdatatagged` with a tag of 0.
 
 ```c
 void* lua_newuserdatataggedwithmetatable(lua_State* L, size_t sz, int tag);
 ```
 
+Places a new `userdata` object with the data size `sz` and the specified tag on top of the stack.
+`userdata` value is assigned a metatable previously set by `lua_setuserdatametatable`.
+Returns the pointer to the start of the data.
+
+This function cannot be used if the metatable was not associated with the tag.
+
 ```c
 void* lua_newuserdatadtor(lua_State* L, size_t sz, void (*dtor)(void*));
 ```
 
-```c
-#define lua_newuserdata(L, s) // Implemented as a macro
-```
+Places a new `userdata` object with the data size `sz` on top of the stack.
+A custom destructor C function is assigned to the value.
+Returns the pointer to the start of the data.
+
+Destructor C function cannot be a `nullptr`.
 
 ```c
 void lua_setuserdatatag(lua_State* L, int idx, int tag);
 ```
 
-```c
-typedef void (*lua_Destructor)(lua_State* L, void* userdata);
-```
+Assigns the new tag value to a `userdata` at the index.
+
+This function should not be used on `userdata` created with `lua_newuserdatadtor`.
 
 ```c
 void lua_setuserdatadtor(lua_State* L, int tag, lua_Destructor dtor);
 ```
 
+Sets the destructor function to use when `userdata` with the specified tag is garbage-collected.
+Destructor of the value can be reassigned or set to `nullptr`.
+
 ```c
 lua_Destructor lua_getuserdatadtor(lua_State* L, int tag);
 ```
+
+Gets the destructor function associated with `userdata` values with the specified tag.
+If the destructor was not set, returns a `nullptr`.
 
 ```c
 void lua_setuserdatametatable(lua_State* L, int tag);
 ```
 
+Takes a table from the top of the stack and sets it as a metatable to be used by `lua_newuserdatataggedwithmetatable`.
+Table is popped from the stack.
+
+Metatable for each tag can only be set once.
+
 ```c
 void lua_getuserdatametatable(lua_State* L, int tag);
 ```
 
-### Direct userdata metamethod calls
+Retrieves the metatable associated with the userdata tag and places it on top of the stack.
+If a table was not associated, `nil` is placed instead.
 
-```c
-typedef void (*lua_UserdataDirectAccess)(lua_State* L, void* data, int atom, uint16_t* cachedslot, int utag);
-```
-
-```c
-typedef int (*lua_UserdataDirectNamecall)(lua_State* L, void* data, int atom, uint16_t* cachedslot, int utag);
-```
+### Direct userdata metamethod calls (experimental)
 
 ```c
 int lua_registeruserdatadirectaccess(
@@ -1121,49 +1165,114 @@ int lua_registeruserdatadirectaccess(
 );
 ```
 
-### Direct userdata field access
+To improve performance of interactions with `userdata` through metamethods like `__index`, `__newindex` and `__namecall`, Luau implements an access speedup mechanism.
+This function associates optional C function callbacks that can be used by Luau VM when a userdata access through metamethods above is detected.
+
+For a member access to be detected, the member name string has to be associated with an atom value.
+
+Each VM instruction making the access contains 16 bits of storage for a user value.
+It is important to note that the storage is associated with an instruction and not a specific userdata value or tag encountered at the instruction.
+As different userdata values can be encountered at the same location of the program, a value stored for userdata of one tag can be retrieved for another.
 
 ```c
-typedef void (*lua_UserdataDirectFieldGet)(void* ud, void* result);
+typedef void (*lua_UserdataDirectAccess)(lua_State* L, void* data, int atom, uint16_t* cachedslot, int utag);
 ```
+
+For `get` (`__index`) and `set` (`__newindex`) operations, this function will receive:
+
+* `data` - userdata data pointer
+* `atom` - atom value associated with the accessed member name
+* `cachedslot` - pointer to a custom 16 bits of data associated with a specific access instruction
+* `utag` - userdata tag
+
+The function is called with the same arguments as an `__index` or `__newindex` metamethod - VM APIs can be used freely.
+
+`get` function must push the result on top of the stack, only one return value is taken, other values are ignored.
+
+```c
+typedef int (*lua_UserdataDirectNamecall)(lua_State* L, void* data, int atom, uint16_t* cachedslot, int utag);
+```
+
+For a `namecall` (`__namecall` method invocation) operation, this function will receive:
+
+* `data` - userdata data pointer
+* `atom` - atom value associated with the accessed member name
+* `cachedslot` - pointer to a custom 16 bits of data associated with a specific access instruction
+* `utag` - userdata tag
+
+The function is called with the same arguments as a `__namecall` metamethod - VM APIs can be used freely.
+
+Return value is the number of results from a method or a yield marker if `lua_yield` is returned.
+
+### Direct userdata field access (experimental)
 
 ```c
 void lua_registeruserdatadirectfieldget(lua_State* L, int tag, const char* field, lua_UserdataDirectFieldGet fn);
 ```
 
+To improve performance of reading `userdata` fields which are retrieved through `__index` metamethod, Luau implements an access speedup mechanism.
+This function associates an optional C function callback that can be used by Luau VM when a userdata field read access is detected.
+
+Unlike `lua_registeruserdatadirectaccess`:
+
+* the `field` string does not have to be associated with an atom value
+* the environment of the function is restricted: it can only return the results through functions described below without any other VM interaction
+
+Field name cannot be a `nullptr`.
+Callback function cannot be a `nullptr`.
+
+```c
+typedef void (*lua_UserdataDirectFieldGet)(void* ud, void* result);
+```
+
+Callback C function.
+
+* `ud` - userdata data pointer
+* `result` - VM-specific pointer to be provided as is to the result provider functions.
+
 ```c
 void lua_userdatadirectfield_setnumber(void* result, double n);
 ```
 
+Set a `number` return value.
+
 ```c
-void lua_userdatadirectfield_setvector(void* result, float x, float y, float z, float w);
-void lua_userdatadirectfield_setvector(void* result, float x, float y, float z);
+void lua_userdatadirectfield_setvector(void* result, float x, float y, float z, float w); // LUA_VECTOR_SIZE is 4
+void lua_userdatadirectfield_setvector(void* result, float x, float y, float z); // LUA_VECTOR_SIZE is 3
 ```
+
+Set a `vector` return value.
 
 ```c
 void lua_userdatadirectfield_setboolean(void* result, int b);
 ```
 
+Set a `boolean` return value.
+
 ```c
 void lua_userdatadirectfield_setinteger64(void* result, int64_t n);
 ```
+
+Set an `integer` return value.
 
 ```c
 void lua_userdatadirectfield_setnil(void* result);
 ```
 
+Set a `nil` return value.
+
 ## Classes (experimental)
 
 ```c
-int lua_isclass(lua_State* L, int n);
-#define lua_isclass(L, n) // Implemented as a macro
+int lua_isclass(lua_State* L, int idx);
+#define lua_isclass(L, idx) // Implemented as a macro
 ```
 
 Returns 1 if the value at the index is a class.
 
 ```c
-int lua_isobject(lua_State* L, int n);
-#define lua_isobject(L, n) // Implemented as a macro
+int lua_isobject(lua_State* L, int idx);
+#define lua_isobject(L, idx) // Implemented as a macro
 ```
 
 Returns 1 if the value at the index is an object.
@@ -1174,13 +1283,56 @@ Returns 1 if the value at the index is an object.
 void lua_call(lua_State* L, int nargs, int nresults);
 ```
 
+Performs a call to a function.
+
+The function or a callable value has to be placed on the stack, followed by `nargs` argument values.
+Both the function and arguments are removed from the top of the stack.
+The specified number of return values `nresults` is placed on top of the stack.
+
+If call returns fewer than `nresults` values, additional `nil` values will be used to fill in missing returns.
+If call returns more than `nresults` values, extra results will be removed from the stack.
+
+`nresults` can be a `LUA_MULTRET` value, specifying a variable number of returns.
+In this case, stack will contain the number of values returned from the call without adjustment.
+
+If the call throws an error, it will propagate out of the function.
+If a protected environment has not been established by an outer `lua_pcall`/`lua_cpcall` or `lua_resume`:
+
+* If VM is built with `LUA_USE_LONGJMP`:
+  * `panic` callback will be called
+  * if there is no `panic` handler or `panic` handler doesn't jump away, an `abort` will be called
+* If VM is built without `LUA_USE_LONGJMP`:
+  * internal `std::exception` of an internal derived type will be thrown
+
+
 ```c
 int lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 ```
 
+Similar to `lua_call`, but performs a call in a new protected environment, similar to Luau's `pcall`/`xpcall` functions.
+Returns the status of the call, see the description of `lua_status`.
+
+Additional `errfunc` argument can be specified with an index of the error handling callback function.
+When `errfunc` is not 0, if an error occurs, this error handling function will be called, similar to Luau's `xpcall` function.
+When `errfunc` is 0, the error value passes through unchanged.
+
+If an error occurred, the error object will be placed on the stack.
+
+We do not recommend using an `errfunc` index pointing into the arguments of the call being performed.
+
 ```c
 int lua_cpcall(lua_State* L, lua_CFunction func, void* ud);
 ```
+
+Performs a C function call in a new protected environment.
+Function receives the specified `ud` pointer as its first argument (a `lightuserdata`).
+Returns the status of the call, see the description of `lua_status`.
+
+Return values placed on the stack are discarded.
+
+Function pointer `func` cannot be a `nullptr`.
+
+This function can be used to work with Luau APIs when protected environment has not been established yet.
 
 ## Comparisons
 
@@ -1188,37 +1340,66 @@ int lua_cpcall(lua_State* L, lua_CFunction func, void* ud);
 int lua_equal(lua_State* L, int idx1, int idx2);
 ```
 
+Compares two values at the specified indices for equality (as if `==` was used in Luau).
+Returns 1 if equal and 0 otherwise.
+
 ```c
 int lua_rawequal(lua_State* L, int idx1, int idx2);
 ```
+
+Compares two values at the specified indices for raw equality (as if `rawequal` was used in Luau).
+Returns 1 if equal and 0 otherwise.
+
+Raw equality means that metamethods are ignored.
 
 ```c
 int lua_lessthan(lua_State* L, int idx1, int idx2);
 ```
 
+Compares two values at the specified indices for the first one being less than the other (as if `<` was used in Luau).
+Returns 1 if first value is less than the second and 0 otherwise.
+
 ## Globals and environments
 
 ```c
+void lua_setglobal(lua_State* L, const char* s);
 #define lua_setglobal(L, s) // Implemented as a macro
 ```
 
+Same as `lua_setfield` when called on the global table value (`LUA_GLOBALSINDEX`).
+
 ```c
+int lua_getglobal(lua_State* L, const char* s);
 #define lua_getglobal(L, s) // Implemented as a macro
 ```
+
+Same as `lua_getfield` when called on the global table value (`LUA_GLOBALSINDEX`).
+Return value is the type tag of the value (`nil` if it was not found).
 
 ```c
 void lua_getfenv(lua_State* L, int idx);
 ```
 
+Gets the environment table of the value at index and places it on top of the stack.
+
+Environment tables can be associated with functions and threads.
+For values of other types, result is `nil`.
+
 ```c
 int lua_setfenv(lua_State* L, int idx);
 ```
+
+Sets the environment table for the value at index using the table on top of the stack.
+Table is popped from the stack.
+
+Environment tables can be associated with functions and threads.
+Returns 1 if the assignment was successful and 0 otherwise.
 
 ## Coroutines
 
 ```c
 int lua_isthread(lua_State* L, int idx);
-#define lua_isthread(L, n) // Implemented as a macro
+#define lua_isthread(L, idx) // Implemented as a macro
 ```
 
 ```c
