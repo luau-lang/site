@@ -296,6 +296,12 @@ For userdata objects created by `newproxy`, this function returns `"userdata"` t
 `"no value"` is returned if there is no value at the index.
 
 ```c
+void luaL_checktype(lua_State* L, int narg, int t);
+```
+
+Checks for an argument to be of the type `t`, and throws an invalid argument type error otherwise.
+
+```c
 const void* lua_topointer(lua_State* L, int idx);
 ```
 
@@ -360,6 +366,12 @@ int lua_isnoneornil(lua_State* L, int idx);
 
 Returns 1 if there is no value at the index (out of range of the current stack) or it is `nil`.
 This is useful to detect missing optional arguments of a function, when `nil` is also considered a missing value.
+
+```c
+void luaL_checkany(lua_State* L, int narg);
+```
+
+Checks for an argument to be present (`lua_isnone`), and throws an invalid argument type error otherwise.
 
 ```c
 int lua_toboolean(lua_State* L, int idx);
@@ -460,6 +472,78 @@ void lua_pushinteger64(lua_State* L, int64_t n);
 ```
 
 Places an `integer` value on top of the stack with the exact value of the 64-bit integer `n`.
+
+```c
+int luaL_checkboolean(lua_State* L, int narg);
+```
+
+Checks for a `boolean` argument, and throws an invalid argument type error otherwise.
+Returns 1 if the value is `true` and 0 otherwise.
+
+Unlike `lua_toboolean`, non-boolean 'truthy' values are not accepted as boolean value.
+
+```c
+int luaL_optboolean(lua_State* L, int narg, int def);
+```
+
+Checks for an optional `boolean` argument, if the argument is not provided or `nil`, returns the `def` value verbatim, otherwise calls `luaL_checkboolean`.
+If default value is not used, returns 1 if the value is `true` and 0 if it's `false`.
+
+```c
+double luaL_checknumber(lua_State* L, int narg);
+```
+
+Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
+Returns the double number value.
+
+```c
+double luaL_optnumber(lua_State* L, int narg, double def);
+```
+
+Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checknumber`.
+Returns the double number value.
+
+```c
+int luaL_checkinteger(lua_State* L, int narg);
+```
+
+Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
+Returns the int number value.
+
+```c
+int luaL_optinteger(lua_State* L, int narg, int def);
+```
+
+Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkinteger`.
+Returns the int number value.
+
+```c
+unsigned luaL_checkunsigned(lua_State* L, int narg);
+```
+
+Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
+Returns the unsigned number value.
+
+```c
+unsigned luaL_optunsigned(lua_State* L, int narg, unsigned def);
+```
+
+Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkunsigned`.
+Returns the unsigned number value.
+
+```c
+int64_t luaL_checkinteger64(lua_State* L, int narg);
+```
+
+Checks for an `integer` argument, and throws an invalid argument type error otherwise.
+Returns the 64-bit integer value.
+
+```c
+int64_t luaL_optinteger64(lua_State* L, int narg, int64_t def);
+```
+
+Checks for an optional `integer` argument, if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkinteger64`.
+Returns the 64-bit integer value.
 
 ## Strings
 
@@ -569,6 +653,46 @@ Concatenate top `n` elements on the stack into a string, similar to applying ope
 This pops `n` elements from the stack and pushes the result on top.
 When `n` is 0, no elements are popped and an empty string is pushed on the top.
 
+```c
+const char* luaL_checklstring(lua_State* L, int numArg, size_t* len);
+```
+
+Checks that the argument is a `string` or a `number` and throws an invalid argument type error otherwise.
+
+Note: if the value on the stack is a `number`, it is coerced to a `string` value, changing the value at the index.
+
+* `len` - when not a `nullptr`, set to the length of the string
+
+```c
+const char* luaL_optlstring(lua_State* L, int numArg, const char* def, size_t* len);
+```
+
+Checks for an optional string argument, if the argument is not provided or `nil`, returns the `def` string verbatim, otherwise calls `luaL_checklstring`.
+
+* `len` - when not a `nullptr`, set to the length of the string (0 for a `nullptr` default value)
+
+```c
+const char* luaL_checkstring(lua_State* L, int numArg);
+#define luaL_checkstring(L, n) // Implemented as a macro
+```
+
+Same as `luaL_checklstring` without the length argument.
+
+```c
+const char* luaL_optstring(lua_State* L, int numArg, const char* def);
+#define luaL_optstring(L, n, d) // Implemented as a macro
+```
+
+Same as `luaL_optlstring` without the length argument.
+
+```c
+const char* luaL_tolstring(lua_State* L, int idx, size_t* len);
+```
+
+```c
+int luaL_checkoption(lua_State* L, int narg, const char* def, const char* const lst[]);
+```
+
 ## Vectors
 
 ```c
@@ -591,6 +715,20 @@ void lua_pushvector(lua_State* L, float x, float y, float z); // LUA_VECTOR_SIZE
 ```
 
 Place a `vector` value with the components `x`, `y`, `z` and `w` (when `LUA_VECTOR_SIZE` is 4) on the top of the stack.
+
+```c
+const float* luaL_checkvector(lua_State* L, int narg);
+```
+
+Checks for a `vector` argument, and throws an invalid argument type error otherwise.
+Returns a pointer to the components of the vector.
+
+```c
+const float* luaL_optvector(lua_State* L, int narg, const float* def);
+```
+
+Checks for an optional `vector` argument, if the argument is not provided or `nil`, returns the `def` value verbatim, otherwise calls `luaL_checkvector`.
+If default value was not used, returns a pointer to the components of the vector.
 
 ## Buffers
 
@@ -617,6 +755,15 @@ void* lua_newbuffer(lua_State* L, size_t sz);
 Creates a new `buffer` value of size `sz` and places it on the top of the stack.
 Buffer data is zero-initialized.
 Returns the pointer to the buffer's data.
+
+```c
+void* luaL_checkbuffer(lua_State* L, int narg, size_t* len);
+```
+
+Checks for a `buffer` argument, and throws an invalid argument type error otherwise.
+Returns a pointer to its data.
+
+* `len` - when not a `nullptr`, set to the size of the buffer
 
 ## Functions
 
@@ -972,6 +1119,14 @@ for (int iter = 0; (iter = lua_rawiter(L, -1, iter)) != -1;)
 // the table we started with is at -1 index again
 ```
 
+```c
+int luaL_getmetafield(lua_State* L, int obj, const char* e);
+```
+
+```c
+int luaL_callmeta(lua_State* L, int obj, const char* e);
+```
+
 ## Light Userdata
 
 `lightuserdata` values are used for external pointers that have no special meaning to Luau VM.
@@ -1153,6 +1308,18 @@ void lua_getuserdatametatable(lua_State* L, int tag);
 Retrieves the metatable associated with the userdata tag and places it on top of the stack.
 If a table was not associated, `nil` is placed instead.
 
+```c
+void* luaL_checkudata(lua_State* L, int ud, const char* tname);
+```
+
+```c
+int luaL_newmetatable(lua_State* L, const char* tname);
+```
+
+```c
+#define luaL_getmetatable(L, n) (lua_getfield(L, LUA_REGISTRYINDEX, (n)))
+```
+
 ### Direct userdata metamethod calls (experimental)
 
 ```c
@@ -1333,6 +1500,14 @@ Return values placed on the stack are discarded.
 Function pointer `func` cannot be a `nullptr`.
 
 This function can be used to work with Luau APIs when protected environment has not been established yet.
+
+```c
+int luaL_callyieldable(lua_State* L, int nargs, int nresults);
+```
+
+```c
+int luaL_pcallyieldable(lua_State* L, int nargs, int nresults, int errfunc);
+```
 
 ## Comparisons
 
@@ -1625,6 +1800,67 @@ This function never returns as it either throws a C++ exception or propagates wi
 Next protected environment up the call stack catches the error.
 If the environment is not protected, see `lua_call` for the description of the behavior.
 
+```c
+void luaL_errorL(lua_State* L, const char* fmt, ...);
+```
+
+Throws a formatted error string message.
+The message will have a prefix created by `luaL_where`.
+
+Can be called without a stack space reservation.
+
+```c
+void luaL_error(lua_State* L, const char* fmt, ...);
+#define luaL_error(L, fmt, ...) // Implemented as a macro
+```
+
+Same as `luaL_errorL`.
+
+```c
+void luaL_typeerrorL(lua_State* L, int narg, const char* tname);
+```
+
+```c
+void luaL_typeerror(lua_State* L, int narg, const char* tname);
+#define luaL_typeerror(L, narg, tname) // Implemented as a macro
+```
+
+Same as `luaL_typeerrorL`.
+
+```c
+void luaL_argexpected(lua_State* L, bool cond, int narg, const char* tname);
+#define luaL_argexpected(L, cond, arg, tname) // Implemented as a macro
+```
+
+Similar to `luaL_typeerrorL`, but only throw an error when `cond` does not hold (`false`).
+
+```c
+void luaL_argerrorL(lua_State* L, int narg, const char* extramsg);
+```
+
+```c
+void luaL_argerror(lua_State* L, int narg, const char* extramsg);
+#define luaL_argerror(L, narg, extramsg) // Implemented as a macro
+```
+
+Same as `luaL_argerrorL`.
+
+```c
+void luaL_argcheck(lua_State* L, bool cond, int narg, const char* extramsg);
+#define luaL_argcheck(L, cond, arg, extramsg) // Implemented as a macro
+```
+
+Similar to `luaL_argerrorL`, but only throw an error when `cond` does not hold (`false`).
+
+```c
+void luaL_where(lua_State* L, int lvl);
+```
+
+Places a string with function name and function definition line in a format `"function:line: "` (with a traling space) on top of the stack.
+If there is no function at the selected call frame level or it does not have a definition line, empty string is placed instead.
+
+Can be called without a stack space reservation.
+
 ## Sandboxing
 
 ```c
@@ -1747,6 +1983,10 @@ Function at the index must be a Luau function.
 
 When execution encounters a breakpoint, `debugbreak` callback is called.
 
+```c
+void luaL_traceback(lua_State* L, lua_State* L1, const char* msg, int level);
+```
+
 ## Callbacks
 
 ```c
@@ -1767,6 +2007,8 @@ The struct contains:
 * `debuginterrupt` - gets called when thread execution is interrupted by break in another thread
 * `debugprotectederror` - gets called when an error happens inside a protected call
 * `onallocate` - gets called when memory is allocated with arguments similar to `lua_Alloc`
+
+`interrupt` callback is allowed to be set from a thread separate from the one running the VM.
 
 ## Coverage
 
@@ -1841,6 +2083,24 @@ Following kinds are currently provided by native code generation:
 
 ## String Buffer Manipulation
 
+## Library Registration
+
+```c
+void luaL_register(lua_State* L, const char* libname, const luaL_Reg* l);
+```
+
+```c
+struct luaL_Reg
+{
+    const char* name;
+    lua_CFunction func;
+};
+```
+
+```c
+const char* luaL_findtable(lua_State* L, int idx, const char* fname, int szhint);
+```
+
 ## Builtin Libraries
 
 ## Miscellaneous Functions
@@ -1850,3 +2110,7 @@ double lua_clock();
 ```
 
 Returns a high-precision clock value in seconds (relative to an unspecified origin point), similar to `os.clock` call inside Luau.
+
+```c
+#define luaL_opt(L, f, n, d) (lua_isnoneornil(L, (n)) ? (d) : f(L, (n)))
+```
