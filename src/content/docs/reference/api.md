@@ -1556,15 +1556,62 @@ Return value is the type tag of the value (`nil` if the reference is `LUA_REFNIL
 int lua_gc(lua_State* L, int what, int data);
 ```
 
+Performs an operation on the garbage collection (GC) system.
+
+Operation is determined by the `what` argument, changing the meaning of the `data` argument and the return value:
+
+* `LUA_GCSTOP` - stop incremental GC
+
+* `LUA_GCRESTART` - resume incremental GC
+
+* `LUA_GCCOLLECT` - run a full GC cycle, not recommended for latency sensitive applications
+
+* `LUA_GCCOUNT` - returns the heap size in KiB
+
+* `LUA_GCCOUNTB` - returns the heap size remainder in bytes (`totalbytes % 1024`) for use together with `LUA_GCCOUNT` to reconstruct the precise amount
+
+* `LUA_GCISRUNNING` - returns 1 if GC is active (not stopped)
+
+* `LUA_GCSTEP` - perform an explicit GC step, with the step size specified in KiB
+
+GC is handled by 'assists' that perform some amount of GC work matching pace of allocation.
+Explicit GC steps allow performing some amount of work at custom points to offset the need for GC assists.
+Note that GC might also be paused for some duration (until bytes allocated meet the threshold).
+If an explicit step is performed during this pause, it will trigger the start of the next collection cycle.
+
+* `LUA_GCSETGOAL`, `LUA_GCSETSTEPMUL` and `LUA_GCSETSTEPSIZE` - tune GC parameters G (goal), S (step multiplier) and step size respectively (step size is usually best left at the default value)
+
+GC is incremental and tries to maintain the heap size to balance memory and performance overhead.
+This overhead is determined by G (goal) which is the ratio between total heap size and the amount of live data in it.
+G is specified in percentages; by default G=200% which means that the heap is allowed to grow to ~2x the size of live data.
+Collector tries to collect S% of allocated bytes by interrupting the application after step size bytes were allocated.
+When S is too small, collector may not be able to catch up and the effective goal that can be reached will be larger.
+S is specified in percentages; by default S=200% which means that collector will run at ~2x the pace of allocations.
+It is recommended to set S in the interval [100 / (G - 100), 100 + 100 / (G - 100))] with a minimum value of 150%; for example:
+
+* for G=200%, S should be in the interval [150%, 200%]
+* for G=150%, S should be in the interval [200%, 300%]
+* for G=125%, S should be in the interval [400%, 500%]
+
 ## Memory
 
 ```c
 void lua_setmemcat(lua_State* L, int category);
 ```
 
+Associates the state with a memory category id.
+Future allocations will count towards the selected memory category.
+
+`category` must be non-negative and less than `LUA_MEMORY_CATEGORIES`, defined in `luaconf.h`.
+The default `category` is 0.
+
 ```c
 size_t lua_totalbytes(lua_State* L, int category);
 ```
+
+Gets the number of bytes associated with a memory category.
+
+When `category` is -1 (or any negative number), total amount of bytes in all categories is returned.
 
 ## Error Handling
 
@@ -1572,73 +1619,225 @@ size_t lua_totalbytes(lua_State* L, int category);
 void lua_error(lua_State* L);
 ```
 
+Throws an error using the object on top of the stack.
+
+This function never returns as it either throws a C++ exception or propagates with a `longjmp`.
+Next protected environment up the call stack catches the error.
+If the environment is not protected, see `lua_call` for the description of the behavior.
+
 ## Sandboxing
 
 ```c
 void lua_setsafeenv(lua_State* L, int idx, int enabled);
 ```
 
+Marks the table at the index as a 'safe' environment table.
+
+When executing a function which has a 'safe' environment, VM makes assumptions about the environment which make execution faster:
+
+* Globals that were not marked as mutable during compilation are read using the 'import' resolve system which caches the values of expressions like `x`, `x.y` and `x.y.z`
+* Built-in functions like `math.cos` are recognized and can execute a fastcall, without worry that they were changed to mean something else
+* Native code generation will often fall back to the VM when environment is not 'safe'
+
 ```c
 uintptr_t lua_encodepointer(lua_State* L, uintptr_t p);
 ```
 
+Encodes the integer value of the specified pointer into an opaque value suitable for printouts and display.
+This is used to make it harder to guess the layout of heap-allocated objects in memory while providing users with a stable identity of pointers they can compare for equality.
+
+Note: there is currently no external API to setup pointer encoding keys.
+
 ## Debugging
 
 ```c
-typedef void (*lua_Hook)(lua_State* L, lua_Debug* ar);
-
 int lua_stackdepth(lua_State* L);
-int lua_getinfo(lua_State* L, int level, const char* what, lua_Debug* ar);
-int lua_getargument(lua_State* L, int level, int n);
-const char* lua_getlocal(lua_State* L, int level, int n);
-const char* lua_setlocal(lua_State* L, int level, int n);
-const char* lua_getupvalue(lua_State* L, int funcindex, int n);
-const char* lua_setupvalue(lua_State* L, int funcindex, int n);
+```
 
+Returns the active number of call frames of the executing thread.
+
+```c
+int lua_getinfo(lua_State* L, int level, const char* what, lua_Debug* ar);
+```
+
+Gets information about the function using a `level` parameter:
+
+* When level is negative, it is used as a relative stack index (function value on the stack)
+* When level is positive or zero, it is used to select the call stack frame (zero is the current frame, 1 is the caller, etc.)
+
+Returns 1 if the function was found at the level and 0 otherwise.
+
+Information is filled into `lua_Debug` structure specified by `ar` according to a `what` string containing symbols which correspond to data that is requested:
+
+* `s` - provide source identifier (`source`) and its truncated chunkid form (`short_src`, up to `LUA_IDSIZE` characters), the kind of function it is 'C'/'Lua' (`what`) and the line where it is defined (`linedefined`)
+* `l` - currently executing source code line or -1 if it is not available (`currentline`)
+* `u` - number of upvalues (`nupvals`)
+* `a` - arity of the function, number of parameters (`nparams`) and if it is variadic or not (`isvararg`)
+* `n` - name of the function or `nullptr` if not available
+* `f` - the function value itself, placing it on top of the stack
+
+```c
+int lua_getargument(lua_State* L, int level, int n);
+```
+
+Gets the value of the `n`th argument of the function at the specified call frame.
+Fails and returns 0 if the `level` is out of bounds, if function is executing natively or if the function is a C function.
+Returns 1 on success with the argument value placed on top of the stack.
+
+For a variadic function, `n` values greater than the number of declared function parameters retrieve the variadic arguments.
+
+```c
+const char* lua_getlocal(lua_State* L, int level, int n);
+```
+
+Gets the value of the `n`th active local of the function at the specified call frame.
+Fails and returns `nullptr` if the `level` is out of bounds, if function is executing natively, if the function is a C function or if there is no `n`th local.
+Returns the name of the local (or a `nullptr` if not available) on success with the local value placed on top of the stack.
+
+Note: return value cannot be used to determine if the value was placed on the stack or not.
+
+```c
+const char* lua_setlocal(lua_State* L, int level, int n);
+```
+
+Sets the value of the `n`th active local of the function at the specified call frame using the value at the top of the stack.
+Fails and returns `nullptr` if the `level` is out of bounds or if function is executing natively, value is left on the stack.
+Fails and returns `nullptr` if the function is a C function or if there is no `n`th local, value is removed from the stack.
+Returns the name of the local (or a `nullptr` if not available) on success with value assigned to it and value removed from the stack.
+
+Note: return value cannot be used to determine if the value was removed from the stack or not.
+
+```c
+const char* lua_getupvalue(lua_State* L, int funcindex, int n);
+```
+
+Gets the value of the `n`th upvalue of the function at the specified index (not a `level`) and places it on top of the stack.
+Returns the name of the upvalue (or an empty string if not available) on success and a `nullptr` otherwise.
+
+If the value is changed while executing natively, the behaviour is undefined.
+
+```c
+const char* lua_setupvalue(lua_State* L, int funcindex, int n);
+```
+
+Sets the value of the `n`th upvalue of the function at the specified index (not a `level`) using the value at the top of the stack.
+Removes the value from the stack on success.
+Returns the name of the upvalue (or an empty string if not available) on success and a `nullptr` otherwise.
+
+If the value is changed while executing natively, the behaviour is undefined.
+
+```c
 void lua_singlestep(lua_State* L, int enabled);
+```
+
+Switches execution to a single-step mode.
+In single-step mode, `debugstep` callback is called before executing each instruction.
+
+```c
 int lua_breakpoint(lua_State* L, int funcindex, int line, int enabled);
 ```
 
-## Coverage
+Sets or removes a breakpoint for a function at index at the specified line.
+If no instructions exist at the line, the breakpoint is moved forward to the line that has instructions (including instructions in nested functions).
+Returns the line where the breakpoint was placed/removed or -1 if an appropriate instruction was not found.
 
-```c
-typedef void (*lua_Coverage)(void* context, const char* function, int linedefined, int depth, const int* hits, size_t size);
+* `enabled` - 1 to set a breakpoint and 0 to remove it
 
-void lua_getcoverage(lua_State* L, int funcindex, void* context, lua_Coverage callback);
-```
+Function at the index must be a Luau function.
 
-## Execution Counters
-
-```c
-typedef void (*lua_CounterFunction)(void* context, const char* function, int linedefined);
-typedef void (*lua_CounterValue)(void* context, int kind, int line, uint64_t hits);
-
-void lua_getcounters(lua_State* L, int funcindex, void* context, lua_CounterFunction functionvisit, lua_CounterValue countervisit);
-```
+When execution encounters a breakpoint, `debugbreak` callback is called.
 
 ## Callbacks
 
 ```c
-struct lua_Callbacks
-{
-    void* userdata; // arbitrary userdata pointer that is never overwritten by Luau
-
-    void (*interrupt)(lua_State* L, int gc);  // gets called at safepoints (loop back edges, call/ret, gc) if set
-    void (*panic)(lua_State* L, int errcode); // gets called when an unprotected error is raised (if longjmp is used)
-
-    void (*userthread)(lua_State* LP, lua_State* L); // gets called when L is created (LP == parent) or destroyed (LP == NULL)
-    int16_t (*useratom)(lua_State* L, const char* s, size_t l); // gets called when a string is created to assign an atom id
-
-    void (*debugbreak)(lua_State* L, lua_Debug* ar);     // gets called when BREAK instruction is encountered
-    void (*debugstep)(lua_State* L, lua_Debug* ar);      // gets called after each instruction in single step mode
-    void (*debuginterrupt)(lua_State* L, lua_Debug* ar); // gets called when thread execution is interrupted by break in another thread
-    void (*debugprotectederror)(lua_State* L);           // gets called when protected call results in an error
-
-    void (*onallocate)(lua_State* L, size_t osize, size_t nsize); // gets called when memory is allocated
-};
-
 lua_Callbacks* lua_callbacks(lua_State* L);
 ```
+
+Returns the pointer to `lua_Callbacks` of the VM.
+
+The struct contains:
+
+* `userdata` - arbitrary userdata pointer that is never overwritten by Luau
+* `interrupt` - gets called at safepoints (loop back edges, call/ret, gc) if set
+* `panic` - gets called when an unprotected error is raised (when VM is built without C++ exceptions enabled)
+* `userthread` - gets called when L is created (LP == parent) or destroyed (LP == `nullptr`)
+* `useratom` - gets called when a string is created to assign an atom id
+* `debugbreak` - gets called when breakpoint is encountered
+* `debugstep` - gets called before each instruction in single-step mode
+* `debuginterrupt` - gets called when thread execution is interrupted by break in another thread
+* `debugprotectederror` - gets called when an error happens inside a protected call
+* `onallocate` - gets called when memory is allocated with arguments similar to `lua_Alloc`
+
+## Coverage
+
+```c
+void lua_getcoverage(lua_State* L, int funcindex, void* context, lua_Coverage callback);
+```
+
+Retrieves the coverage information collected for function at the index and any nested functions it has.
+
+For coverage information to work, coverage has to be enabled in the compilation options.
+
+Specified `callback` will be called with a custom `context` pointer passed as is.
+
+```c
+typedef void (*lua_Coverage)(void* context, const char* function, int linedefined, int depth, const int* hits, size_t size);
+```
+
+Callback will be called for each visited function.
+
+* `context` - context pointer provided to `lua_getcoverage`
+* `function` - function name
+* `linedefined` - function definition line
+* `depth` - nesting depth of a function, starting with 0 for the function at index
+* `hits` - array with the number of hits for every line
+* `size` - array size
+
+Array element index corresponds to the line number in the file, counting from 0
+
+## Execution Counters
+
+```c
+void lua_getcounters(lua_State* L, int funcindex, void* context, lua_CounterFunction functionvisit, lua_CounterValue countervisit);
+```
+
+Retrieves the execution counter information collected for a function at the index and any nested functions it has.
+
+Execution counters have to be enabled in native code generation options.
+
+Function at the index must be a Luau function.
+
+Specified callbacks will be called with a custom `context` pointer passed as is.
+
+`functionvisit` is called for each visited function, starting at function at the index and all nested functions recursively.
+After each `functionvisit`, zero or more `countervisit` calls are made for each counter inside the function.
+
+```c
+typedef void (*lua_CounterFunction)(void* context, const char* function, int linedefined);
+```
+
+This callback is called for each new function that is visited.
+
+* `context` - context pointer provided to `lua_getcounters`
+* `function` - function name
+* `linedefined` - function definition line
+
+```c
+typedef void (*lua_CounterValue)(void* context, int kind, int line, uint64_t hits);
+```
+
+This callback is called for each counter that is visited in a function.
+
+* `context` - context pointer provided to `lua_getcounters`
+* `kind` - the kind of the counter (see below)
+* `line` - line number in the file
+* `hits` - number of hits recorded
+
+Following kinds are currently provided by native code generation:
+
+* 1 - native block was executed (`CodeGenCounter::RegularBlockExecuted`)
+* 2 - fallback block was executed (`CodeGenCounter::FallbackBlockExecuted`)
+* 3 - VM exit was taken (`CodeGenCounter::VmExitTaken`)
 
 ## String Buffer Manipulation
 
@@ -1649,3 +1848,5 @@ lua_Callbacks* lua_callbacks(lua_State* L);
 ```c
 double lua_clock();
 ```
+
+Returns a high-precision clock value in seconds (relative to an unspecified origin point), similar to `os.clock` call inside Luau.
