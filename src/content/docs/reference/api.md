@@ -135,8 +135,8 @@ When `env` is 0, current thread environment table is used.
 On success, returns 0 and places the top closure of the bytecode on the stack.
 On failure, returns 1 and places a string with an error message on the stack.
 
-TODO: explain environment tables
-TODO: explain what imports are
+<!--TODO: explain environment tables-->
+<!--TODO: explain what imports are-->
 
 ---
 
@@ -236,7 +236,7 @@ int lua_checkstack(lua_State* L, int sz);
 Reserve space on the stack for `sz` items.
 Returns 1 on success, and 0 if C stack limit is reached or no more memory for stack items can be allocated.
 
-TODO: explain the C stack limit concept
+<!--TODO: explain the C stack limit concept-->
 
 ```c
 void lua_rawcheckstack(lua_State* L, int sz);
@@ -689,9 +689,22 @@ Same as `luaL_optlstring` without the length argument.
 const char* luaL_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
+Converts the value at the index into a string that is placed on top of the stack.
+Function returns the pointer to the string data and an optional length.
+
+This conversion supports the `__tostring` metamethod of the value.
+
+* `len` - when not a `nullptr`, set to the length of the string
+
 ```c
 int luaL_checkoption(lua_State* L, int narg, const char* def, const char* const lst[]);
 ```
+
+Returns which string option out of the list of strings `lst` matches the `string` or a `number` at the argument index.
+
+When default value `def` is not a `nullptr`, a string check using `luaL_optstring` is made, otherwise, `luaL_checkstring` is used.
+
+If the string check was successful, but the string was not found in the list, `""invalid option '{name}'"` error is thrown.
 
 ## Vectors
 
@@ -1123,9 +1136,18 @@ for (int iter = 0; (iter = lua_rawiter(L, -1, iter)) != -1;)
 int luaL_getmetafield(lua_State* L, int obj, const char* e);
 ```
 
+Retrieves the metatable key (`e`) value from the metatable of an object at the index and places it on top of the stack.
+Returns 1 if the metatable exists and has the value for the key and 0 otherwise.
+
 ```c
 int luaL_callmeta(lua_State* L, int obj, const char* e);
 ```
+
+Calls the metamethod (`e`) stored in the metatable of an object at the index and places the result on top of the stack.
+Returns 1 on successful call and 0 otherwise.
+
+The object at the index is used as a single and only argument to the metamethod.
+Metamethods expecting other arguments like `__index` or `__add` are not suitable for use with this function.
 
 ## Light Userdata
 
@@ -1309,16 +1331,28 @@ Retrieves the metatable associated with the userdata tag and places it on top of
 If a table was not associated, `nil` is placed instead.
 
 ```c
-void* luaL_checkudata(lua_State* L, int ud, const char* tname);
-```
-
-```c
 int luaL_newmetatable(lua_State* L, const char* tname);
 ```
 
+Creates a new metatable and registers it under `tname` name in the registry table.
+If the metatable was already registered, previously created metatable is placed on top of the stack and return value is 0.
+Otherwise, new metatable is placed on top of the stack and return value is 1.
+
 ```c
-#define luaL_getmetatable(L, n) (lua_getfield(L, LUA_REGISTRYINDEX, (n)))
+void* luaL_checkudata(lua_State* L, int ud, const char* tname);
 ```
+
+Checks that the value at the index is a userdata with a metatable registered under the name `tname` in the registry table.
+Returns the pointer to userdata data on success.
+Throws a type mismatch error on failure.
+
+```c
+int luaL_getmetatable(lua_State* L, const char* tname);
+#define luaL_getmetatable(L, n) // Implemented as a macro
+```
+
+Same as `lua_getfield` when called on the registry table value (`LUA_REGISTRYINDEX`).
+Return value is the type tag of the value (`nil` if it was not found).
 
 ### Direct userdata metamethod calls (experimental)
 
@@ -1505,9 +1539,46 @@ This function can be used to work with Luau APIs when protected environment has 
 int luaL_callyieldable(lua_State* L, int nargs, int nresults);
 ```
 
+Similar to `lua_call`, but intended to perform the call from inside a yieldable C function.
+
+If callee yields, function returns a thread yield marker that has to be passed back to the VM.
+
+The function is best used as a split between C function start and the first potentially yielding call:
+
+```c
+int example(lua_State* L)
+{
+    ...
+    return luaL_callyieldable(L, nargs, nreturns);
+}
+
+int exampleCont(lua_State* L, int status)
+{
+    ...
+}
+```
+
+Original `example` arguments and values placed on stack are preserved in the continuation.
+If the called function did not yield, continuation is called immediately after.
+
+Continuation is allowed to repeatedly yield, but the state has to be tracked manually.
+State can be safely placed on the stack.
+
+`status` is always `LUA_OK`, on error, the continuation is not called.
+
+This function can only be called from inside a yieldable C function.
+
 ```c
 int luaL_pcallyieldable(lua_State* L, int nargs, int nresults, int errfunc);
 ```
+
+Similar to `lua_pcall`, but intended to perform the call from inside a yieldable C function.
+
+Behavior is similar to `luaL_callyieldable`, but failures can now be captured.
+
+`status` will signal error conditions, see `lua_status` for the description of the values.
+
+This function can only be called from inside a yieldable C function.
 
 ## Comparisons
 
@@ -1820,6 +1891,13 @@ Same as `luaL_errorL`.
 void luaL_typeerrorL(lua_State* L, int narg, const char* tname);
 ```
 
+Throws an argument type mismatch error, including an error for missing arguments.
+
+For type mismatch, the format is `"invalid argument #{narg} to '{function}' ({tname} expected, got {type})"`.
+For a missing argument, the format is `"missing argument #{narg} to '{function}' ({tname} expected)"`.
+
+If the function has no registered debug name, `to '{function}'` part is not added.
+
 ```c
 void luaL_typeerror(lua_State* L, int narg, const char* tname);
 #define luaL_typeerror(L, narg, tname) // Implemented as a macro
@@ -1837,6 +1915,12 @@ Similar to `luaL_typeerrorL`, but only throw an error when `cond` does not hold 
 ```c
 void luaL_argerrorL(lua_State* L, int narg, const char* extramsg);
 ```
+
+Throws an invalid argument error with an `extramsg` included.
+
+The format is `"invalid argument #{narg} to '{function}' ({extramsg})"`.
+
+If the function has no registered debug name, `to '{function}'` part is not added.
 
 ```c
 void luaL_argerror(lua_State* L, int narg, const char* extramsg);
@@ -1987,6 +2071,21 @@ When execution encounters a breakpoint, `debugbreak` callback is called.
 void luaL_traceback(lua_State* L, lua_State* L1, const char* msg, int level);
 ```
 
+Places a call stack traceback string on top of stack.
+
+* `L1` - the thread that is being inspected (can equal `L`)
+* `msg` - optional custom message line to be used as the first line of the trace
+* `level` - the call stack frame to start the trace from, 0 to start from the top
+
+Format of each call frame entry and the number of entries included can change with the implementation.
+
+The current format is that all call frames are included (without inlined function calls) and each entry is:
+`"{source}:line function {function}\n"`
+
+If data for any of the parts is not available, the corresponding part is omitted.
+
+Today, only Luau functions appear in the stack, C functions are omitted.
+
 ## Callbacks
 
 ```c
@@ -2114,3 +2213,10 @@ Returns a high-precision clock value in seconds (relative to an unspecified orig
 ```c
 #define luaL_opt(L, f, n, d) (lua_isnoneornil(L, (n)) ? (d) : f(L, (n)))
 ```
+
+A wrapper for checking on optional arguments.
+
+When argument is provided and not `nil`, function `f` is called with the argument number.
+Otherwise, default value `d` is returned verbatim.
+
+As an example, `luaL_optvector` can be thought of as `luaL_opt(L, luaL_checkvector, n, d)`.
