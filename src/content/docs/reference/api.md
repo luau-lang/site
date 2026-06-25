@@ -312,7 +312,7 @@ For tagged light userdata objects, returns either the value registered by `lua_s
 For userdata objects created by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
 `"no value"` is returned if there is no value at the index.
 
-Values other than userdata can have a metatable set with a `__type` value overriding the built-in default name of the type.
+Values other than userdata can have a shared metatable set with a `__type` value overriding the built-in default name of the type (for tables this would be the typename of all tables, individual table `__type` metatable key is not looked up).
 
 ```c
 void luaL_checktype(lua_State* L, int narg, int t);
@@ -674,7 +674,7 @@ Concatenate top `n` elements on the stack into a string, similar to applying ope
 This pops `n` elements from the stack and pushes the result on top.
 When `n` is 0, no elements are popped and an empty string is pushed on the top.
 
-For values that are neither `string` or `number`, `__concat` metamethod call will be made, with an error thrown if it is not available.
+For values that are neither `string` nor `number`, `__concat` metamethod call will be made, with an error thrown if the metamethod is not available.
 
 ```c
 const char* luaL_checklstring(lua_State* L, int numArg, size_t* len);
@@ -1060,7 +1060,7 @@ This method throws an error if used on a read-only table.
 void lua_setreadonly(lua_State* L, int idx, int enabled);
 ```
 
-Marks the table at the index as read-only if `enabled` is not 0 and as `read-write` otherwise.
+Marks the table at the index as read-only if `enabled` is not 0 and as read-write otherwise.
 When set to read-only, future modifications of the table will throw an error.
 
 This method cannot be used on the registry table.
@@ -1089,7 +1089,7 @@ Creates a copy of the table at the index and places it at the top of the stack.
 Array elements and hash key/values are copied over without a deep clone.
 Metatable is copied without a deep clone.
 If the original was read-only, the copy becomes read-write again.
-If the original was used as an environment table and marked a safe environment table, the copy loses that property.
+If the original was used as an environment table and marked as a safe environment table, the copy loses that property.
 
 ```c
 int lua_next(lua_State* L, int idx);
@@ -1406,7 +1406,7 @@ To improve performance of interactions with `userdata` through metamethods like 
 This function associates optional C function callbacks that can be used by Luau VM when a userdata access through metamethods above is detected.
 Returns 1 if the specified userdata tag is associated with a metatable using `lua_setuserdatametatable` and 0 otherwise (skipping the callback registration).
 
-Callback will only be registered if the userdata metatable contains the corresponding metamethod (`__index` for `get`, etc)
+Callback will only be registered if the userdata metatable contains the corresponding metamethod (`__index` for `get`, etc.)
 
 For a member access to be detected, the member name string has to be associated with an atom value.
 
@@ -1569,8 +1569,8 @@ Performs a C function call in a new protected environment.
 Function receives the specified `ud` pointer as its first argument (a `lightuserdata`).
 Returns the status of the call, see the description of `lua_status`.
 
-Return values placed on the stack are discarded.
-If call errors, the error object is placed on top of the stack (same as `lua_pcall`).
+If the call success, the return values placed on the stack are discarded.
+If the call errors, the error object is placed on top of the stack (same as `lua_pcall`).
 
 Function pointer `func` cannot be a `nullptr`.
 
@@ -1716,7 +1716,7 @@ Resumes the execution of a thread.
 If the thread has not been executing code, execution starts by calling the function followed by `narg` arguments on top of the stack.
 The function and arguments are removed from the stack.
 If the thread was yielded, resumes the execution of the top function with `narg` values returned to the yielded function.
-If the thread was stopped on a breakpoint, `narg` should be 0, otherwise the behavior is unspecified.
+If the thread was stopped on a breakpoint, `narg` should be 0, as the values will be discarded.
 
 Returns the status of the thread, see the description of `lua_status`.
 
@@ -1886,7 +1886,7 @@ It is recommended to set S in the interval [100 / (G - 100), 100 + 100 / (G - 10
 * for G=150%, S should be in the interval [200%, 300%]
 * for G=125%, S should be in the interval [400%, 500%]
 
-Returns the previous value of the corresponding paramented (in KiB for step size).
+Returns the previous value of the corresponding parameter (in KiB for step size).
 
 ## Memory
 
@@ -1989,7 +1989,7 @@ Similar to `luaL_argerrorL`, but only throw an error when `cond` does not hold (
 void luaL_where(lua_State* L, int lvl);
 ```
 
-Places a string with source and line information about the selected call frame level `lvl` in a format `"{short_src}:{line}: "` (with a traling space) on top of the stack.
+Places a string with source and line information about the selected call frame level `lvl` in a format `"{short_src}:{line}: "` (with a trailing space) on top of the stack.
 If there is no associated line number for the selected call frame level (for example, it is a C function call frame), empty string is placed instead.
 
 Can be called without a stack space reservation.
@@ -2188,7 +2188,7 @@ The struct contains:
 * `userdata` - arbitrary userdata pointer that is never overwritten by Luau
 * `interrupt` - gets called at safepoints (loop back edges, call/ret, gc) if set
   * callback is provided with a `gc` state value (-1 when not called from GC)
-* `panic` - gets called when an unprotected error is raised (when VM is built without C++ exceptons enabled)
+* `panic` - gets called when an unprotected error is raised (when VM is built without C++ exceptions enabled)
   * callback is provided with the error status `errcode` (see `lua_status`)
 * `userthread` - gets called when a thread is created or destroyed
   * `L` specifies the created (`LP` == parent thread) or destroyed (LP == `nullptr`)
@@ -2292,7 +2292,7 @@ With the exception of `luaL_addvalue` that expects the value at the top and stri
 
 It is invalid to use the internal string storage as a `string`.
 
-Note that `luaL_Strbuf` and `luaL_Buffer` type definitions are alises to each other and are provided for compatibility.
+Note that `luaL_Strbuf` and `luaL_Buffer` type definitions are aliases to each other and are provided for compatibility.
 
 ```c
 void luaL_buffinit(lua_State* L, luaL_Strbuf* B);
@@ -2339,7 +2339,7 @@ void luaL_addvalue(luaL_Strbuf* B);
 ```
 
 Appends `string` or `number` on top of the stack to the buffer and removes it from the stack.
-If value on top of the stack was neither `string` or `number`, the function is a no-op (leaving the value on the stack).
+If value on top of the stack was neither `string` nor `number`, the function is a no-op (leaving the value on the stack).
 
 ```c
 void luaL_addvalueany(luaL_Strbuf* B, int idx);
