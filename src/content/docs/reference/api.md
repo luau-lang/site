@@ -30,6 +30,8 @@ Allocation function type.
 * `osize` - old size of the object, 0 when new object is allocated
 * `nsize` - new size of the object, 0 when object is to be freed
 
+If the allocation fails, return value is a `nullptr`.
+
 ```c
 lua_State* luaL_newstate(void);
 ```
@@ -63,8 +65,9 @@ lua_State* lua_newthread(lua_State* L);
 ```
 
 Creates a new thread of execution, placing it on top of the stack.
+Returns the pointer to the created thread.
 
-`userthread` callback will be called (see Callbacks section).
+Optional `userthread` callback will be called ([more in the callbacks section](#callbacks)).
 
 ```c
 lua_State* lua_mainthread(lua_State* L);
@@ -93,7 +96,7 @@ void lua_resetthread(lua_State* L);
 
 Reset the state of a thread for use to run new code.
 
-Reset can only be made on threads that are not running and are not waiting for resume on yield/break.
+Reset can only be made on threads that are not executing.
 
 ```c
 int lua_isthreadreset(lua_State* L);
@@ -130,7 +133,8 @@ Load bytecode into the VM.
 * `size` - bytecode size
 * `env` - environment table to associate with loaded functions and to use when resolving imports
 
-When `env` is 0, current thread environment table is used.
+When `env` is 0, current thread global table is used.
+When `env` is not 0, it must be an index to a table object.
 
 On success, returns 0 and places the top closure of the bytecode on the stack.
 On failure, returns 1 and places a string with an error message on the stack.
@@ -156,6 +160,13 @@ Stack items can be selected using an index:
 * `LUA_ENVIRONINDEX` pseudo index of the environment table
 * `LUA_GLOBALSINDEX` pseudo index of the global table
 * Function upvalues can be referred to using pseudo indices produced by the `lua_upvalueindex` function
+
+```c
+int lua_ispseudo(int idx);
+#define lua_ispseudo(idx) // Implemented as a macro
+```
+
+Returns true if the index value is a pseudo index.
 
 ```c
 int lua_absindex(lua_State* L, int idx);
@@ -223,26 +234,31 @@ void lua_xmove(lua_State* from, lua_State* to, int n);
 
 Move `n` elements from the top of `from` thread to the top of `to` thread, popping them from the `from` thread.
 
+Threads have to belong to the same VM.
+
 ```c
 void lua_xpush(lua_State* from, lua_State* to, int idx);
 ```
 
 Copy element at the index of the `from` thread to the top of the `to` thread, leaving the `from` stack unchanged.
 
+Threads have to belong to the same VM.
+
 ```c
 int lua_checkstack(lua_State* L, int sz);
 ```
 
 Reserve space on the stack for `sz` items.
-Returns 1 on success, and 0 if C stack limit is reached or no more memory for stack items can be allocated.
+Returns 1 on success, and 0 if stack limit for C functions is reached or no more memory for stack items can be allocated.
 
-<!--TODO: explain the C stack limit concept-->
+Stack limit for C functions is controlled by `LUAI_MAXCSTACK` configuration parameter, defined in `luaconf.h` (default 8000).
+It is the maximum number of stack slots a single C function may use.
 
 ```c
 void lua_rawcheckstack(lua_State* L, int sz);
 ```
 
-Reserve space on the stack for `sz` items, ignoring the C stack limit.
+Reserve space on the stack for `sz` items, ignoring the stack limit for C functions.
 Not recommended for general use as unlike `lua_checkstack`, it can still error on memory allocation failure.
 
 ```c
@@ -255,6 +271,7 @@ Try to reserve space on the stack for `sz` items or throw a `"stack overflow ({m
 
 Luau has the following value types, represented as `lua_Type` enumeration constants:
 
+* `LUA_TNONE` - no value
 * `LUA_TNIL` - the `nil` value
 * `LUA_TBOOLEAN` - a `boolean` value
 * `LUA_TLIGHTUSERDATA` - a light userdata value
@@ -282,8 +299,8 @@ Returns the type of the value at the index.
 const char* lua_typename(lua_State* L, int tp);
 ```
 
-Returns the type of the object, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, `"buffer"`, `"class"` or `"object"`.
-`"no value"` is returned if there is no value at the index.
+Returns the name for the type based on type tag `tp`, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, `"buffer"`, `"class"` or `"object"`.
+`"no value"` is returned if the type tag corresponds to a missing value (see `lua_isnone`).
 
 ```c
 const char* luaL_typename(lua_State* L, int idx);
@@ -294,6 +311,8 @@ For userdata objects that have a metatable with the `__type` field and are defin
 For tagged light userdata objects, returns either the value registered by `lua_setlightuserdataname` or `"userdata"`.
 For userdata objects created by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
 `"no value"` is returned if there is no value at the index.
+
+Values other than userdata can have a metatable set with a `__type` value overriding the built-in default name of the type.
 
 ```c
 void luaL_checktype(lua_State* L, int narg, int t);
@@ -371,7 +390,7 @@ This is useful to detect missing optional arguments of a function, when `nil` is
 void luaL_checkany(lua_State* L, int narg);
 ```
 
-Checks for an argument to be present (`lua_isnone`), and throws an invalid argument type error otherwise.
+Checks for an argument to be present (not `lua_isnone`), and throws a missing argument error otherwise (see `luaL_typeerrorL`).
 
 ```c
 int lua_toboolean(lua_State* L, int idx);
@@ -384,7 +403,7 @@ double lua_tonumberx(lua_State* L, int idx, int* isnum);
 ```
 
 Converts value at the index to a double number.
-If the value at the index is not a number and not a string convertible to a number, returns `0.0`.
+If the value at the index is not a `number` and not a string convertible to a `number`, returns `0.0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -392,8 +411,8 @@ If the value at the index is not a number and not a string convertible to a numb
 int lua_tointegerx(lua_State* L, int idx, int* isnum);
 ```
 
-Converts value at the index to an integer number.
-If the value at the index is not a number and not a string convertible to a number, returns `0`.
+Converts value at the index to an integer number (truncating towards 0).
+If the value at the index is not a `number` and not a string convertible to a `number`, returns `0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -401,8 +420,8 @@ If the value at the index is not a number and not a string convertible to a numb
 unsigned lua_tounsignedx(lua_State* L, int idx, int* isnum);
 ```
 
-Converts value at the index to an unsigned integer number.
-If the value at the index is not a number and not a string convertible to a number, returns `0`.
+Converts value at the index to an unsigned integer number (truncating towards 0).
+If the value at the index is not a `number` and not a string convertible to a `number`, returns `0`.
 
 * `isnum` - when not a `nullptr`, set to 1 when conversion was successful and 0 otherwise
 
@@ -493,43 +512,43 @@ If default value is not used, returns 1 if the value is `true` and 0 if it's `fa
 double luaL_checknumber(lua_State* L, int narg);
 ```
 
-Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
+Checks for a `number` argument (or a string convertible to a `number`), and throws an invalid argument type error otherwise.
 Returns the double number value.
 
 ```c
 double luaL_optnumber(lua_State* L, int narg, double def);
 ```
 
-Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checknumber`.
+Checks for an optional `number` argument (or a string convertible to a `number`), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checknumber`.
 Returns the double number value.
 
 ```c
 int luaL_checkinteger(lua_State* L, int narg);
 ```
 
-Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
-Returns the int number value.
+Checks for a `number` argument (or a string convertible to a `number`), and throws an invalid argument type error otherwise.
+Returns the int number value (truncating towards 0).
 
 ```c
 int luaL_optinteger(lua_State* L, int narg, int def);
 ```
 
-Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkinteger`.
-Returns the int number value.
+Checks for an optional `number` argument (or a string convertible to a `number`), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkinteger`.
+Returns the int number value (truncating towards 0).
 
 ```c
 unsigned luaL_checkunsigned(lua_State* L, int narg);
 ```
 
-Checks for a `number` argument (or a string convertible to a number), and throws an invalid argument type error otherwise.
-Returns the unsigned number value.
+Checks for a `number` argument (or a string convertible to a `number`), and throws an invalid argument type error otherwise.
+Returns the unsigned number value (truncating towards 0).
 
 ```c
 unsigned luaL_optunsigned(lua_State* L, int narg, unsigned def);
 ```
 
-Checks for an optional `number` argument (or a string convertible to a number), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkunsigned`.
-Returns the unsigned number value.
+Checks for an optional `number` argument (or a string convertible to a `number`), if the argument is not provided or `nil`, returns the `def` value, otherwise calls `luaL_checkunsigned`.
+Returns the unsigned number value (truncating towards 0).
 
 ```c
 int64_t luaL_checkinteger64(lua_State* L, int narg);
@@ -551,17 +570,18 @@ Returns the 64-bit integer value.
 int lua_isstring(lua_State* L, int idx);
 ```
 
-Returns 1 if the value at the index is a string or a number.
+Returns 1 if the value at the index is a `string` or a `number`.
 
 ```c
 const char* lua_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
 Converts the `string` or `number` at the index to a string pointer.
+Returns pointer to string data on success and a `nullptr` on failure.
 
 Note: if the value on the stack is a `number`, it is coerced to a `string` value, changing the value at the index.
 
-* `len` - when not a `nullptr`, set to the length of the string
+* `len` - when not a `nullptr`, set to the length of the string (0 on failure)
 
 ```c
 const char* lua_tostring(lua_State* L, int idx);
@@ -576,8 +596,9 @@ const char* lua_tolstringatom(lua_State* L, int idx, size_t* len, int* atom);
 
 Converts the string at the index to a string pointer.
 Unlike `lua_tolstring`, number values will not be converted.
+Returns pointer to string data on success and a `nullptr` on failure.
 
-* `len` - when not a `nullptr`, set to the length of the string
+* `len` - when not a `nullptr`, set to the length of the string (0 on failure)
 * `atom` - when not a `nullptr`, set to the 'atom' identifier of the string, set by `useratom` callback
 
 ```c
@@ -653,6 +674,8 @@ Concatenate top `n` elements on the stack into a string, similar to applying ope
 This pops `n` elements from the stack and pushes the result on top.
 When `n` is 0, no elements are popped and an empty string is pushed on the top.
 
+For values that are neither `string` or `number`, `__concat` metamethod call will be made, with an error thrown if it is not available.
+
 ```c
 const char* luaL_checklstring(lua_State* L, int numArg, size_t* len);
 ```
@@ -689,7 +712,7 @@ Same as `luaL_optlstring` without the length argument.
 const char* luaL_tolstring(lua_State* L, int idx, size_t* len);
 ```
 
-Converts the value at the index into a string that is placed on top of the stack.
+Converts the value at the index into a string that is placed on top of the stack (original is kept on the stack).
 Function returns the pointer to the string data and an optional length.
 
 This conversion supports the `__tostring` metamethod of the value.
@@ -768,6 +791,8 @@ void* lua_newbuffer(lua_State* L, size_t sz);
 Creates a new `buffer` value of size `sz` and places it on the top of the stack.
 Buffer data is zero-initialized.
 Returns the pointer to the buffer's data.
+
+Error is thrown when buffer size exceeds the implementation-specified limit (1 GiB).
 
 ```c
 void* luaL_checkbuffer(lua_State* L, int narg, size_t* len);
@@ -1035,7 +1060,7 @@ This method throws an error if used on a read-only table.
 void lua_setreadonly(lua_State* L, int idx, int enabled);
 ```
 
-Marks the table at the index as read-only.
+Marks the table at the index as read-only if `enabled` is not 0 and as `read-write` otherwise.
 When set to read-only, future modifications of the table will throw an error.
 
 This method cannot be used on the registry table.
@@ -1064,7 +1089,7 @@ Creates a copy of the table at the index and places it at the top of the stack.
 Array elements and hash key/values are copied over without a deep clone.
 Metatable is copied without a deep clone.
 If the original was read-only, the copy becomes read-write again.
-If the original was used as an environment table and marked as 'sandboxed', the copy loses that property.
+If the original was used as an environment table and marked a safe environment table, the copy loses that property.
 
 ```c
 int lua_next(lua_State* L, int idx);
@@ -1308,6 +1333,17 @@ Sets the destructor function to use when `userdata` with the specified tag is ga
 Destructor of the value can be reassigned or set to `nullptr`.
 
 ```c
+typedef void (*lua_Destructor)(lua_State* L, void* userdata);
+```
+
+The signature of the destructor callback.
+
+* `userdata` - pointer to the userdata data
+
+Interactions with Luau VM from a destructor must be limited as callbacks are called from the garbage-collection stage.
+Our recommendation is to only look up `lua_getthreaddata` for associated host data and postpone any additional cleanup to a later Luau VM resume point.
+
+```c
 lua_Destructor lua_getuserdatadtor(lua_State* L, int tag);
 ```
 
@@ -1368,6 +1404,9 @@ int lua_registeruserdatadirectaccess(
 
 To improve performance of interactions with `userdata` through metamethods like `__index`, `__newindex` and `__namecall`, Luau implements an access speedup mechanism.
 This function associates optional C function callbacks that can be used by Luau VM when a userdata access through metamethods above is detected.
+Returns 1 if the specified userdata tag is associated with a metatable using `lua_setuserdatametatable` and 0 otherwise (skipping the callback registration).
+
+Callback will only be registered if the userdata metatable contains the corresponding metamethod (`__index` for `get`, etc)
 
 For a member access to be detected, the member name string has to be associated with an atom value.
 
@@ -1403,7 +1442,7 @@ For a `namecall` (`__namecall` method invocation) operation, this function will 
 
 The function is called with the same arguments as a `__namecall` metamethod - VM APIs can be used freely.
 
-Return value is the number of results from a method or a yield marker if `lua_yield` is returned.
+Return value is the number of results from a method or a thread yield marker when `lua_yield` result is returned.
 
 ### Direct userdata field access (experimental)
 
@@ -1421,6 +1460,8 @@ Unlike `lua_registeruserdatadirectaccess`:
 
 Field name cannot be a `nullptr`.
 Callback function cannot be a `nullptr`.
+
+While the function does not require the userdata to have an `__index` metamethod, it is strongly recommended to have it and return consistent results with the direct callback.
 
 ```c
 typedef void (*lua_UserdataDirectFieldGet)(void* ud, void* result);
@@ -1505,7 +1546,6 @@ If a protected environment has not been established by an outer `lua_pcall`/`lua
 * If VM is built without `LUA_USE_LONGJMP`:
   * internal `std::exception` of an internal derived type will be thrown
 
-
 ```c
 int lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 ```
@@ -1530,6 +1570,7 @@ Function receives the specified `ud` pointer as its first argument (a `lightuser
 Returns the status of the call, see the description of `lua_status`.
 
 Return values placed on the stack are discarded.
+If call errors, the error object is placed on top of the stack (same as `lua_pcall`).
 
 Function pointer `func` cannot be a `nullptr`.
 
@@ -1674,7 +1715,8 @@ Resumes the execution of a thread.
 
 If the thread has not been executing code, execution starts by calling the function followed by `narg` arguments on top of the stack.
 The function and arguments are removed from the stack.
-If the thread was yielded or stopped on a breakpoint, resumes the execution of the top function with `narg` values returned from the yielded function.
+If the thread was yielded, resumes the execution of the top function with `narg` values returned to the yielded function.
+If the thread was stopped on a breakpoint, `narg` should be 0, otherwise the behavior is unspecified.
 
 Returns the status of the thread, see the description of `lua_status`.
 
@@ -1745,7 +1787,7 @@ Returns the 'coroutine' status `lua_CoStatus` of the thread `co`.
 The status is reported with respect to the currently executing thread.
 
 * `LUA_CORUN` - coroutine is currently running
-* `LUA_COSUS` - coroutine is currently suspended on a yield
+* `LUA_COSUS` - coroutine is currently suspended (yielded, or not started yet)
 * `LUA_CONOR` - coroutine is running, but is not the current thread of execution
 * `LUA_COFIN` - coroutine execution has completed
 * `LUA_COERR` - coroutine execution has completed with an error
@@ -1804,7 +1846,10 @@ int lua_gc(lua_State* L, int what, int data);
 
 Performs an operation on the garbage collection (GC) system.
 
-Operation is determined by the `what` argument, changing the meaning of the `data` argument and the return value:
+Operation is determined by the `what` argument, changing the meaning of the `data` argument and the return value.
+For unknown `what` operations, function returns -1.
+
+Supported `what` operations:
 
 * `LUA_GCSTOP` - stop incremental GC
 
@@ -1825,6 +1870,8 @@ Explicit GC steps allow performing some amount of work at custom points to offse
 Note that GC might also be paused for some duration (until bytes allocated meet the threshold).
 If an explicit step is performed during this pause, it will trigger the start of the next collection cycle.
 
+Returns 1 if the GC cycle has completed.
+
 * `LUA_GCSETGOAL`, `LUA_GCSETSTEPMUL` and `LUA_GCSETSTEPSIZE` - tune GC parameters G (goal), S (step multiplier) and step size respectively (step size is usually best left at the default value)
 
 GC is incremental and tries to maintain the heap size to balance memory and performance overhead.
@@ -1838,6 +1885,8 @@ It is recommended to set S in the interval [100 / (G - 100), 100 + 100 / (G - 10
 * for G=200%, S should be in the interval [150%, 200%]
 * for G=150%, S should be in the interval [200%, 300%]
 * for G=125%, S should be in the interval [400%, 500%]
+
+Returns the previous value of the corresponding paramented (in KiB for step size).
 
 ## Memory
 
@@ -1940,8 +1989,8 @@ Similar to `luaL_argerrorL`, but only throw an error when `cond` does not hold (
 void luaL_where(lua_State* L, int lvl);
 ```
 
-Places a string with function name and function definition line in a format `"function:line: "` (with a traling space) on top of the stack.
-If there is no function at the selected call frame level or it does not have a definition line, empty string is placed instead.
+Places a string with source and line information about the selected call frame level `lvl` in a format `"{source}:{line}: "` (with a traling space) on top of the stack.
+If there is no associated line number for the selected call frame level (for example, it is a C function call frame), empty string is placed instead.
 
 Can be called without a stack space reservation.
 
@@ -2021,7 +2070,7 @@ Returns 1 if the function was found at the level and 0 otherwise.
 Information is filled into `lua_Debug` structure specified by `ar` according to a `what` string containing symbols which correspond to data that is requested:
 
 * `s` - provide source identifier (`source`) and its truncated chunkid form (`short_src`, up to `LUA_IDSIZE` characters), the kind of function it is 'C'/'Lua' (`what`) and the line where it is defined (`linedefined`)
-* `l` - currently executing source code line or -1 if it is not available (`currentline`)
+* `l` - currently executing source code line for call frames and the definition line for function values, -1 if it is not available (`currentline`)
 * `u` - number of upvalues (`nupvals`)
 * `a` - arity of the function, number of parameters (`nparams`) and if it is variadic or not (`isvararg`)
 * `n` - name of the function or `nullptr` if not available
@@ -2082,7 +2131,7 @@ void lua_singlestep(lua_State* L, int enabled);
 ```
 
 Switches execution to a single-step mode.
-In single-step mode, `debugstep` callback is called before executing each instruction.
+In single-step mode, `debugstep` callback (when set) is called before executing each instruction (see the [callbacks section](#callbacks)).
 
 ```c
 int lua_breakpoint(lua_State* L, int funcindex, int line, int enabled);
@@ -2111,11 +2160,20 @@ Places a call stack traceback string on top of stack.
 Format of each call frame entry and the number of entries included can change with the implementation.
 
 The current format is that all call frames are included (without inlined function calls) and each entry is:
-`"{source}:line function {function}\n"`
+`"{short_src}:{line} function {function}\n"`
 
 If data for any of the parts is not available, the corresponding part is omitted.
 
 Today, only Luau functions appear in the stack, C functions are omitted.
+
+```c
+const char* lua_debugtrace(lua_State* L);
+```
+
+Returns a pointer to C string containing the call stack traceback (similar to `luaL_traceback`).
+
+This function is not thread-safe since it stores the result in a shared global array across different VMs!
+Only use for debugging.
 
 ## Callbacks
 
@@ -2129,14 +2187,22 @@ The struct contains:
 
 * `userdata` - arbitrary userdata pointer that is never overwritten by Luau
 * `interrupt` - gets called at safepoints (loop back edges, call/ret, gc) if set
-* `panic` - gets called when an unprotected error is raised (when VM is built without C++ exceptions enabled)
-* `userthread` - gets called when L is created (LP == parent) or destroyed (LP == `nullptr`)
+  * callback is provided with a `gc` state value (-1 when not called from GC)
+* `panic` - gets called when an unprotected error is raised (when VM is built without C++ exceptons enabled)
+  * callback is provided with the error status `errcode` (see `lua_status`)
+* `userthread` - gets called when a thread is created or destroyed
+  * `L` specifies the created (`LP` == parent thread) or destroyed (LP == `nullptr`)
 * `useratom` - gets called when a string is created to assign an atom id
+  * callback is provided with string data pointer `s` and string size `l`
 * `debugbreak` - gets called when breakpoint is encountered
+  * callback is provided with `lua_Debug` data
 * `debugstep` - gets called before each instruction in single-step mode
+  * callback is provided with `lua_Debug` data
 * `debuginterrupt` - gets called when thread execution is interrupted by break in another thread
+  * callback is provided with `lua_Debug` data
 * `debugprotectederror` - gets called when an error happens inside a protected call
 * `onallocate` - gets called when memory is allocated with arguments similar to `lua_Alloc`
+  * callback is provided with the previous allocation size `osize` (0 for fresh allocations) and new size `nsize`
 
 `interrupt` callback is allowed to be set from a thread separate from the one running the VM.
 
@@ -2146,9 +2212,11 @@ The struct contains:
 void lua_getcoverage(lua_State* L, int funcindex, void* context, lua_Coverage callback);
 ```
 
-Retrieves the coverage information collected for function at the index and any nested functions it has.
+Retrieves the coverage information collected for a function at the index and any nested functions it has.
 
-For coverage information to work, coverage has to be enabled in the compilation options.
+For coverage information to work, coverage has to be enabled in the compilation options (`coverageLevel` option).
+
+Function at the index must be a Luau function.
 
 Specified `callback` will be called with a custom `context` pointer passed as is.
 
@@ -2165,7 +2233,8 @@ Callback will be called for each visited function.
 * `hits` - array with the number of hits for every line
 * `size` - array size
 
-Array element index corresponds to the line number in the file, counting from 0
+Array index `i` corresponds to the source line number `i` (1-based).
+Lines that have no coverage data have `-1` as the hit count.
 
 ## Execution Counters
 
@@ -2175,14 +2244,14 @@ void lua_getcounters(lua_State* L, int funcindex, void* context, lua_CounterFunc
 
 Retrieves the execution counter information collected for a function at the index and any nested functions it has.
 
-Execution counters have to be enabled in native code generation options.
+Execution counters have to be enabled in native code generation options (`recordCounters` option).
 
 Function at the index must be a Luau function.
 
 Specified callbacks will be called with a custom `context` pointer passed as is.
 
-`functionvisit` is called for each visited function, starting at function at the index and all nested functions recursively.
-After each `functionvisit`, zero or more `countervisit` calls are made for each counter inside the function.
+`functionvisit` is called for each visited function that has counters data recorded, starting at function at the index and all nested functions recursively.
+After each `functionvisit`, zero or more `countervisit` calls are made for each available counter inside the function.
 
 ```c
 typedef void (*lua_CounterFunction)(void* context, const char* function, int linedefined);
@@ -2222,6 +2291,8 @@ In general, functions expect the mutable string buffer to be located on top of t
 With the exception of `luaL_addvalue` that expects the value at the top and string buffer after that.
 
 It is invalid to use the internal string storage as a `string`.
+
+Note that `luaL_Strbuf` and `luaL_Buffer` type definitions are alises to each other and are provided for compatibility.
 
 ```c
 void luaL_buffinit(lua_State* L, luaL_Strbuf* B);
@@ -2268,7 +2339,7 @@ void luaL_addvalue(luaL_Strbuf* B);
 ```
 
 Appends `string` or `number` on top of the stack to the buffer and removes it from the stack.
-If value on top of the stack was neither `string` or `number`, the function is a no-op.
+If value on top of the stack was neither `string` or `number`, the function is a no-op (leaving the value on the stack).
 
 ```c
 void luaL_addvalueany(luaL_Strbuf* B, int idx);
@@ -2361,7 +2432,7 @@ Libraries are registered under a name provided with a `#define`.
 int luaopen_base(lua_State* L);
 ```
 
-Initializes the [base library](./library.md#global-functions).
+Initializes the set of [global functions](./library.md#global-functions).
 
 ```c
 #define LUA_COLIBNAME "coroutine"
@@ -2417,7 +2488,7 @@ Initializes the [`utf8` library](./library.md#utf8-library).
 int luaopen_class(lua_State* L);
 ```
 
-Initializes the [`class` library](./library.md#class-library).
+Initializes the [`class` library](./library.md#class-library) (Experimental).
 
 ```c
 #define LUA_MATHLIBNAME "math"
