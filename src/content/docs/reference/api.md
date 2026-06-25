@@ -1569,7 +1569,7 @@ Performs a C function call in a new protected environment.
 Function receives the specified `ud` pointer as its first argument (a `lightuserdata`).
 Returns the status of the call, see the description of `lua_status`.
 
-If the call success, the return values placed on the stack are discarded.
+If the call succeeds, the return values placed on the stack are discarded.
 If the call errors, the error object is placed on top of the stack (same as `lua_pcall`).
 
 Function pointer `func` cannot be a `nullptr`.
