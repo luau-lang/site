@@ -1951,13 +1951,13 @@ Luau is created to be used in environments where sandboxing of the executed code
 
 Information on what library and language functions have been removed for safety, how trusted and untrusted code can coexist in the same VM and other features can be found in the [sandboxing guide](../guides/sandbox.md).
 
-To create a fully sandvoxed scripting environment, cooperation from the embedder is required and the following functions should be used to:
+To create a fully sandboxed scripting environment, cooperation from the embedder is required and the following functions should be used to:
 
-* Make the globally shared metatables and libraries immutable (`luaL_sandbox` for built-in and `lua_setreadonly` for custom)
+* Make the globally shared metatables and libraries immutable (`luaL_sandbox` for built-ins and `lua_setreadonly` for custom tables)
 * Separate globals of different threads (`luaL_sandboxthread`)
 * Reduce exposed information to the loaded scripts (`lua_encodepointer`)
-* Interrupt and terminate hanging scipts ([`interrupt` callback](#callbacks))
-* Track memory use by category (`lua_setmemcat`, `lua_totalbytes` and [`onallocate` callback](#callbacks))
+* Interrupt and terminate hanging scripts ([`interrupt` callback](#callbacks))
+* Track memory use by category (`lua_setmemcat` and `lua_totalbytes`)
 
 The standard helpers preserve the [safe-environment optimization](../guides/performance.md).
 Use `lua_setsafeenv` directly when creating a custom environment setup.
