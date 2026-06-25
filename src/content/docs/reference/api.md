@@ -1,5 +1,5 @@
 ---
-slug: library
+slug: api
 title: C API
 description: The official reference for Luau's C API.
 sidebar:
@@ -700,11 +700,11 @@ This conversion supports the `__tostring` metamethod of the value.
 int luaL_checkoption(lua_State* L, int narg, const char* def, const char* const lst[]);
 ```
 
-Returns which string option out of the list of strings `lst` matches the `string` or a `number` at the argument index.
+Returns which string option out of the list of strings `lst` matches the `string` or a `number` argument.
 
 When default value `def` is not a `nullptr`, a string check using `luaL_optstring` is made, otherwise, `luaL_checkstring` is used.
 
-If the string check was successful, but the string was not found in the list, `""invalid option '{name}'"` error is thrown.
+If the string check was successful, but the string was not found in the list, `"invalid option '{name}'"` error is thrown.
 
 ## Vectors
 
@@ -819,7 +819,7 @@ Creates a `function` from a C function pointer and places it on top of the stack
 
 When `nup` is not zero, the specified number of upvalues are popped from the stack to be stored in the function object.
 
-Important: Luau does not preserve the `debugname`, the pointer lifetime has to encompass the lifetime of the VM.
+Important: Luau does not copy the `debugname`, the pointer lifetime has to encompass the lifetime of the VM.
 
 ```c
 void lua_pushcclosure(lua_State* L, lua_CFunction fn, const char* debugname, int nup);
@@ -1947,6 +1947,21 @@ Can be called without a stack space reservation.
 
 ## Sandboxing
 
+Luau is created to be used in environments where sandboxing of the executed code is required.
+
+Information on what library and language functions have been removed for safety, how trusted and untrusted code can coexist in the same VM and other features can be found in the [sandboxing guide](../guides/sandbox.md).
+
+To create a fully sandvoxed scripting environment, cooperation from the embedder is required and the following functions should be used to:
+
+* Make the globally shared metatables and libraries immutable (`luaL_sandbox` for built-in and `lua_setreadonly` for custom)
+* Separate globals of different threads (`luaL_sandboxthread`)
+* Reduce exposed information to the loaded scripts (`lua_encodepointer`)
+* Interrupt and terminate hanging scipts ([`interrupt` callback](#callbacks))
+* Track memory use by category (`lua_setmemcat`, `lua_totalbytes` and [`onallocate` callback](#callbacks))
+
+The standard helpers preserve the [safe-environment optimization](../guides/performance.md).
+Use `lua_setsafeenv` directly when creating a custom environment setup.
+
 ```c
 void lua_setsafeenv(lua_State* L, int idx, int enabled);
 ```
@@ -1967,6 +1982,22 @@ Encodes the integer value of the specified pointer into an opaque value suitable
 This is used to make it harder to guess the layout of heap-allocated objects in memory while providing users with a stable identity of pointers they can compare for equality.
 
 Note: there is currently no external API to setup pointer encoding keys.
+
+```c
+void luaL_sandbox(lua_State* L);
+```
+
+Marks all global libraries and all built-in metatables read-only.
+Additionally marks the globals table as read-only and working as a safe environment table (see `lua_setsafeenv`).
+
+```c
+void luaL_sandboxthread(lua_State* L);
+```
+
+Creates a new global table which proxies the reads to the original global table.
+This new global table is marked as working as a safe environment table (see `lua_setsafeenv`).
+
+Writes to the global table are allowed, but update only the new global table, leaving original intact.
 
 ## Debugging
 
@@ -2182,11 +2213,89 @@ Following kinds are currently provided by native code generation:
 
 ## String Buffer Manipulation
 
-## Library Registration
+A set of functions is provided as a string builder to avoid creation of intermediary strings while formatting.
+
+This buffer uses a starting reserved size of `LUA_BUFFERSIZE` characters, allocated on the stack.
+
+When internal buffer storage is exhausted, a mutable string value 'storage' will be placed on the stack.
+In general, functions expect the mutable string buffer to be located on top of the stack.
+With the exception of `luaL_addvalue` that expects the value at the top and string buffer after that.
+
+It is invalid to use the internal string storage as a `string`.
 
 ```c
-void luaL_register(lua_State* L, const char* libname, const luaL_Reg* l);
+void luaL_buffinit(lua_State* L, luaL_Strbuf* B);
 ```
+
+Initializes the buffer `B` for use.
+
+```c
+char* luaL_buffinitsize(lua_State* L, luaL_Strbuf* B, size_t size);
+```
+
+Initializes the buffer `B` with reserved size of at least `size` for use.
+Returns the pointer to the start of the data with `size` bytes that are writable.
+
+```c
+char* luaL_prepbuffsize(luaL_Buffer* B, size_t size);
+```
+
+Reserve `size` bytes to be added to the buffer.
+Returns the pointer to the current buffer position with `size` bytes that are writable.
+
+```c
+void luaL_addchar(luaL_Buffer* B, char c);
+#define luaL_addchar(B, c) // Implemented as a macro
+```
+
+Appends a single character to the buffer.
+
+```c
+void luaL_addlstring(luaL_Strbuf* B, const char* s, size_t l);
+```
+
+Appends a string `s` of length `l` to the buffer.
+
+```c
+void luaL_addstring(luaL_Strbuf* B, const char* s);
+#define luaL_addstring(B, s) // Implemented as a macro
+```
+
+Same as `luaL_addlstring` without an explicit length. `strlen` is used to determine the length of the string.
+
+```c
+void luaL_addvalue(luaL_Strbuf* B);
+```
+
+Appends `string` or `number` on top of the stack to the buffer and removes it from the stack.
+If value on top of the stack was neither `string` or `number`, the function is a no-op.
+
+```c
+void luaL_addvalueany(luaL_Strbuf* B, int idx);
+```
+
+Appends the string representation of the value at the index to the buffer.
+The value at the index must exist.
+
+This conversion supports the `__tostring` metamethod of the value.
+
+Be careful with relative stack indices as any buffer operation might place internal string storage object on the stack.
+
+```c
+void luaL_pushresult(luaL_Strbuf* B);
+```
+
+Places the accumulated string on top of the stack.
+If internal string storage object was used, it is removed from the stack.
+
+```c
+void luaL_pushresultsize(luaL_Strbuf* B, size_t size);
+```
+
+Advances the accumulated buffer position by `size` bytes and places the accumulated string on top of the stack.
+If internal string storage object was used, it is removed from the stack.
+
+## Library Registration
 
 ```c
 struct luaL_Reg
@@ -2194,13 +2303,155 @@ struct luaL_Reg
     const char* name;
     lua_CFunction func;
 };
+
+void luaL_register(lua_State* L, const char* libname, const luaL_Reg* l);
 ```
+
+Helper for registration of global libraries.
+
+When `libname` is not a `nullptr`, the function locates or creates a table with that name.
+
+Locating the table is made by:
+
+* Fetching or creating a `_LOADED` table in the registry table
+* Looking up `libname` value in that table and reusing that value if it is already a table (preserving the existing keys)
+* Otherwise, `libname` table is located or created in the globals table
+  * In this case, `libname` can be a dot-separated path like `"a.b.c"`
+  * If any component of the dot-separated path exists, but is not a table, `"name conflict for module '{libname}'"` error is thrown
+* The resulting table is stored to `_LOADED` table under the `libname` key
+
+When `libname` is a `nullptr`, target table for the assignment is expected to be on top of the stack.
+
+Pointer `l` has to be a start of an array of `luaL_Reg` structures describing the name+C function pairs.
+The last item in the array must have `name` and `func` set to a `nullptr`.
+
+Name strings are used as C function `debugname`.
+As Luau does not copy the `debugname`, the pointer lifetime has to encompass the lifetime of the VM.
+
+Function keeps the table it was assigning to on top of the stack.
 
 ```c
 const char* luaL_findtable(lua_State* L, int idx, const char* fname, int szhint);
 ```
 
+Retrieves a (possibly nested) table inside the table at the index using a dot-separated path (`fname`).
+
+If at any point the key for the component of the path is missing, a new empty table is created and assigned to that key.
+If a new table is created, for tables before the last path segment 1 item is reserved, otherwise `szhint` items are reserved.
+
+If the component of the path is not a table, the part of the path where this has occurred is returned with stack unmodified.
+On success, return value is a `nullptr` and the stack contains the table for the last component of the path.
+
+Note that the key lookups are performed with `rawget`, the assignment of new tables is performed as usual with support for `__newindex` metamethod.
+
+Function might throw an error on attempt to assign a new table to a read-only table.
+
 ## Builtin Libraries
+
+Luau provides a number of built-in libraries.
+
+These built-in libraries can be initialized all together using `luaL_openlibs` described below or individually.
+
+When initializing individually, note that each function uses the standard Luau C function signature, where the return value is the number of items returned on the stack.
+For built-in libraries, the result is 1 and is the table with the library functions.
+
+Libraries are registered under a name provided with a `#define`.
+
+```c
+int luaopen_base(lua_State* L);
+```
+
+Initializes the [base library](./library.md#global-functions).
+
+```c
+#define LUA_COLIBNAME "coroutine"
+int luaopen_coroutine(lua_State* L);
+```
+
+Initializes the [`coroutine` library](./library.md#coroutine-library).
+
+```c
+#define LUA_TABLIBNAME "table"
+int luaopen_table(lua_State* L);
+```
+
+Initializes the [`table` library](./library.md#table-library).
+
+```c
+#define LUA_OSLIBNAME "os"
+int luaopen_os(lua_State* L);
+```
+
+Initializes the [`os` library](./library.md#os-library).
+
+```c
+#define LUA_STRLIBNAME "string"
+int luaopen_string(lua_State* L);
+```
+
+Initializes the [`string` library](./library.md#string-library).
+
+```c
+#define LUA_BITLIBNAME "bit32"
+int luaopen_bit32(lua_State* L);
+```
+
+Initializes the [`bit32` library](./library.md#bit32-library).
+
+```c
+#define LUA_BUFFERLIBNAME "buffer"
+int luaopen_buffer(lua_State* L);
+```
+
+Initializes the [`buffer` library](./library.md#buffer-library).
+
+```c
+#define LUA_UTF8LIBNAME "utf8"
+int luaopen_utf8(lua_State* L);
+```
+
+Initializes the [`utf8` library](./library.md#utf8-library).
+
+```c
+#define LUA_CLASSLIBNAME "class"
+int luaopen_class(lua_State* L);
+```
+
+Initializes the [`class` library](./library.md#class-library).
+
+```c
+#define LUA_MATHLIBNAME "math"
+int luaopen_math(lua_State* L);
+```
+
+Initializes the [`math` library](./library.md#math-library).
+
+```c
+#define LUA_DBLIBNAME "debug"
+int luaopen_debug(lua_State* L);
+```
+
+Initializes the [`debug` library](./library.md#debug-library).
+
+```c
+#define LUA_VECLIBNAME "vector"
+int luaopen_vector(lua_State* L);
+```
+
+Initializes the [`vector` library](./library.md#vector-library).
+
+```c
+#define LUA_INTLIBNAME "integer"
+int luaopen_integer(lua_State* L);
+```
+
+Initializes the [`integer` library](./library.md#integer-library).
+
+```c
+void luaL_openlibs(lua_State* L);
+```
+
+Initializes all the libraries.
 
 ## Miscellaneous Functions
 
