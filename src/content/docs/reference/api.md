@@ -1989,7 +1989,7 @@ Similar to `luaL_argerrorL`, but only throw an error when `cond` does not hold (
 void luaL_where(lua_State* L, int lvl);
 ```
 
-Places a string with source and line information about the selected call frame level `lvl` in a format `"{source}:{line}: "` (with a traling space) on top of the stack.
+Places a string with source and line information about the selected call frame level `lvl` in a format `"{short_src}:{line}: "` (with a traling space) on top of the stack.
 If there is no associated line number for the selected call frame level (for example, it is a C function call frame), empty string is placed instead.
 
 Can be called without a stack space reservation.
@@ -2244,7 +2244,7 @@ void lua_getcounters(lua_State* L, int funcindex, void* context, lua_CounterFunc
 
 Retrieves the execution counter information collected for a function at the index and any nested functions it has.
 
-Execution counters have to be enabled in native code generation options (`recordCounters` option).
+Execution counters have to be enabled in native code generation options (`recordCounters` option) and only work for natively compiled functions.
 
 Function at the index must be a Luau function.
 
