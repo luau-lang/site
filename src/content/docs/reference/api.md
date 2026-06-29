@@ -284,8 +284,8 @@ Luau has the following value types, represented as `lua_Type` enumeration consta
 * `LUA_TUSERDATA` - a userdata value
 * `LUA_TTHREAD` - a thread value
 * `LUA_TBUFFER` - a buffer value
-* `LUA_TCLASS` - a class value
-* `LUA_TOBJECT` - an object value
+* `LUA_TCLASS` - a class value ([experimental](#classes-experimental))
+* `LUA_TOBJECT` - an object value ([experimental](#classes-experimental))
 
 There are additional enumeration values which are for internal use and are subject to change.
 
@@ -299,7 +299,7 @@ Returns the type of the value at the index.
 const char* lua_typename(lua_State* L, int tp);
 ```
 
-Returns the name for the type based on type tag `tp`, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, `"buffer"`, `"class"` or `"object"`.
+Returns the name for the type based on type tag `tp`, which is one of `"nil"`, `"boolean"`, `"number"`, `"integer"`, `"vector"`, `"string"`, `"table"`, `"function"`, `"userdata"`, `"thread"`, `"buffer"`, `"class"` ([experimental](#classes-experimental)) or `"object"` ([experimental](#classes-experimental)).
 `"no value"` is returned if the type tag corresponds to a missing value (see `lua_isnone`).
 
 ```c
