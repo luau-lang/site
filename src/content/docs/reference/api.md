@@ -3,7 +3,7 @@ slug: api
 title: C API
 description: The official reference for Luau's C API.
 sidebar:
-  order: 1
+  order: 3
 ---
 
 ## Virtual Machine State

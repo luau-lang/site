@@ -2,7 +2,7 @@
 slug: grammar
 title: Syntax Grammar
 sidebar:
-  order: 3
+  order: 4
 ---
 
 This is the complete syntax grammar for Luau in EBNF. More information about the terminal nodes STRING and NUMBER
