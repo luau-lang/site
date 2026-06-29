@@ -1553,9 +1553,10 @@ int lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 Similar to `lua_call`, but performs a call in a new protected environment, similar to Luau's `pcall`/`xpcall` functions.
 Returns the status of the call, see the description of `lua_status`.
 
-Additional `errfunc` argument can be specified with an index of the error handling callback function.
-When `errfunc` is not 0, if an error occurs, this error handling function will be called, similar to Luau's `xpcall` function.
+`errfunc` is an optional stack index of an error handling callback function.
+When `errfunc` is not 0, if an error occurs, the error handling function will be called, similar to Luau's `xpcall` function.
 When `errfunc` is 0, the error value passes through unchanged.
+Pseudo indices are not allowed.
 
 If an error occurred, the error object will be placed on the stack.
 
