@@ -30,7 +30,7 @@ Allocation function type.
 * `osize` - old size of the object, 0 when new object is allocated
 * `nsize` - new size of the object, 0 when object is to be freed
 
-If the allocation fails, return value is a `nullptr`.
+If the allocation fails, it should return a `nullptr`.
 
 ```c
 lua_State* luaL_newstate(void);
@@ -118,7 +118,7 @@ Retrieves the custom data associated with a specific thread.
 
 ---
 
-Additional detail on manipulating threads on the Luau stack is described in the 'Coroutines' section.
+Additional detail on manipulating threads on the Luau stack is described in [the 'Coroutines' section](#Coroutines).
 
 ## Loading Bytecode
 
@@ -133,8 +133,8 @@ Load bytecode into the VM.
 * `size` - bytecode size
 * `env` - environment table to associate with loaded functions and to use when resolving imports
 
-When `env` is 0, current thread global table is used.
-When `env` is not 0, it must be an index to a table object.
+When `env` is 0, the current thread's global table is used.
+When `env` is not 0, it must be a stack index to a table object to use as the global table.
 
 On success, returns 0 and places the top closure of the bytecode on the stack.
 On failure, returns 1 and places a string with an error message on the stack.
@@ -144,9 +144,9 @@ On failure, returns 1 and places a string with an error message on the stack.
 
 ---
 
-See the `lua_call`/`lua_pcall` on how to run the resulting closure.
+See the documentation for `lua_call`/`lua_pcall` on how to run the resulting closure.
 
-## Working with Stack
+## Working with the Stack
 
 Stack manipulation is done within the stack area of the active call frame.
 There is always an implicit top call frame present to use for arguments of the initial call of the thread.
@@ -259,13 +259,13 @@ void lua_rawcheckstack(lua_State* L, int sz);
 ```
 
 Reserve space on the stack for `sz` items, ignoring the stack limit for C functions.
-Not recommended for general use as unlike `lua_checkstack`, it can still error on memory allocation failure.
+Not recommended for general use as, unlike `lua_checkstack`, it can still error on memory allocation failure.
 
 ```c
 void luaL_checkstack(lua_State* L, int sz, const char* msg);
 ```
 
-Try to reserve space on the stack for `sz` items or throw a `"stack overflow ({msg})"` error.
+Attempt to reserve space on the stack for `sz` items or throw a `"stack overflow ({msg})"` error.
 
 ## Type Inspection
 
@@ -312,7 +312,7 @@ For tagged light userdata objects, returns either the value registered by `lua_s
 For userdata objects created by `newproxy`, this function returns `"userdata"` to make sure host-defined types can not be spoofed.
 `"no value"` is returned if there is no value at the index.
 
-Values other than userdata can have a shared metatable set with a `__type` value overriding the built-in default name of the type (for tables this would be the typename of all tables, individual table `__type` metatable key is not looked up).
+Values other than userdata can have a shared metatable set with a `__type` value overriding the built-in default name of the type (for tables, this would be the typename of all tables, an individual table's `__type` metatable key is not looked up).
 
 ```c
 void luaL_checktype(lua_State* L, int narg, int t);
@@ -1241,8 +1241,8 @@ If a name was not associated, returns `nullptr`.
 
 ## Userdata
 
-Userdata values are used to hold host data with lifetime managed by Luau.
-Userdata can have a metatable to enable custom behaviors of the value.
+Userdata values are used to hold host data with their lifetime managed by Luau.
+Userdata can have a metatable to enable custom behaviors of the value in Luau code.
 
 These values can be associated with an optional 'tag'.
 `tag` has to be non-negative and lower than `LUA_UTAG_LIMIT`, defined in `luaconf.h`.
@@ -1479,8 +1479,8 @@ void lua_userdatadirectfield_setnumber(void* result, double n);
 Set a `number` return value.
 
 ```c
-void lua_userdatadirectfield_setvector(void* result, float x, float y, float z, float w); // LUA_VECTOR_SIZE is 4
-void lua_userdatadirectfield_setvector(void* result, float x, float y, float z); // LUA_VECTOR_SIZE is 3
+void lua_userdatadirectfield_setvector(void* result, float x, float y, float z, float w); // when LUA_VECTOR_SIZE is 4
+void lua_userdatadirectfield_setvector(void* result, float x, float y, float z); // when LUA_VECTOR_SIZE is 3
 ```
 
 Set a `vector` return value.
@@ -1559,7 +1559,7 @@ When `errfunc` is 0, the error value passes through unchanged.
 
 If an error occurred, the error object will be placed on the stack.
 
-We do not recommend using an `errfunc` index pointing into the arguments of the call being performed.
+We do not recommend using an `errfunc` index pointing at any of the arguments of the call being performed.
 
 ```c
 int lua_cpcall(lua_State* L, lua_CFunction func, void* ud);
@@ -1582,7 +1582,7 @@ int luaL_callyieldable(lua_State* L, int nargs, int nresults);
 
 Similar to `lua_call`, but intended to perform the call from inside a yieldable C function.
 
-If callee yields, function returns a thread yield marker that has to be passed back to the VM.
+If the callee yields, returns a thread yield marker that has to be passed back to the VM.
 
 The function is best used as a split between C function start and the first potentially yielding call:
 
@@ -1599,7 +1599,7 @@ int exampleCont(lua_State* L, int status)
 }
 ```
 
-Original `example` arguments and values placed on stack are preserved in the continuation.
+Original `example` arguments and values placed on the stack are preserved in the continuation.
 If the called function did not yield, continuation is called immediately after.
 
 Continuation is allowed to repeatedly yield, but the state has to be tracked manually.
