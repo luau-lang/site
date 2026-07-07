@@ -6,6 +6,15 @@ sidebar:
   order: 3
 ---
 
+The Luau Virtual Machine exposes a C API that allows embedders to manipulate it and execute Luau code.
+It is declared through the [`VM/include`](https://github.com/luau-lang/luau/tree/master/VM/include) header files:
+
+* `lua.h` - Primary VM APIs, members use either the `lua_` or `luau_` prefix
+* `lualib.h` - Helpers implemented exclusively using other public APIs, members have the `luaL_` prefix
+* `luaconf.h` - Compile-time configuration flags
+
+Embedders should prefer to use these over the internal implementation details in `VM/src`.
+
 ## Virtual Machine State
 
 ```c
