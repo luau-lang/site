@@ -70,11 +70,11 @@ You can add annotations to locals, arguments, and function return types. Among o
 --!file test.luau
 --!strict
 
-function ispositive(x : number) : boolean
+function ispositive(x: number): boolean
     return x > 0
 end
 
-local result : boolean
+local result: boolean
 result = ispositive(1)
 
 ```
@@ -85,7 +85,7 @@ Now we've explicitly told Luau that ``ispositive()`` accepts a number and return
 --!file test.luau
 --!strict
 
-function ispositive(x : number) : boolean
+function ispositive(x: number): boolean
     if x > 0 then
         return "yes"
     else
@@ -93,7 +93,7 @@ function ispositive(x : number) : boolean
     end
 end
 
-local result : boolean
+local result: boolean
 result = ispositive(1)
 ```
 
@@ -111,7 +111,7 @@ The fix is simple; just change the annotation to declare the return type as a st
 --!file test.luau
 --!strict
 
-function ispositive(x : number) : string
+function ispositive(x: number): string
     if x > 0 then
         return "yes"
     else
@@ -119,7 +119,7 @@ function ispositive(x : number) : string
     end
 end
 
-local result : boolean
+local result: boolean
 result = ispositive(1)
 ```
 
@@ -136,7 +136,7 @@ If we update the type of the local variable, everything is good. Note that we co
 --!file test.luau
 --!strict
 
-function ispositive(x : number) : string
+function ispositive(x: number): string
     if x > 0 then
         return "yes"
     else
@@ -144,7 +144,7 @@ function ispositive(x : number) : string
     end
 end
 
-local result : string
+local result: string
 result = ispositive(1)
 ```
 
