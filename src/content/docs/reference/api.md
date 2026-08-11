@@ -881,13 +881,13 @@ The cloned function environment is set to the current thread's globals table, wh
 int lua_hascustomexecution(lua_State* L, int level);
 ```
 
-Returns whether the function has custom execution data set for Native/JIT mode.
+Returns whether the call frame at `level` has custom execution data set.
 
 ```c
 lua_incustomexecution(lua_State* L, int level);
 ```
 
-Returns whether the function is currently running using custom execution for Native/JIT mode.
+Returns whether the call frame `level` is currently in a custom execution mode.
 
 ## Tables
 
@@ -2088,6 +2088,7 @@ void lua_setpointerencodekey(lua_State* L, uint64_t a, uint64_t b, uint64_t c, u
 ```
 
 Setup keys for `lua_encodepointer`.
+Both `1, 0, 0, 0` and `0, 1, 0, 0` are guaranteed to produce an identity transformation by `lua_encodepointer`.
 
 ```c
 void luaL_sandbox(lua_State* L);
