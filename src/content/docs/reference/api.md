@@ -2087,8 +2087,7 @@ This is used to make it harder to guess the layout of heap-allocated objects in 
 void lua_setpointerencodekey(lua_State* L, uint64_t a, uint64_t b, uint64_t c, uint64_t d);
 ```
 
-Setup keys for `lua_encodepointer`.
-Both `1, 0, 0, 0` and `0, 1, 0, 0` are guaranteed to produce an identity transformation by `lua_encodepointer`.
+Setup keys for `lua_encodepointer`, for which both `1, 0, 0, 0` and `0, 1, 0, 0` are guaranteed to produce an identity transformation.
 
 ```c
 void luaL_sandbox(lua_State* L);
