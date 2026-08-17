@@ -138,6 +138,22 @@ type:is(arg: "nil" | "unknown" | "never" | "any" | "boolean" | "number" | "strin
 
 Returns `true` if `self` has the argument as its tag.
 
+```
+type:issubtypeof(super: type): boolean
+```
+
+Returns `true` if `self` is a semantic subtype of the provided `super` type argument.
+
+```
+type function isString(ty)
+    return ty:issubtypeof(types.string)
+end
+
+local x: isString<string> --> `true`
+local y: isString<"hello" --> `true`
+local z: isString<false>  --> `false`
+```
+
 ### Singleton `type` instance
 
 ```
