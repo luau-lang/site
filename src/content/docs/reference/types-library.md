@@ -146,7 +146,7 @@ Returns `true` if `self` is a semantic subtype of the provided `super` type argu
 
 ```
 type function isString(ty)
-    return ty:issubtypeof(types.string)
+    return types.singleton(ty:issubtypeof(types.string))
 end
 
 local x: isString<string>  --> `true`
