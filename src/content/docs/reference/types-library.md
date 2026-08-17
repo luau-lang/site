@@ -149,9 +149,9 @@ type function isString(ty)
     return ty:issubtypeof(types.string)
 end
 
-local x: isString<string> --> `true`
-local y: isString<"hello" --> `true`
-local z: isString<false>  --> `false`
+local x: isString<string>  --> `true`
+local y: isString<"hello"> --> `true`
+local z: isString<false>   --> `false`
 ```
 
 ### Singleton `type` instance
