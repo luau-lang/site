@@ -16,7 +16,8 @@ const shouldRenderSearch =
 const currentPath = Astro.url.pathname;
 const isHomePath = currentPath === "/";
 const isNewsPath = currentPath.startsWith("/news");
-const isDocsPath = !isHomePath && !isNewsPath;
+const isBrandPath = currentPath === "/brand" || currentPath === "/brand/";
+const isDocsPath = !isHomePath && !isNewsPath && !isBrandPath;
 ---
 
 <div class="header">
