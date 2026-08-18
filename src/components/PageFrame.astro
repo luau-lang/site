@@ -6,7 +6,35 @@ const { hasSidebar } = Astro.locals.starlightRoute;
 
 const isHomepage = Astro.locals.starlightRoute.id === '';
 const isBlog = Astro.locals.starlightRoute.id.startsWith("news");
-const hasFooter = !hasSidebar && (isHomepage || isBlog);
+const isBrandPage = Astro.locals.starlightRoute.id === 'brand';
+const hasFooter = !hasSidebar && (isHomepage || isBlog || isBrandPage);
+
+const footerSections = [
+	{
+		title: 'Get started',
+		links: [
+			{ label: 'Playground', href: 'https://play.luau.org' },
+			{ label: 'Syntax Tour', href: '/syntax/' },
+			{ label: 'Type System', href: '/types/' },
+		],
+	},
+	{
+		title: 'About',
+		links: [
+			{ label: 'Lute Runtime', href: 'https://lute.luau.org/' },
+			{ label: 'Luau News', href: '/news/' },
+			{ label: 'Brand Guidelines', href: '/brand/' },
+		],
+	},
+	{
+		title: 'Connect',
+		links: [
+			{ label: 'GitHub', href: 'https://github.com/luau-lang/luau' },
+			{ label: 'Issue Tracker', href: 'https://github.com/luau-lang/luau/issues' },
+			{ label: 'RSS feed', href: '/feed.xml' },
+		],
+	},
+];
 ---
 
 <div class="page sl-flex">
@@ -25,14 +53,52 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 	}
 	<div class="main-frame"><slot /></div>
 	{
-     	hasFooter && <footer class="footer">
-          <div class="copyright">
-              &COPY; {new Date().getFullYear()} Roblox
-          </div>
-          <div class="tagline">
-              <Image src="/images/meowluau.png" alt="A blob cat emoji holding the Luau logo" width="32" height="32" />
-          </div>
-        </footer>
+		hasFooter && <footer class="footer">
+			<div class="footer-content">
+				<div class="footer-intro">
+					<p class="footer-title">Luau</p>
+					<p class="footer-description">
+						A fast, small, and embeddable programming language with powerful gradual types.
+					</p>
+				</div>
+				<nav class="footer-sitemap" aria-label="Footer">
+					{footerSections.map((section) => (
+						<div class="footer-section">
+							<h2>{section.title}</h2>
+							<ul>
+								{section.links.map((link) => (
+									<li><a href={link.href}>{link.label}</a></li>
+								))}
+							</ul>
+						</div>
+					))}
+				</nav>
+			</div>
+			<div class="footer-meta">
+				<div class="footer-feedback">
+					<Image src="/images/meowluau.png" alt="A blob cat emoji holding the Luau logo" width="32" height="32" />
+					<a href="https://github.com/luau-lang/site/issues/new">Issue with the website?</a>
+				</div>
+				<span class="roblox-wordmarks" role="img" aria-label="Roblox">
+					<img
+						class="roblox-wordmark roblox-wordmark-white"
+						src="/images/Roblox_Wordmark_White.svg"
+						alt=""
+						width="800"
+						height="148"
+						aria-hidden="true"
+					/>
+					<img
+						class="roblox-wordmark roblox-wordmark-black"
+						src="/images/Roblox_Wordmark_Black.svg"
+						alt=""
+						width="800"
+						height="148"
+						aria-hidden="true"
+					/>
+				</span>
+			</div>
+		</footer>
 	}
 </div>
 
@@ -57,21 +123,130 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 		}
 
 		.footer {
-    		display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
 			width: 100%;
-			height: var(--sl-nav-height);
-			margin-top: calc(-1 var(--sl-nav-height));
 			border-top: 1px solid var(--sl-color-hairline-shade);
-			padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
-			padding-inline-end: var(--sl-nav-pad-x);
+			padding: 3rem var(--sl-nav-pad-x) 1.25rem;
 			background-color: var(--sl-color-bg-nav);
 		}
 
-		.tagline {
-    		text-align: right;
-            padding-top: 8px;
+		.footer-content {
+			display: grid;
+			gap: 2.5rem;
+			width: min(100%, 72rem);
+			margin-inline: auto;
+			padding-bottom: 3rem;
+		}
+
+		.footer-intro {
+			max-width: 19rem;
+		}
+
+		.footer-title {
+			margin: 0 0 0.75rem;
+			color: var(--sl-color-white);
+			font-size: 1.35rem;
+			font-weight: 800;
+		}
+
+		.footer-description {
+			margin: 0;
+			color: var(--sl-color-gray-3);
+			line-height: 1.5;
+		}
+
+		.footer-sitemap {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 2rem 1.5rem;
+		}
+
+		.footer-section h2 {
+			margin: 0 0 1rem;
+			color: var(--sl-color-white);
+			font-size: 1rem;
+			font-weight: 700;
+		}
+
+		.footer-section ul {
+			display: grid;
+			gap: 0.65rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		.footer-section a {
+			color: var(--sl-color-gray-3);
+			text-decoration: none;
+		}
+
+		.footer-section a:hover {
+			color: var(--sl-color-text-accent);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+		}
+
+		.footer-section a:focus-visible {
+			outline: 2px solid var(--sl-color-text-accent);
+			outline-offset: 0.25rem;
+			border-radius: 0.125rem;
+		}
+
+		.footer-meta {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: min(100%, 72rem);
+			margin-inline: auto;
+			border-top: 1px solid var(--sl-color-hairline-shade);
+			padding-top: 1.25rem;
+			color: var(--sl-color-gray-3);
+			font-size: var(--sl-text-sm);
+		}
+
+		.footer-feedback {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+		}
+
+		.footer-feedback a {
+			color: var(--sl-color-gray-3);
+			text-decoration: none;
+		}
+
+		.footer-feedback a:hover {
+			color: var(--sl-color-text-accent);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+		}
+
+		.footer-feedback a:focus-visible {
+			outline: 2px solid var(--sl-color-text-accent);
+			outline-offset: 0.25rem;
+			border-radius: 0.125rem;
+		}
+
+		.roblox-wordmarks {
+			display: block;
+			line-height: 0;
+		}
+
+		.roblox-wordmark {
+			width: auto;
+			height: 1.2rem;
+		}
+
+		.roblox-wordmark-black {
+			display: none;
+		}
+
+		:global([data-theme='light']) .roblox-wordmark-white {
+			display: none;
+		}
+
+		:global([data-theme='light']) .roblox-wordmark-black {
+			display: block;
 		}
 
 		:global([data-has-sidebar]) .header {
@@ -111,14 +286,27 @@ const hasFooter = !hasSidebar && (isHomepage || isBlog);
 		}
 
 		.main-frame {
+			flex: 1;
 			padding-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height));
 			padding-inline-start: var(--sl-content-inline-start);
 		}
 
+		@media (min-width: 32rem) {
+			.footer-sitemap {
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
 		@media (min-width: 50rem) {
+			.footer-content {
+				grid-template-columns: minmax(15rem, 1fr) minmax(31rem, 2fr);
+				gap: 4rem;
+			}
+
 			:global([data-has-sidebar]) .header {
 				padding-inline-end: var(--sl-nav-pad-x);
 			}
+
 			.sidebar-pane {
 				--sl-sidebar-visibility: visible;
 				width: var(--sl-sidebar-width);
