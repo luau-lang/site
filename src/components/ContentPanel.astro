@@ -2,10 +2,15 @@
 import Default from '@astrojs/starlight/components/ContentPanel.astro'
 
 const isBlogPage = Astro.locals.starlightRoute.id.startsWith("news")
+const isBrandPage = Astro.locals.starlightRoute.id === "brand"
 ---
 
 {
-  isBlogPage ? (
+  isBrandPage ? (
+    <div class="content-panel brand-content-panel">
+        <div class="sl-container"><slot /></div>
+    </div>
+  ) : isBlogPage ? (
     <div class="content-panel">
         <div class="sl-container"><slot /></div>
     </div>
@@ -19,9 +24,16 @@ const isBlogPage = Astro.locals.starlightRoute.id.startsWith("news")
 		.content-panel {
 			padding: 1.5rem var(--sl-content-pad-x);
 		}
+
 		.content-panel + .content-panel {
 			border-top: 1px solid var(--sl-color-hairline);
 		}
+
+		.brand-content-panel {
+			--sl-content-gap-y: 0.75rem;
+			padding-block: 1rem;
+		}
+
 		.sl-container {
 			max-width: var(--sl-content-width);
 		}
