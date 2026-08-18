@@ -142,7 +142,7 @@ Returns `true` if `self` has the argument as its tag.
 type:issubtypeof(super: type): boolean
 ```
 
-Returns `true` if `self` is a semantic subtype of the provided `super` type argument.
+Returns `true` if `self` is a subtype of the provided `super` type argument.
 
 ```
 type function isString(ty)
