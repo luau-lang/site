@@ -7,6 +7,7 @@ import starlight from "@astrojs/starlight";
 
 import tailwindcss from "@tailwindcss/vite";
 import remarkLuauPlayground from "./src/plugins/remark-luau-playground";
+import remarkLuauCodeBlocks from "./src/plugins/remark-luau-code-blocks";
 
 // https://astro.build/config
 export default defineConfig({
@@ -27,7 +28,7 @@ export default defineConfig({
   },
 
   markdown: {
-    remarkPlugins: [remarkLuauPlayground],
+    remarkPlugins: [remarkLuauPlayground, remarkLuauCodeBlocks],
   },
 
   integrations: [
@@ -35,8 +36,10 @@ export default defineConfig({
       name: "luau-playground",
       hooks: {
         'astro:config:setup': function({ addWatchFile }) {
-          const remarkPlugin = path.resolve("src", "plugins", "remark-luau-playground.ts");
-          addWatchFile(remarkPlugin);
+          const remarkPlaygroundPlugin = path.resolve("src", "plugins", "remark-luau-playground.ts");
+          const remarkCodeBlocksPlugin = path.resolve("src", "plugins", "remark-luau-code-blocks.ts");
+          addWatchFile(remarkPlaygroundPlugin);
+          addWatchFile(remarkCodeBlocksPlugin);
         }
       }
     },
