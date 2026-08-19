@@ -383,6 +383,24 @@ function math.round(n: number): number
 
 Rounds `n` to the nearest integer boundary. If `n` is exactly halfway between two integers, rounds `n` away from 0.
 
+```
+function math.isnan(n: number): boolean
+```
+
+Returns whether `n` is a NaN.
+
+```
+function math.isinf(n: number): boolean
+```
+
+Returns whether `n` is either of the infinities.
+
+```
+function math.isfinite(n: number): boolean
+```
+
+Returns whether `n` is neither NaN nor an infinity.
+
 ## table library
 
 ```
