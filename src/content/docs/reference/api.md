@@ -2194,7 +2194,7 @@ In single-step mode, `debugstep` callback (when set) is called before executing 
 void lua_callhook(lua_State* L, lua_Hook hook, void* userdata);
 ```
 
-Invokes a debug hook on a thread in a `BREAK` or `YIELD` state.
+Invokes a debug hook on a thread in a `LUA_BREAK` or `LUA_YIELD` state.
 The `userdata` is passed to the hook through the `lua_Debug::userdata` field.
 
 ```c
