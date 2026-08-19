@@ -877,6 +877,18 @@ Clones the function at the specified index and places it on the stack.
 The function can only be used on Luau functions.
 The cloned function environment is set to the current thread's globals table, while upvalues are copied over.
 
+```c
+int lua_hascustomexecution(lua_State* L, int level);
+```
+
+Returns whether the call frame at `level` has custom execution data set.
+
+```c
+lua_incustomexecution(lua_State* L, int level);
+```
+
+Returns whether the call frame `level` is currently in a custom execution mode.
+
 ## Tables
 
 ```c
@@ -1376,6 +1388,13 @@ Retrieves the metatable associated with the userdata tag and places it on top of
 If a table was not associated, `nil` is placed instead.
 
 ```c
+const char* lua_getuserdataname(lua_State* L, int tag);
+```
+
+Retrieves the type name associated with a userdata tag through its `__type` metafield.
+Returns `"userdata"` if one is not found.
+
+```c
 int luaL_newmetatable(lua_State* L, const char* tname);
 ```
 
@@ -1390,6 +1409,12 @@ void* luaL_checkudata(lua_State* L, int ud, const char* tname);
 Checks that the value at the index is a userdata with a metatable registered under the name `tname` in the registry table.
 Returns the pointer to userdata data on success.
 Throws a type mismatch error on failure.
+
+```c
+void* luaL_checkudatatagged(lua_State* L, int ud, int tag);
+```
+
+Similar `luaL_checkudata`, except it checks the tag.
 
 ```c
 int luaL_getmetatable(lua_State* L, const char* tname);
@@ -1587,7 +1612,7 @@ Function pointer `func` cannot be a `nullptr`.
 This function can be used to work with Luau APIs when protected environment has not been established yet.
 
 ```c
-int luaL_callyieldable(lua_State* L, int nargs, int nresults);
+int lua_callyieldable(lua_State* L, int nargs, int nresults);
 ```
 
 Similar to `lua_call`, but intended to perform the call from inside a yieldable C function.
@@ -1600,7 +1625,7 @@ The function is best used as a split between C function start and the first pote
 int example(lua_State* L)
 {
     ...
-    return luaL_callyieldable(L, nargs, nreturns);
+    return lua_callyieldable(L, nargs, nreturns);
 }
 
 int exampleCont(lua_State* L, int status)
@@ -1620,12 +1645,12 @@ State can be safely placed on the stack.
 This function can only be called from inside a yieldable C function.
 
 ```c
-int luaL_pcallyieldable(lua_State* L, int nargs, int nresults, int errfunc);
+int lua_pcallyieldable(lua_State* L, int nargs, int nresults, int errfunc);
 ```
 
 Similar to `lua_pcall`, but intended to perform the call from inside a yieldable C function.
 
-Behavior is similar to `luaL_callyieldable`, but failures can now be captured.
+Behavior is similar to `lua_callyieldable`, but failures can now be captured.
 
 `status` will signal error conditions, see `lua_status` for the description of the values.
 
@@ -1873,6 +1898,8 @@ Supported `what` operations:
 
 * `LUA_GCISRUNNING` - returns 1 if GC is active (not stopped)
 
+* `LUA_GCISPAUSED` - returns 1 if GC is running, but in a paused state
+
 * `LUA_GCSTEP` - perform an explicit GC step, with the step size specified in KiB
 
 GC is handled by 'assists' that perform some amount of GC work matching pace of allocation.
@@ -1917,6 +1944,22 @@ size_t lua_totalbytes(lua_State* L, int category);
 Gets the number of bytes associated with a memory category.
 
 When `category` is -1 (or any negative number), total amount of bytes in all categories is returned.
+
+```c
+int64_t lua_allocationrate(lua_State* L);
+```
+
+Attempts to determine the allocation rate of the VM in bytes per second.
+Returns `-1` if it cannot.
+
+```c
+typedef const char* (*lua_CategoryName)(lua_State* L, uint8_t memcat);
+
+void lua_memorydump(lua_State* L, void* file, lua_CategoryName categoryName);
+```
+
+Writes a Luau memory dump to a `FILE*` in JSON format.
+The `categoryName` callback, when provided, will be called to record a name associated with any active memory categories.
 
 ## Error Handling
 
@@ -2040,7 +2083,11 @@ uintptr_t lua_encodepointer(lua_State* L, uintptr_t p);
 Encodes the integer value of the specified pointer into an opaque value suitable for printouts and display.
 This is used to make it harder to guess the layout of heap-allocated objects in memory while providing users with a stable identity of pointers they can compare for equality.
 
-Note: there is currently no external API to setup pointer encoding keys.
+```c
+void lua_setpointerencodekey(lua_State* L, uint64_t a, uint64_t b, uint64_t c, uint64_t d);
+```
+
+Setup keys for `lua_encodepointer`, for which both `1, 0, 0, 0` and `0, 1, 0, 0` are guaranteed to produce an identity transformation.
 
 ```c
 void luaL_sandbox(lua_State* L);
@@ -2144,6 +2191,13 @@ Switches execution to a single-step mode.
 In single-step mode, `debugstep` callback (when set) is called before executing each instruction (see the [callbacks section](#callbacks)).
 
 ```c
+void lua_callhook(lua_State* L, lua_Hook hook, void* userdata);
+```
+
+Invokes a debug hook on a thread in a `LUA_BREAK` or `LUA_YIELD` state.
+The `userdata` is passed to the hook through the `lua_Debug::userdata` field.
+
+```c
 int lua_breakpoint(lua_State* L, int funcindex, int line, int enabled);
 ```
 
@@ -2156,6 +2210,13 @@ Returns the line where the breakpoint was placed/removed or -1 if an appropriate
 Function at the index must be a Luau function.
 
 When execution encounters a breakpoint, `debugbreak` callback is called.
+
+```c
+int lua_atbreakpoint(lua_State* L);
+```
+
+Returns `1` if execution is currently at a breakpoint.
+Should only be called from `debug*` callbacks.
 
 ```c
 void luaL_traceback(lua_State* L, lua_State* L1, const char* msg, int level);
