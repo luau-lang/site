@@ -15,6 +15,15 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Generate LLM content
+        uses: ./.github/actions/generate-llm-content
+        with:
+          output_directory: ./public
+          base_url: https://luau.org
       - name: Install, build, and upload your site
         uses: luau-lang/astro-deploy@v6
 

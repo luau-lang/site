@@ -1,0 +1,33 @@
+name: "Generate LLM Content"
+description: "Generates llms.txt and clean .md files from Luau documentation"
+
+inputs:
+  output_directory:
+    description: "Directory to write output files (llms.txt, llms-full.txt, llm/**)"
+    required: true
+    default: "./public"
+  base_url:
+    description: "Base URL for generated links (e.g., https://luau.org)"
+    required: true
+
+outputs:
+  file_count:
+    description: "Number of .md files generated"
+    value: ${{ steps.generate.outputs.file_count }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install action dependencies
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci --quiet
+
+    - name: Generate LLM content
+      id: generate
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        OUTPUT_DIR: ${{ inputs.output_directory }}
+        BASE_URL: ${{ inputs.base_url }}
+      run: npx tsx src/index.ts
