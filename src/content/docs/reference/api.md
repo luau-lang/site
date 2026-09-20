@@ -1961,18 +1961,6 @@ void lua_memorydump(lua_State* L, void* file, lua_CategoryName categoryName);
 Writes a Luau memory dump to a `FILE*` in JSON format.
 The `categoryName` callback, when provided, will be called to record a name associated with any active memory categories.
 
-```c
-typedef void* (*lua_CageAlloc)(void* ud, void* ptr, size_t osize, size_t nsize, int type);
-
-void lua_setbuffercage(lua_State* L, lua_CageAlloc alloc, void* ud);
-```
-
-Assigns an isolated allocator for buffers. Must be called after `lua_newstate` and before the state creates any buffers.
-The VM makes no assumptions about the layout or structure of the caged heap.
-The VM assumes that the embedder will free any memory allocated if the `lua_State` the cage is associated with is closed.
-
-The `type` argument to the callback identifies the caged heap allocation, which is an opaque embedder-defined identifier.
-
 ## Error Handling
 
 ```c
