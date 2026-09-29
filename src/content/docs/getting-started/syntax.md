@@ -23,7 +23,7 @@ local function tree_insert(tree, x)
 end
 ```
 
-Note that future versions of Lua extend the Lua 5.1 syntax with more  features; Luau does  support string literal extensions but does not support other 5.x additions; for details please refer to [compatibility section](../compatibility).
+Note that future versions of Lua extend the Lua 5.1 syntax with more features; Luau does support string literal extensions but does not support other 5.x additions; for details please refer to [compatibility section](../compatibility).
 
 The rest of this document documents additional syntax used in Luau.
 
@@ -276,7 +276,7 @@ local maxValue = if a > b then a else b
 
 `if-then-else` expressions may occur in any place a regular expression is used.  The `if-then-else` expression must match `if <expr> then <expr> else <expr>`; it can also contain an arbitrary number of `elseif` clauses, like `if <expr> then <expr> elseif <expr> then <expr> else <expr>`. Note that in either case, `else` is mandatory.  
 
-Here's is an example demonstrating `elseif`:
+Here's an example demonstrating `elseif`:
 ```luau
 local x = -21
 local sign = if x < 0 then -1 elseif x > 0 then 1 else 0
@@ -312,7 +312,7 @@ As an exception for dense (gap-free) arrays, non-nil elements inserted at positi
 
 Luau adds an additional way to define string values that allows you to place runtime expressions directly inside specific spots of the literal.
 
-This is a more ergonomic alternative over using `string.format` or `("literal"):format`.
+This is a more ergonomic alternative to using `string.format` or `("literal"):format`.
 
 To use string interpolation, use a backtick string literal:
 
@@ -381,7 +381,7 @@ print(n) --> 2
 
 Note that it's possible to get `inf`, `-inf`, or `NaN` with floor division; when `b` is `0`, `a // b` results in positive or negative infinity, and when both `a` and `b` are `0`, `a // b` results in NaN.
 
-For native vectors, `c // d` applies `math.floor` to each component of the vector `c`. Therefore `c // d` is equivalent to `vector.create(math.floor(c.x / d), math.floor(c.y / b), math.floor(c.z / b))`.
+For native vectors, `c // d` applies `math.floor` to each component of the vector `c`. Therefore `c // d` is equivalent to `vector.create(math.floor(c.x / d), math.floor(c.y / d), math.floor(c.z / d))`.
 
 Floor division syntax and semantics follow from [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#3.4.1) where applicable.
 

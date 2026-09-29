@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-One of main goals of Luau is to enable high performance code, with gameplay code being the main use case. This can be viewed as two separate goals:
+One of the main goals of Luau is to enable high performance code, with gameplay code being the main use case. This can be viewed as two separate goals:
 
 - Make idiomatic code that wasn't tuned faster
 - Enable even higher performance through careful tuning
@@ -34,7 +34,7 @@ While bytecode optimizations are limited due to the flexibility of Luau code (e.
 
 Most bytecode optimizations are performed on individual statements or functions, however the compiler also does a limited amount of interprocedural optimizations; notably, calls to local functions can be optimized with the knowledge of the argument count or number of return values involved. Interprocedural optimizations are limited to a single module due to the compilation model.
 
-Luau compiler is also able to use type information to do further optimizations. Because we control the entire stack (unlike e.g. TypeScript where the type information is discarded completely before reaching the VM), we have more flexibility there and can make some tradeoffs during codegen even if the type system isn't completely sound. For example, it might be reasonable to assume that in presence of known types, we can infer absence of side effects for arithmetic operations and builtins - if the runtime types mismatch due to intentional violation of the type safety through global injection, the code will still be safely sandboxed. Type information is currently limited to small peephole optimizations, but it has a potential to unlock optimizations such as common subexpression elimination and allocation hoisting in the future, without having to rely on a JIT. These future optimizations opportunities are speculative pending further research.
+Luau compiler is also able to use type information to do further optimizations. Because we control the entire stack (unlike e.g. TypeScript where the type information is discarded completely before reaching the VM), we have more flexibility there and can make some tradeoffs during codegen even if the type system isn't completely sound. For example, it might be reasonable to assume that in presence of known types, we can infer absence of side effects for arithmetic operations and builtins - if the runtime types mismatch due to intentional violation of the type safety through global injection, the code will still be safely sandboxed. Type information is currently limited to small peephole optimizations, but it has a potential to unlock optimizations such as common subexpression elimination and allocation hoisting in the future, without having to rely on a JIT. These future optimization opportunities are speculative pending further research.
 
 ## Epsilon-overhead debugger
 
@@ -177,7 +177,7 @@ While the best performing code in Luau spends most of the time in the interprete
 
 Functions from the `table` library like `insert`, `remove` and `move` have been tuned for performance on array-like tables, achieving 3x and more performance compared to un-tuned versions, and Luau provides additional functions like `table.create` and `table.find` to achieve further speedup when applicable. Our implementation of `table.sort` is using `introsort` algorithm which results in guaranteed worst case `NlogN` complexity regardless of the input, and, together with the array-like specializations, helps achieve ~4x speedup on average.
 
-For `string` library, we use a carefully tuned dynamic string buffer implementation; it is optimized for smaller strings to reduce garbage created during string manipulation, and for larger strings it allows to produce a large string without extra copies, especially in cases where the resulting size is known ahead of time. Additionally, functions like `format` have been tuned to avoid the overhead of `sprintf` where possible, resulting in further speedups.
+For `string` library, we use a carefully tuned dynamic string buffer implementation; it is optimized for smaller strings to reduce garbage created during string manipulation, and for larger strings it allows producing a large string without extra copies, especially in cases where the resulting size is known ahead of time. Additionally, functions like `format` have been tuned to avoid the overhead of `sprintf` where possible, resulting in further speedups.
 
 ## Improved garbage collector pacing
 

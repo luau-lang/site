@@ -7,7 +7,7 @@ sidebar:
 
 Roblox supports a rich set of classes and data types, [documented here](https://developer.roblox.com/en-us/api-reference). All of them are readily available for the type checker to use by their name (e.g. `Part` or `RaycastResult`).
 
-When one type inherits from another type, the type checker models this relationship and allows to cast a subclass to the parent class implicitly, so you can pass a `Part` to a function that expects an `Instance`.
+When one type inherits from another type, the type checker models this relationship and allows casting a subclass to the parent class implicitly, so you can pass a `Part` to a function that expects an `Instance`.
 
 All enums are also available to use by their name as part of the `Enum` type library, e.g. `local m: Enum.Material = part.Material`.
 

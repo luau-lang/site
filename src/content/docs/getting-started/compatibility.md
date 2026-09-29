@@ -118,7 +118,7 @@ If integers are taken out of the equation, bitwise operators make less sense, as
 | function `print` calls `__tostring` instead of `tostring` to format its arguments | ✔️ | |
 | decoding functions in the utf8 library do not accept surrogates | ✔️ | |
 
-Taking syntax aside (which doesn't feel idiomatic or beautiful), `<close>` isn't very useful in Luau - its dominant use case is for code that works with external resources like files or sockets, but we don't provide such APIs - and has a very large complexity cost, evidences by a lot of bug fixes since the initial implementation in 5.4 work versions. `<const>` in Luau doesn't matter for performance - our multi-pass compiler is already able to analyze the usage of the variable to know if it's modified or not and extract all performance gains from it - so the only use here is for code readability, where the `<const>` syntax is... suboptimal.
+Taking syntax aside (which doesn't feel idiomatic or beautiful), `<close>` isn't very useful in Luau - its dominant use case is for code that works with external resources like files or sockets, but we don't provide such APIs - and has a very large complexity cost, evidenced by a lot of bug fixes since the initial implementation in 5.4 work versions. `<const>` in Luau doesn't matter for performance - our multi-pass compiler is already able to analyze the usage of the variable to know if it's modified or not and extract all performance gains from it - so the only use here is for code readability, where the `<const>` syntax is... suboptimal.
 
 Const variables are available in Luau through a `const var = value` syntax, which is backwards compatible through a context-sensitive keyword (similar to `type`).
 
@@ -132,7 +132,7 @@ Const variables are available in Luau through a `const var = value` syntax, whic
 | floats are printed in decimal with enough digits to be read back correctly | ✔️ | |
 | `table.create(arraysize, recordsize)` | ❌ | breaks compatibility |
 | `utf8.offset` returns also final position of character | 🤷‍♀️ | |
-| external strings | ❌ | not compatible with internal object structure;  |
+| external strings | ❌ | not compatible with internal object structure |
 | new functions `luaL_openselectedlibs` and `luaL_makeseed` | 🤷‍♀️ | |
 
 ## Differences from Lua
