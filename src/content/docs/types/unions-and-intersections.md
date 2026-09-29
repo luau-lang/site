@@ -18,7 +18,7 @@ local onlyString: string = stringOrNumber -- not ok
 local onlyNumber: number = stringOrNumber -- not ok
 ```
 
-Note: it's impossible to be able to call a function if there are two or more function types in this union.
+Note: it's impossible to call a value of a union type if there are two or more function types in this union.
 
 ### Tagged unions
 
@@ -89,4 +89,4 @@ local r4: string = f(12345) -- ok
 
 Note: it's impossible to create an intersection type of some primitive types, e.g. `string & number`, or `string & boolean`, or other variations thereof.
 
-Note: Luau still does not support user-defined overloaded functions. Some of Roblox and Lua 5.1 functions have different function signature, so inherently requires overloaded functions.
+Note: Luau still does not support user-defined overloaded functions. Some Roblox and Lua 5.1 functions have different function signatures, so they inherently require overloaded functions.

@@ -375,7 +375,7 @@ Returns the extern type's indexer, or `nil` if it doesn't exist.
 externtype:readindexer(): { index: type, result: type }?
 ```
 
-Returns result type of reading from the extern type via indexing, or `nil` if it doesn't exist.
+Returns the result type of reading from the extern type via indexing, or `nil` if it doesn't exist.
 
 ```
 externtype:writeindexer(): { index: type, result: type }?

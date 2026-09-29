@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-One of main goals of Luau is to enable high performance code. To help with that goal, we are relentlessly optimizing the compiler and runtime - but ultimately, performance of their
+One of the main goals of Luau is to enable high performance code. To help with that goal, we are relentlessly optimizing the compiler and runtime - but ultimately, performance of their
 code is in developers' hands, and is a combination of good algorithm design and implementation that adheres to the strengths of the language. To help write efficient code, Luau
 provides a built-in profiler that samples the execution of the program and outputs a profiler dump that can be converted to an interactive flamegraph.
 
@@ -33,7 +33,7 @@ This produces an SVG file that can be opened in a browser (the image below is cl
 
 [![profile.svg](/images/chess-profile.svg)](/images/chess-profile.svg)
 
-In a flame graph visualization, the individual bars represent function calls, the width represents how much of the total program runtime they execute, and the nesting matches the call stack encountered during program execution. This is a fantastic visualization technique that allows you to hone in on the specific bottlenecks affecting
+In a flame graph visualization, the individual bars represent function calls, the width represents how much of the total program runtime they execute, and the nesting matches the call stack encountered during program execution. This is a fantastic visualization technique that allows you to home in on the specific bottlenecks affecting
 your program performance, optimize those exact bottlenecks, and then re-generate the profile data and visualizer, and look for the next set of true bottlenecks (if any).
 
 Hovering your mouse cursor over individual sections will display detailed function information in the status bar and in a tooltip. If you want to Search for a specific named
@@ -47,9 +47,9 @@ allows Luau compiler to track the name. To fill in more names, you may want to m
 
 `local myFunc = function() --[[ work ]] end` -> `local function myFunc() --[[ work ]] end`
 
-Even without these changes, you can hover over a given bar with no visible name and see it's source location. 
+Even without these changes, you can hover over a given bar with no visible name and see its source location. 
 
-As any sampling profiler, this profiler relies on gathering enough information for the resulting output to be statistically meaningful. It may miss short functions if they
+Like any sampling profiler, this profiler relies on gathering enough information for the resulting output to be statistically meaningful. It may miss short functions if they
 aren't called often enough. By default the profiler runs at 10 kHz, this can be customized by passing a different parameter to `--profile=`. Note that higher
 frequencies result in higher profiling overhead and longer program execution, potentially skewing the results.
 

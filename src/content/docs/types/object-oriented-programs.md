@@ -7,7 +7,7 @@ sidebar:
 
 ## Adding types for faux object oriented programs
 
-One common pattern we see with existing Lua/Luau code is the following object-oriented code. While Luau is capable of inferring a decent chunk of this code, it cannot pin down on the types of `self` when it spans multiple methods.
+One common pattern we see with existing Lua/Luau code is the following object-oriented code. While Luau is capable of inferring a decent chunk of this code, it cannot pin down the types of `self` when it spans multiple methods.
 
 ```luau
 local Account = {}

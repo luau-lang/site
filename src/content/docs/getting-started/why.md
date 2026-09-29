@@ -19,7 +19,7 @@ All of these motivated us to start reshaping Lua 5.1 that we started from into a
 
 A very large part of Luau codebase is written from scratch. We needed a set of tools to be able to write language analysis tools; Lua has a parser that is integrated with the bytecode compiler, which makes it unsuitable for complex semantic analysis. For bytecode compilation, while a single pass compiler can deliver better compilation throughput and be simpler than a full frontend/backend, it significantly limits the optimizations that can be done at the bytecode level.
 
-Luau compiler and analysis tools are thus written from scratch, closely following the syntax and semantics of Lua. Our compiler is not single-pass, and instead relies on a set of analysis passes that run over the AST to produce efficient bytecode, followed by some post-process optimizations.
+The Luau compiler and analysis tools are thus written from scratch, closely following the syntax and semantics of Lua. Our compiler is not single-pass, and instead relies on a set of analysis passes that run over the AST to produce efficient bytecode, followed by some post-process optimizations.
 
 As for the runtime, we had to rewrite the interpreter from scratch to get substantially faster performance; using a combination of techniques pioneered by LuaJIT and custom optimizations that are able to improve performance by taking control over the entire stack (language, compiler, interpreter, virtual machine), we're able to get close to LuaJIT interpreter performance while using C as an implementation language.
 

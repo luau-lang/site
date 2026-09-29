@@ -84,7 +84,7 @@ if b < 0 then local a = b + 1 print(a, b) end
 
 ## MultiLineStatement (6)
 
-An opposite problem is having statements that span multiple lines. This is good for readability when the code is indented properly, but when it's not it results in code that's hard to understand, as its easy to confuse the next line for a separate statement.
+An opposite problem is having statements that span multiple lines. This is good for readability when the code is indented properly, but when it's not it results in code that's hard to understand, as it's easy to confuse the next line for a separate statement.
 
 ```luau
 --!hidden mode=nocheck
@@ -191,7 +191,7 @@ end
 
 ## UnbalancedAssignment (15)
 
-Assignment statements and local variable declarations in Luau support multiple variables on the left side and multiple values on the right side. The number of values doesn't need to match; when the right side has more values, the extra values are discarded, and then the left side has more variables the extra variables are set to `nil`. However, this can result in subtle bugs where a value is omitted mistakenly. This warning warns about cases like this; if the last expression on the right hand side returns multiple values, the warning is not emitted.
+Assignment statements and local variable declarations in Luau support multiple variables on the left side and multiple values on the right side. The number of values doesn't need to match; when the right side has more values, the extra values are discarded, and when the left side has more variables the extra variables are set to `nil`. However, this can result in subtle bugs where a value is omitted mistakenly. This warning warns about cases like this; if the last expression on the right hand side returns multiple values, the warning is not emitted.
 
 ```luau
 -- Assigning 2 values to 3 variables initializes extra variables with nil; add 'nil' to value list to silence
@@ -218,7 +218,7 @@ end
 
 ## DuplicateLocal (17)
 
-Luau syntax allows to use the same name for different parameters of a function as well as different local variables declared in the same statement. This is error prone, even if it's occasionally useful, so a warning is emitted in cases like this, unless the duplicate name is the placeholder `_`:
+Luau syntax allows using the same name for different parameters of a function as well as different local variables declared in the same statement. This is error prone, even if it's occasionally useful, so a warning is emitted in cases like this, unless the duplicate name is the placeholder `_`:
 
 ```luau
 --!hidden mode=nocheck
