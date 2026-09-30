@@ -75,7 +75,7 @@ Luau specializes method calls to improve their performance through a combination
 
 For this to be effective, it's crucial that `__index` in a metatable points to a table directly. For performance reasons it's strongly recommended to avoid `__index` functions as well as deep `__index` chains; an ideal object in Luau is a table with a metatable that points to itself through `__index`.
 
-Metamethod dispatch can benefit from frozen metatables . As such indirectly making the method calls faster. So it is also recommended to freeze metatables that are known to be static after their initialization via `table.freeze`.
+Metamethod dispatch can benefit from frozen metatables, indirectly making method calls faster. Therefore, it is also recommended to freeze metatables that are known to be static after their initialization via `table.freeze`.
 
 When the object in question is a reflected userdata, a special mechanism called "namecall" is used to minimize the interop cost. In classical Lua binding model, `obj:Method` is called in two steps, retrieving the function object (`obj.Method`) and calling it; both steps are often implemented in C++, and the method retrieval needs to use a method object cache - all of this makes method calls slow.
 
