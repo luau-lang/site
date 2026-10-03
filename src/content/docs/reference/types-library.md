@@ -121,11 +121,27 @@ type function keyof(obj: type): type
 
 Returns all property keys of `obj` as a [union](#union-type-instance) of string [singletons](#singleton-type-instance). Note that this type function does not respect [table indexers](../types/tables/#table-indexers).
 
+```luau
+type t = setmetatable<{ [number]: string, foo: number, baz: vector }, {
+    __index: { bar: buffer }
+}>
+
+local keys: keyof<t> --> `"bar" | "baz" | "foo"`
+```
+
 ```
 type function rawkeyof(obj: type): type
 ```
 
 Returns all property keys of `obj` as a [union](#union-type-instance) of string [singletons](#singleton-type-instance). Unlike `keyof`, this type function bypasses metatables/`__index`. This type function also does not respect [table indexers](../types/tables/#table-indexers)
+
+```luau
+type t = setmetatable<{ [number]: string, foo: number, baz: vector }, {
+    __index: { bar: buffer }
+}>
+
+local keys: rawkeyof<t> --> `"baz" | "foo"`
+```
 
 ```
 type function setmetatable(t: type, mt: type): type
