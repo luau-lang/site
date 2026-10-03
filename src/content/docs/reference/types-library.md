@@ -94,9 +94,10 @@ type t = setmetatable<{ [number]: string, foo: number }, {
     __index: { bar: buffer }
 }>
 
-local indexIndexer: index<t, number> --> `string`
-local indexFoo: index<t, "foo">      --> `number`
-local indexBar: index<t, "bar">      --> `buffer`
+local indexIndexer: index<t, number>     --> `string`
+local indexFoo: index<t, "foo">          --> `number`
+local indexBar: index<t, "bar">          --> `buffer`
+local indexFooBar: index<t, "foo"|"bar"> --> `buffer | number`
 ```
 
 ```
@@ -106,13 +107,12 @@ type function rawget(obj: type, key: type): type
 Indexes the given `obj` with the given `key` and returns the resulting type. Unlike `index`, this type function bypasses metatables/`__index`.
 
 ```luau
-type t = setmetatable<{ [number]: string, foo: number }, {
+type t = setmetatable<{ foo: number }, {
     __index: { bar: buffer }
 }>
 
-local indexIndexer: rawget<t, number> --> `string`
-local indexFoo: rawget<t, "foo">      --> `number`
-local indexBar: rawget<t, "bar">      --> `nil`
+local indexFoo: rawget<t, "foo"> --> `number`
+local indexBar: rawget<t, "bar"> --> `nil`
 ```
 
 ```
