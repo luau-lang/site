@@ -127,7 +127,7 @@ Retrieves the custom data associated with a specific thread.
 
 ---
 
-Additional detail on manipulating threads on the Luau stack is described in [the 'Coroutines' section](#Coroutines).
+Additional detail on manipulating threads on the Luau stack is described in [the 'Coroutines' section](#coroutines).
 
 ## Loading Bytecode
 
@@ -2051,7 +2051,7 @@ Can be called without a stack space reservation.
 
 Luau is created to be used in environments where sandboxing of the executed code is required.
 
-Information on what library and language functions have been removed for safety, how trusted and untrusted code can coexist in the same VM and other features can be found in the [sandboxing guide](../guides/sandbox.md).
+Information on what library and language functions have been removed for safety, how trusted and untrusted code can coexist in the same VM and other features can be found in the [sandboxing guide](../sandbox).
 
 To create a fully sandboxed scripting environment, cooperation from the embedder is required and the following functions should be used to:
 
@@ -2061,7 +2061,7 @@ To create a fully sandboxed scripting environment, cooperation from the embedder
 * Interrupt and terminate hanging scripts ([`interrupt` callback](#callbacks))
 * Track memory use by category (`lua_setmemcat` and `lua_totalbytes`)
 
-The standard helpers preserve the [safe-environment optimization](../guides/performance.md).
+The standard helpers preserve the [safe-environment optimization](../performance).
 Use `lua_setsafeenv` directly when creating a custom environment setup.
 
 ```c
@@ -2505,91 +2505,91 @@ Libraries are registered under a name provided with a `#define`.
 int luaopen_base(lua_State* L);
 ```
 
-Initializes the set of [global functions](./library.md#global-functions).
+Initializes the set of [global functions](../library#global-functions).
 
 ```c
 #define LUA_COLIBNAME "coroutine"
 int luaopen_coroutine(lua_State* L);
 ```
 
-Initializes the [`coroutine` library](./library.md#coroutine-library).
+Initializes the [`coroutine` library](../library#coroutine-library).
 
 ```c
 #define LUA_TABLIBNAME "table"
 int luaopen_table(lua_State* L);
 ```
 
-Initializes the [`table` library](./library.md#table-library).
+Initializes the [`table` library](../library#table-library).
 
 ```c
 #define LUA_OSLIBNAME "os"
 int luaopen_os(lua_State* L);
 ```
 
-Initializes the [`os` library](./library.md#os-library).
+Initializes the [`os` library](../library#os-library).
 
 ```c
 #define LUA_STRLIBNAME "string"
 int luaopen_string(lua_State* L);
 ```
 
-Initializes the [`string` library](./library.md#string-library).
+Initializes the [`string` library](../library#string-library).
 
 ```c
 #define LUA_BITLIBNAME "bit32"
 int luaopen_bit32(lua_State* L);
 ```
 
-Initializes the [`bit32` library](./library.md#bit32-library).
+Initializes the [`bit32` library](../library#bit32-library).
 
 ```c
 #define LUA_BUFFERLIBNAME "buffer"
 int luaopen_buffer(lua_State* L);
 ```
 
-Initializes the [`buffer` library](./library.md#buffer-library).
+Initializes the [`buffer` library](../library#buffer-library).
 
 ```c
 #define LUA_UTF8LIBNAME "utf8"
 int luaopen_utf8(lua_State* L);
 ```
 
-Initializes the [`utf8` library](./library.md#utf8-library).
+Initializes the [`utf8` library](../library#utf8-library).
 
 ```c
 #define LUA_CLASSLIBNAME "class"
 int luaopen_class(lua_State* L);
 ```
 
-Initializes the [`class` library](./library.md#class-library) (Experimental).
+Initializes the [`class` library](../library#class-library) (Experimental).
 
 ```c
 #define LUA_MATHLIBNAME "math"
 int luaopen_math(lua_State* L);
 ```
 
-Initializes the [`math` library](./library.md#math-library).
+Initializes the [`math` library](../library#math-library).
 
 ```c
 #define LUA_DBLIBNAME "debug"
 int luaopen_debug(lua_State* L);
 ```
 
-Initializes the [`debug` library](./library.md#debug-library).
+Initializes the [`debug` library](../library#debug-library).
 
 ```c
 #define LUA_VECLIBNAME "vector"
 int luaopen_vector(lua_State* L);
 ```
 
-Initializes the [`vector` library](./library.md#vector-library).
+Initializes the [`vector` library](../library#vector-library).
 
 ```c
 #define LUA_INTLIBNAME "integer"
 int luaopen_integer(lua_State* L);
 ```
 
-Initializes the [`integer` library](./library.md#integer-library).
+Initializes the [`integer` library](../library#integer-library).
 
 ```c
 void luaL_openlibs(lua_State* L);
