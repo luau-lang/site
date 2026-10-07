@@ -1,6 +1,7 @@
 ---
 import MobileMenuToggle from '@astrojs/starlight/components/MobileMenuToggle.astro'
 import { Image } from 'astro:assets';
+import PageScrollbar from './PageScrollbar.astro';
 
 const { hasSidebar } = Astro.locals.starlightRoute;
 
@@ -37,7 +38,7 @@ const footerSections = [
 ];
 ---
 
-<div class="page sl-flex">
+<div id="page-content" class="page sl-flex">
 	<header class="header"><slot name="header" /></header>
 	{
 		hasSidebar && (
@@ -101,6 +102,8 @@ const footerSections = [
 		</footer>
 	}
 </div>
+
+<PageScrollbar />
 
 <style>
 	@layer starlight.core {
