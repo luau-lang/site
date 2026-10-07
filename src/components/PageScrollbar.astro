@@ -19,7 +19,7 @@
         position: fixed;
         inset-block: 4px;
         inset-inline-end: 0;
-        width: 16px;
+        width: 18px;
         z-index: calc(var(--sl-z-index-navbar) + 1);
         touch-action: none;
         user-select: none;
@@ -42,12 +42,11 @@
         inset-inline: 5px;
         border-radius: 999px;
         background-color: var(--sl-color-gray-3);
-        opacity: 0.5;
+        opacity: 0.4;
     }
 
     page-scrollbar:is(:hover, :focus-visible, [data-dragging]) .thumb::before {
-        inset-inline: 3px;
-        opacity: 0.7;
+        opacity: 0.9;
     }
 
     page-scrollbar:focus-visible {
