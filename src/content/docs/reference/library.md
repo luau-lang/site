@@ -887,7 +887,7 @@ function buffer.create(size: number): buffer
 
 Creates a buffer of the requested size with all bytes initialized to 0.
 
-Size limit is 1GB or 1,073,741,824 bytes.
+Size limit is 1 GiB, or 1,073,741,824 bytes.
 
 ```
 function buffer.fromstring(str: string): buffer
