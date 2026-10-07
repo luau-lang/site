@@ -10,6 +10,8 @@ class PageScrollbar extends HTMLElement {
     private drag?: { pointerId: number; offset: number };
 
     connectedCallback() {
+        if (!CSS.supports('scrollbar-width', 'none') || typeof ResizeObserver === 'undefined') return;
+
         this.thumb = this.querySelector<HTMLElement>('.thumb')!;
         this.events = new AbortController();
         const { signal } = this.events;
@@ -34,6 +36,9 @@ class PageScrollbar extends HTMLElement {
             attributeFilter: ['data-search-modal-open', 'data-mobile-menu-expanded', 'style'],
         });
         this.update();
+        document.documentElement.setAttribute('data-page-scrollbar-ready', '');
+        // Removing the native scrollbar can change text wrapping and the document height.
+        this.scheduleUpdate();
     }
 
     disconnectedCallback() {
@@ -43,6 +48,8 @@ class PageScrollbar extends HTMLElement {
         this.lockObserver?.disconnect();
         cancelAnimationFrame(this.frame);
         this.frame = 0;
+        this.hidden = true;
+        document.documentElement.removeAttribute('data-page-scrollbar-ready');
     }
 
     private scheduleUpdate = () => {
