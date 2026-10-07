@@ -209,6 +209,9 @@
 }
 
 :root {
+  /* Hide the page scrollbar so opening search does not change the page width. */
+  scrollbar-width: none;
+
   --sl-font: var(--font-sans), var(--font-sans-fallback), serif;
   --sl-font-mono: var(--font-mono), var(--font-mono-fallback), monospace;
 
