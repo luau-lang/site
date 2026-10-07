@@ -19,7 +19,7 @@
         position: fixed;
         inset-block: 4px;
         inset-inline-end: 0;
-        width: 18px;
+        width: 24px; /* covers the clickable width */
         z-index: calc(var(--sl-z-index-navbar) + 1);
         touch-action: none;
         user-select: none;
@@ -32,7 +32,8 @@
     .thumb {
         position: absolute;
         inset-block-start: 0;
-        inset-inline: 0;
+        inset-inline-end: 0;
+        width: 18px; /* the actual width of the visual dragger */
     }
 
     .thumb::before {
