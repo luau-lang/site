@@ -208,6 +208,11 @@
   --color-extended-yellow-1400: rgb(24, 17, 0);
 }
 
+/* Hide native scrollbars when the custom scrollbar is initialized. */
+:root[data-page-scrollbar-ready] {
+  scrollbar-width: none;
+}
+
 :root {
   --sl-font: var(--font-sans), var(--font-sans-fallback), serif;
   --sl-font-mono: var(--font-mono), var(--font-mono-fallback), monospace;
