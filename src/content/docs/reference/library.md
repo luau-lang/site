@@ -680,6 +680,19 @@ function coroutine.close(co: thread): (boolean, any?)
 
 Closes the coroutine which puts coroutine in the dead state. The coroutine must be dead or suspended - in particular it can't be currently running. If the coroutine that's being closed was in an error state, returns `false` along with an error object; otherwise returns `true`. After closing, the coroutine can't be resumed and the coroutine stack becomes empty.
 
+```
+function coroutine.finally(co: thread, callback: (status: "finished" | "error" | "cancelled", ...any) -> ())
+```
+
+Registers a callback on coroutine `co` that will be called when `co` reaches a terminal state.
+Calling `coroutine.finally` is an error when `co` is already dead, or is the main thread of the VM.
+The callback is called with a status and a set of values depending on how the coroutine terminated:
+
+- `callback("finished", ...results)`. The coroutine function returned normally. All result values are forwarded to the callback.
+- `callback("error", err)`. The coroutine terminated with an error. The error value is passed as the only additional argument.
+- `callback("cancelled")`. `coroutine.close` was called on the coroutine. The coroutine did not complete its work. No extra values are provided.
+
+
 ## bit32 library
 
 All functions in the `bit32` library treat input numbers as 32-bit unsigned integers in `[0..4294967295]` range. The bit positions start at 0 where 0 corresponds to the least significant bit.
