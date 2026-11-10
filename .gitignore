@@ -19,3 +19,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# generated content (built by .github/actions/generate-llm-content)
+public/llms.txt
+public/llms-full.txt
+public/llm/
+public/**/index.md
