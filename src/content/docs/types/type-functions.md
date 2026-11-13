@@ -8,7 +8,7 @@ sidebar:
 Type functions are functions that run during analysis time and operate on types, instead of runtime values. They can use the [types](../../types-library) library to transform existing types or create new ones.
 
 
-Here's a simplified implementation of the builtin type function `keyof`. It takes a table type and returns its property names as a [union](../unions-and-intersections#union-types) of [singletons](../basic-types#singleton-types-aka-literal-types).
+Here's a simplified implementation of the builtin type function [`keyof`](../../types-library#global-type-functions). It takes a table type and returns its property names as a [union](../unions-and-intersections#union-types) of [singletons](../basic-types#singleton-types-aka-literal-types).
 
 ```luau
 type function simple_keyof(ty)
