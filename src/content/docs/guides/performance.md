@@ -75,11 +75,13 @@ Luau specializes method calls to improve their performance through a combination
 
 For this to be effective, it's crucial that `__index` in a metatable points to a table directly. For performance reasons it's strongly recommended to avoid `__index` functions as well as deep `__index` chains; an ideal object in Luau is a table with a metatable that points to itself through `__index`.
 
+Metamethod dispatch can benefit from frozen metatables, indirectly making method calls faster. Therefore, it is also recommended to freeze metatables that are known to be static after their initialization via `table.freeze`.
+
 When the object in question is a reflected userdata, a special mechanism called "namecall" is used to minimize the interop cost. In classical Lua binding model, `obj:Method` is called in two steps, retrieving the function object (`obj.Method`) and calling it; both steps are often implemented in C++, and the method retrieval needs to use a method object cache - all of this makes method calls slow.
 
 Luau can directly call the method by name using the "namecall" extension, and an optimized reflection layer can retrieve the correct method quickly through more voodoo magic based on string interning and custom Luau features that aren't exposed through Luau scripts.
 
-As a result of both optimizations, common Lua tricks of caching the method in a local variable aren't very productive in Luau and aren't recommended either.
+As a result of these optimizations, common Lua tricks of caching the method in a local variable aren't very productive in Luau and aren't recommended either.
 
 ## Specialized builtin function calls
 
@@ -96,6 +98,7 @@ Some builtin functions have partial specializations that reduce the cost of the 
 - `assert` is specialized for cases when the assertion return value is not used and the condition is truthy; this helps reduce the runtime cost of assertions to the extent possible
 - `bit32.extract` is optimized further when field and width selectors are constant
 - `select` is optimized when the second argument is `...`; in particular, `select(x, ...)` is O(1) when using the builtin dispatch mechanism even though it's normally O(N) in variadic argument count.
+- `pcall`/`xpcall` is optimized via a special opcode if they are able to be resolved to a built-in, furthermore they can be optimized if amount of input arguments is known
 
 Some functions from `math` library like `math.floor` can additionally take advantage of advanced SIMD instruction sets like SSE4.1 when available.
 
