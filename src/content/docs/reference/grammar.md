@@ -45,7 +45,7 @@ prefixexp ::= var | functioncall | '(' exp ')'
 functioncall ::= prefixexp funcargs | prefixexp ':' NAME funcargs
 
 exp ::= asexp { binop exp } | unop exp { binop exp }
-ifelseexp ::= 'if' (ifLocalCondExp | exp) 'then' exp {'elseif' exp 'then' exp} 'else' exp
+ifelseexp ::= 'if' (ifLocalCondExp | exp) 'then' exp {'elseif' (ifLocalCondExp | exp) 'then' exp} 'else' exp
 asexp ::= simpleexp ['::' Type]
 stringinterp ::= INTERP_BEGIN exp { INTERP_MID exp } INTERP_END
 simpleexp ::= NUMBER | STRING | 'nil' | 'true' | 'false' | '...' | tableconstructor | attributes 'function' funcbody | prefixexp | ifelseexp | stringinterp
