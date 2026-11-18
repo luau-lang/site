@@ -9,7 +9,7 @@ Luau comes with a set of linting passes, that help make sure that the code is co
 
 Luau's built-in linter produces many different types of warnings; many of these are enabled by default, and can be suppressed by declaring `--!nolint NAME` at the top of the file. In dire situations `--!nolint` at the top of the file can be used to completely disable all warnings. Note that the type checker is separate from the linter, and will still be enabled. Disabling it requires a separate `--!nocheck` directive.
 
-The rest of this page documents all warnings produced by the linter; each warning has a name and a numeric code, the latter is used when displaying warnings. Note that the in-browser version of Luau on this website does not currently use the linter.
+The rest of this page documents all warnings produced by the linter; each warning has a name and a numeric code, the latter is used when displaying warnings.
 
 ## UnknownGlobal (1)
 
