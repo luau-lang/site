@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate:llms": "cd .github/actions/generate-llm-content && npx tsx src/index.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.14",
