@@ -5,6 +5,158 @@ sidebar:
   order: 2
 ---
 
+Luau provides both built-in and user-defined type functions as a way to create and manipulate types during analysis. Check out the [`types` library](#types-library) designed to interact with types for the user-defined type function environment.
+
+## Global type functions
+
+Luau has built-in type functions that provide common operations with types. These type functions can be accessed globally without extra namespacing.
+
+```
+type function len(t: type): type
+```
+
+Returns the resulting type after applying the unary `#` length operator to `t`.
+
+```
+type function unm(t: type): type
+```
+
+Returns the resulting type after applying the unary `-` minus operator to `t`.
+
+```
+type function add(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `+` addition operator between `t1` and `t2` as `t1 + t2`.
+
+```
+type function sub(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `-` subtraction operator between `t1` and `t2` as `t1 - t2`.
+
+```
+type function mul(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `*` multiplication operator between `t1` and `t2` as `t1 * t2`.
+
+```
+type function div(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `/` division operator between `t1` and `t2` as `t1 / t2`.
+
+```
+type function idiv(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `//` floor division operator between `t1` and `t2` as `t1 // t2`.
+
+```
+type function pow(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `^` exponent operator between `t1` and `t2` as `t1 ^ t2`.
+
+```
+type function mod(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `%` modulo operator between `t1` and `t2` as `t1 % t2`.
+
+```
+type function concat(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the `..` concatenation operator between `t1` and `t2` as `t1 .. t2`.
+
+```
+type function lt(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the relational `<` less-than operator between `t1` and `t2` as `t1 < t2`.
+
+```
+type function le(t1: type, t2: type): type
+```
+
+Returns the resulting type after applying the relational `<=` less-than-or-equals-to operator between `t1` and `t2` as `t1 <= t2`.
+
+```
+type function index(obj: type, key: type): type
+```
+
+Indexes the given `obj` with the given `key` and returns the resulting type.
+
+```luau
+type t = setmetatable<{ [number]: string, foo: number }, {
+    __index: { bar: buffer }
+}>
+
+local indexIndexer: index<t, number>     --> `string`
+local indexFoo: index<t, "foo">          --> `number`
+local indexBar: index<t, "bar">          --> `buffer`
+local indexFooBar: index<t, "foo"|"bar"> --> `buffer | number`
+```
+
+```
+type function rawget(obj: type, key: type): type
+```
+
+Indexes the given `obj` with the given `key` and returns the resulting type. Unlike `index`, this type function bypasses metatables/`__index`.
+
+```luau
+type t = setmetatable<{ foo: number }, {
+    __index: { bar: buffer }
+}>
+
+local indexFoo: rawget<t, "foo"> --> `number`
+local indexBar: rawget<t, "bar"> --> `nil`
+```
+
+```
+type function keyof(obj: type): type
+```
+
+Returns all property keys of `obj` as a [union](#union-type-instance) of string [singletons](#singleton-type-instance). Note that this type function does not respect [table indexers](../types/tables/#table-indexers).
+
+```luau
+type t = setmetatable<{ [number]: string, foo: number, baz: vector }, {
+    __index: { bar: buffer }
+}>
+
+local keys: keyof<t> --> `"bar" | "baz" | "foo"`
+```
+
+```
+type function rawkeyof(obj: type): type
+```
+
+Returns all property keys of `obj` as a [union](#union-type-instance) of string [singletons](#singleton-type-instance). Unlike `keyof`, this type function bypasses metatables/`__index`. This type function also does not respect [table indexers](../types/tables/#table-indexers)
+
+```luau
+type t = setmetatable<{ [number]: string, foo: number, baz: vector }, {
+    __index: { bar: buffer }
+}>
+
+local keys: rawkeyof<t> --> `"baz" | "foo"`
+```
+
+```
+type function setmetatable(t: type, mt: type): type
+```
+
+Returns a copy of `t` with the given `mt` metatable attached to it.
+
+```
+type function getmetatable(t: type): type
+```
+
+Returns the attached metatable type for the given `t`, or `nil` if it does not exist.
+
+## `types` library
+
 The `types` library is used to create and transform types, and can only be used within [type functions](../types/type-functions).
 
 ### `types` library properties
@@ -57,7 +209,7 @@ types.thread
 
 The thread `type`.
 
-## `types` library functions
+### `types` library functions
 
 ```
 types.singleton(arg: string | boolean | nil): type
@@ -144,7 +296,7 @@ type:issubtypeof(super: type): boolean
 
 Returns `true` if `self` is a subtype of the provided `super` type argument.
 
-```
+```luau
 type function isString(ty)
     return types.singleton(ty:issubtypeof(types.string))
 end
