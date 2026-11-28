@@ -168,7 +168,7 @@ on functions that never run.
 
 Takes ownership of `owner`: data must stay valid and unchanged until `release(owner)` is called, when no unbuilt function of the
 chunk is left (possibly before `luau_loadlazy` returns).
-`release` may be `NULL`.
+`release` may be `nullptr`.
 
 ---
 
