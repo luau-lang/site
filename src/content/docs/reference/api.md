@@ -151,9 +151,28 @@ On failure, returns 1 and places a string with an error message on the stack.
 <!--TODO: explain environment tables-->
 <!--TODO: explain what imports are-->
 
+```c
+int luau_loadlazy(
+    lua_State* L,
+    const char* chunkname,
+    const char* data,
+    size_t size,
+    int env,
+    void* owner,
+    void (*release)(void* owner)
+);
+```
+
+Returns the same result as `luau_load`, but every function other than the main one is built on its first access. Thus, memory is saved
+on functions that never run.
+
+Takes ownership of `owner`: data must stay valid and unchanged until `release(owner)` is called, when no unbuilt function of the
+chunk is left (possibly before `luau_loadlazy` returns).
+`release` may be `nullptr`.
+
 ---
 
-See the documentation for `lua_call`/`lua_pcall` on how to run the resulting closure.
+See the documentation for `lua_call`/`lua_pcall` on how to run the resulting closure of these two functions.
 
 ## Working with the Stack
 
